@@ -4,12 +4,30 @@
       <h1 class="title">
         delphi-thorchain
       </h1>
+
+      <ul>
+        <li v-for="item in $store.state.pools.poolIds" :key="item">
+          {{ item }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { loadPools } from '../lib/api.mjs';
+
+export default {
+  // load data here
+  async fetch() {
+    console.log('fetch');
+    const poolIds = await loadPools({
+      axios: this.$axios,
+    });
+    console.log(poolIds);
+    this.$store.commit('pools/setPoolIds', poolIds);
+  },
+};
 </script>
 
 <style>
