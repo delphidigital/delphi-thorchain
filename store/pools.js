@@ -2,6 +2,8 @@
 // import { subMonths } from 'date-fns';
 import { loadPools } from '../lib/api.mjs';
 
+const runeDivider = 100000;
+
 export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
   pools: {},
@@ -58,6 +60,11 @@ export const getters = {
       (result + item.poolDepth)
     ), 0);
   },
+  totalRuneDepth(state) {
+    return Object.values(state.pools).reduce((result, item) => (
+      (result + item.runeDepth)
+    ), 0);
+  },
 };
 
 export const mutations = {
@@ -67,9 +74,10 @@ export const mutations = {
   setPoolDetail(state, { poolId, poolDetail }) {
     state.pools[poolId] = {
       ...poolDetail,
-      poolVolume: parseInt(poolDetail.poolVolume, 10),
-      poolVolume24h: parseInt(poolDetail.poolVolume24h, 10),
-      poolDepth: parseInt(poolDetail.poolDepth, 10),
+      poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
+      poolVolume24h: parseInt(poolDetail.poolVolume24h, 10) / runeDivider,
+      poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
+      runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
     };
   },
 };

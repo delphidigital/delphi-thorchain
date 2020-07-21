@@ -5,17 +5,20 @@
         delphi-thorchain
       </h1>
       <PoolDepthSummary />
+      <PercentageRuneLocked />
     </div>
   </div>
 </template>
 
 <script>
-import { loadPools, loadPoolDetail } from '../lib/api.mjs';
+import { loadPools, loadPoolDetail, loadNodeAccounts } from '../lib/api.mjs';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
+import PercentageRuneLocked from '../components/PercentageRuneLocked.vue';
 
 export default {
   // load data here
   components: {
+    PercentageRuneLocked,
     PoolDepthSummary,
   },
   async fetch() {
@@ -31,6 +34,11 @@ export default {
       });
       this.$store.commit('pools/setPoolDetail', { poolId, poolDetail });
     }));
+
+    const nodeAccounts = await loadNodeAccounts({
+      axios: this.$axios,
+    });
+    this.$store.commit('nodes/setNodeAccounts', nodeAccounts);
   },
 };
 </script>

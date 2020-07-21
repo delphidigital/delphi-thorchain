@@ -26,6 +26,9 @@
     <div>
       Total value locked in pools: <RuneUSD :rune="totalPoolDepth" />
     </div>
+    <div>
+      [Fake chart here as we don't have historical data yet]
+    </div>
   </div>
 </template>
 
