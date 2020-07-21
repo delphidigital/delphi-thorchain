@@ -54,6 +54,9 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module'
   ],
+  env: {
+    useStubs: process.env.USE_STUBS ? true : false,
+  },    
   /*
   ** Nuxt.js modules
   */

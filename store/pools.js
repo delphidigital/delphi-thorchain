@@ -15,6 +15,9 @@ export const mutations = {
   setPoolIds(state, poolIds) {
     state.poolIds = poolIds;
   },
+  setPoolDetail(state, poolId, poolDetail) {
+    state.pools[poolId] = poolDetail;
+  },
 };
 
 export const actions = {

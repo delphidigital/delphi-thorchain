@@ -4,28 +4,36 @@
       <h1 class="title">
         delphi-thorchain
       </h1>
-
-      <ul>
-        <li v-for="item in $store.state.pools.poolIds" :key="item">
-          {{ item }}
-        </li>
-      </ul>
+      <PoolDepthSummary />
     </div>
   </div>
 </template>
 
 <script>
-import { loadPools } from '../lib/api.mjs';
+import { loadPools, loadPoolDetail } from '../lib/api.mjs';
+import PoolDepthSummary from '../components/PoolDepthSummary.vue';
 
 export default {
   // load data here
+  components: {
+    PoolDepthSummary,
+  },
   async fetch() {
     console.log('fetch');
     const poolIds = await loadPools({
       axios: this.$axios,
     });
-    console.log(poolIds);
     this.$store.commit('pools/setPoolIds', poolIds);
+
+    await Promise.all(poolIds.map(async (poolId) => {
+      console.log('load detail', poolId);
+      const poolDetail = await loadPoolDetail({
+        axios: this.$axios,
+        poolId,
+      });
+      console.log(poolDetail);
+      this.$store.commit('pools/setPoolDetail', poolId, poolDetail);
+    }));
   },
 };
 </script>

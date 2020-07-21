@@ -16,6 +16,9 @@
     "nuxt": "^2.13.0",
     "date-fns": "^2.12.0"
   },
+  "browser": {
+    "fs": false
+  },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^3.0.0",
     "@nuxtjs/eslint-module": "^2.0.0",
