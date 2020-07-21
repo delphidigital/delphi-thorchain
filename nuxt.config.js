@@ -55,7 +55,8 @@ export default {
     '@nuxtjs/eslint-module'
   ],
   env: {
-    useStubs: process.env.USE_STUBS ? true : false,
+    nodeBaseUrl: process.env.NODE_BASE_URL || 'http://44.231.128.98',
+    midgardBaseUrl: process.env.MIDGARD_BASE_URL || 'http://44.231.128.98'
   },    
   /*
   ** Nuxt.js modules
@@ -74,5 +75,12 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
-  }
+    /*
+    ** You can extend webpack config here
+    */   
+    watch: ['api'],
+    extend (config, ctx) {
+    }
+  },
+  serverMiddleware: ['~/api']
 }
