@@ -19,20 +19,17 @@ export default {
     PoolDepthSummary,
   },
   async fetch() {
-    console.log('fetch');
     const poolIds = await loadPools({
       axios: this.$axios,
     });
     this.$store.commit('pools/setPoolIds', poolIds);
 
     await Promise.all(poolIds.map(async (poolId) => {
-      console.log('load detail', poolId);
       const poolDetail = await loadPoolDetail({
         axios: this.$axios,
         poolId,
       });
-      console.log(poolDetail);
-      this.$store.commit('pools/setPoolDetail', poolId, poolDetail);
+      this.$store.commit('pools/setPoolDetail', { poolId, poolDetail });
     }));
   },
 };

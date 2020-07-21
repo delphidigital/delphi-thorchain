@@ -8,15 +8,64 @@ export const state = () => ({
   poolIds: [],
 });
 
+function aggPoolGetter(state, { attr, min, max }) {
+  let ret = 0;
+  Object.values(state.pools).forEach((item) => {
+    if (max && item[attr] > ret) ret = item[attr];
+    if (min && item[attr] < ret) ret = item[attr];
+  });
+  return ret;
+}
+
 export const getters = {
+  maxPoolDepth(state) {
+    return aggPoolGetter(state, { attr: 'poolDepth', max: true });
+  },
+  minPoolDepth(state) {
+    return aggPoolGetter(state, { attr: 'poolDepth', min: true });
+  },
+  maxPoolVolume(state) {
+    return aggPoolGetter(state, { attr: 'poolVolume', max: true });
+  },
+  minPoolVolume(state) {
+    return aggPoolGetter(state, { attr: 'poolVolume', min: true });
+  },
+  poolVolumeAndDepth(state) {
+    const ret = [];
+
+    const maxPoolVolume = getters.maxPoolVolume(state);
+    const minPoolVolume = getters.minPoolVolume(state);
+    const maxPoolDepth = getters.maxPoolDepth(state);
+    const minPoolDepth = getters.minPoolDepth(state);
+
+    state.poolIds.forEach((poolId) => {
+      const pool = state.pools[poolId];
+      const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
+      const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
+      ret.push({
+        normPoolDepth,
+        normPoolVolume,
+        poolVolume: pool.poolVolume,
+        poolDepth: pool.poolDepth,
+        poolId,
+      });
+    });
+
+    return ret;
+  },
 };
 
 export const mutations = {
   setPoolIds(state, poolIds) {
     state.poolIds = poolIds;
   },
-  setPoolDetail(state, poolId, poolDetail) {
-    state.pools[poolId] = poolDetail;
+  setPoolDetail(state, { poolId, poolDetail }) {
+    state.pools[poolId] = {
+      ...poolDetail,
+      poolVolume: parseInt(poolDetail.poolVolume, 10),
+      poolVolume24h: parseInt(poolDetail.poolVolume24h, 10),
+      poolDepth: parseInt(poolDetail.poolDepth, 10),
+    };
   },
 };
 
