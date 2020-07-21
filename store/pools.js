@@ -53,6 +53,11 @@ export const getters = {
 
     return ret;
   },
+  totalPoolDepth(state) {
+    return Object.values(state.pools).reduce((result, item) => (
+      (result + item.poolDepth)
+    ), 0);
+  },
 };
 
 export const mutations = {
@@ -71,7 +76,6 @@ export const mutations = {
 
 export const actions = {
   async loadPools({ commit }) {
-    console.log('load pools');
     const poolIds = await loadPools({
       axios: this.$axios,
     });

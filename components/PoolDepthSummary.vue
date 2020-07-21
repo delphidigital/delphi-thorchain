@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div>
-      * Fede: note the absolute numbers are here
-      are still in RUNE but need to be converted to USD
-    </div>
+    <h2>Pool depth & volume</h2>
     <table>
       <thead>
         <tr>
@@ -26,6 +23,9 @@
         </tr>
       </tbody>
     </table>
+    <div>
+      Total value locked in pools: <RuneUSD :rune="totalPoolDepth" />
+    </div>
   </div>
 </template>
 
@@ -38,8 +38,10 @@ export default {
   },
   computed: {
     poolVolumeAndDepth() {
-      console.log(this.$store.getters);
       return this.$store.getters['pools/poolVolumeAndDepth'];
+    },
+    totalPoolDepth() {
+      return this.$store.getters['pools/totalPoolDepth'];
     },
   },
 };
