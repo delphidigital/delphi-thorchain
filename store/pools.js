@@ -53,6 +53,11 @@ export const getters = {
       });
     });
 
+    // NOTE(Fede): Sorting by poolVolume here as that is how it is presented in the charts
+    // maybe the api should give us the results already sorted or we should do this at the
+    // component level?
+    ret.sort((a, b) => b.poolVolume - a.poolVolume);
+
     return ret;
   },
   totalPoolDepth(state) {

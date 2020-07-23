@@ -28,6 +28,10 @@ export default {
         href: 'https://unpkg.com/purecss@2.0.3/build/pure-min.css',
         integrity: 'sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ',
         crossorigin: 'anonymous',
+      },
+      {
+        rel: 'stylesheet',
+        href: "https://unpkg.com/purecss@2.0.3/build/grids-responsive-min.css",
       }
     ]
   },
@@ -35,6 +39,7 @@ export default {
   ** Global CSS
   */
   css: [
+    '@/assets/css/main.css'
   ],
   /*
   ** Plugins to load before mounting the App
@@ -63,7 +68,8 @@ export default {
   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    'nuxt-highcharts'
   ],
   /*
   ** Axios module configuration
