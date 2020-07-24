@@ -50,20 +50,15 @@
 </template>
 
 <script>
-import moment from 'moment';
 import Highcharts from 'highcharts';
+import { format } from 'date-fns';
 import variablePie from 'highcharts/modules/variable-pie';
 import RuneUSD from './RuneUSD.vue';
-import { dummyTimeSeriesProgressive } from '../lib/utils.mjs';
 
 // NOTE(Fede): Prevent this from failing when run on server side as it calls 'window'
 if (typeof Highcharts === 'object') {
   variablePie(Highcharts);
 }
-
-const today = new Date();
-const someTimeAgo = new Date(2020, 5, 1);
-const dummyData = dummyTimeSeriesProgressive(someTimeAgo, today, 10);
 
 export default {
   components: {
@@ -77,7 +72,7 @@ export default {
       return this.$store.getters['pools/totalPoolDepth'];
     },
     liquidityDepthOverTime() {
-      return dummyData;
+      return this.$store.state.timeSeries.liquidityDepthOverTime;
     },
     pieChartOptions() {
       const chartData =
@@ -128,7 +123,7 @@ export default {
           },
         },
         xAxis: {
-          categories: this.liquidityDepthOverTime.map(e => moment(e.date).format('DD MMM YYYY')),
+          categories: this.liquidityDepthOverTime.map(e => format(e.date, 'dd MMM yyyy')),
           labels: {
             formatter() {
               if (this.isLast || this.isFirst) {

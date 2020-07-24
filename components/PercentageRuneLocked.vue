@@ -32,13 +32,8 @@
 </template>
 
 <script>
-import moment from 'moment';
+import { format } from 'date-fns';
 import Percentage from './Percentage.vue';
-import { dummyTimeSeriesIntervals } from '../lib/utils.mjs';
-
-const today = new Date();
-const someTimeAgo = new Date(2020, 5, 1);
-const dummyData = dummyTimeSeriesIntervals(someTimeAgo, today, 20, 100);
 
 export default {
   components: {
@@ -76,7 +71,7 @@ export default {
       const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
       const totalLocked = totalRuneDepth + totalActiveBonded + totalStandbyBonded;
 
-      // using this in the view so rounding for now, also probably better to remove
+      // NOTE(Fede): using this in the view so rounding for now, also probably better to remove
       // duplication later.
       return Math.round((totalLocked / circulatingSupply) * 100);
     },
@@ -105,7 +100,7 @@ export default {
       ];
     },
     percentageRuneLockedOverTime() {
-      return dummyData;
+      return this.$store.state.timeSeries.percentageRuneLockedOverTime;
     },
     pieChartOptions() {
       return {
@@ -158,7 +153,7 @@ export default {
           },
         },
         xAxis: {
-          categories: this.percentageRuneLockedOverTime.map(e => moment(e.date).format('DD MMM YYYY')),
+          categories: this.percentageRuneLockedOverTime.map(e => format(e.date, 'dd MMM yyyy')),
           labels: {
             formatter() {
               if (this.isLast || this.isFirst) {
