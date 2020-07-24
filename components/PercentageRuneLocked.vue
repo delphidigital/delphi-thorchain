@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="section">
     <h2>Percentage RUNE locked</h2>
     <div class="pure-g">
       <div class="pure-u-2-5">
@@ -21,13 +21,24 @@
       </div>
     </div>
     <div>
-      [Fake chart here as we don't have historical data yet]
+      <h3 style="margin-bottom: 10px;">
+        Percentage RUNE Locked Over Time
+      </h3>
+      <client-only>
+        <highchart :options="areaChartOptions" />
+      </client-only>
     </div>
   </div>
 </template>
 
 <script>
+import moment from 'moment';
 import Percentage from './Percentage.vue';
+import { dummyTimeSeriesIntervals } from '../lib/utils.mjs';
+
+const today = new Date();
+const someTimeAgo = new Date(2020, 5, 1);
+const dummyData = dummyTimeSeriesIntervals(someTimeAgo, today, 20, 100);
 
 export default {
   components: {
@@ -93,7 +104,9 @@ export default {
         },
       ];
     },
-
+    percentageRuneLockedOverTime() {
+      return dummyData;
+    },
     pieChartOptions() {
       return {
         chart: {
@@ -122,6 +135,60 @@ export default {
         series: [{
           innerSize: '92%',
           data: this.runeLockedData.map(rld => ({ name: rld.name, y: rld.percentage })),
+        }],
+      };
+    },
+    areaChartOptions() {
+      return {
+        chart: {
+          type: 'areaspline',
+          backgroundColor: 'transparent',
+          height: 200,
+        },
+        title: false,
+        labels: false,
+        credits: false,
+        legend: false,
+        plotOptions: {
+          areaspline: {
+            dataLabels: {
+              enabled: false,
+            },
+            fillColor: '#262f51',
+          },
+        },
+        xAxis: {
+          categories: this.percentageRuneLockedOverTime.map(e => moment(e.date).format('DD MMM YYYY')),
+          labels: {
+            formatter() {
+              if (this.isLast || this.isFirst) {
+                return this.value;
+              }
+              return null;
+            },
+            overflow: 'allow',
+            style: { color: '#fff' },
+          },
+        },
+        yAxis: {
+          title: false,
+          max: 100,
+          labels: {
+            formatter() {
+              if (this.isLast || this.isFirst) {
+                return `%${this.value}`;
+              }
+              return null;
+            },
+            style: { color: '#fff' },
+          },
+        },
+        series: [{
+          marker: {
+            enabled: false,
+          },
+          color: '#262f51',
+          data: this.percentageRuneLockedOverTime.map(e => e.value),
         }],
       };
     },

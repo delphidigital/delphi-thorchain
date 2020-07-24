@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="dashboard__header">
-      <h1 class="title">
+      <h1 class="title" style="margin-bottom: 10px;">
         Dashboard
       </h1>
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2">
+      <div class="pure-u-1 pure-u-md-1-2" style="padding-right: 15px;">
         <PoolDepthSummary />
       </div>
-      <div class="pure-u-1 pure-u-md-1-2">
+      <div class="pure-u-1 pure-u-md-1-2" style="padding-left: 15px;">
         <PercentageRuneLocked />
       </div>
     </div>

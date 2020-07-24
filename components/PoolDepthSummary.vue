@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="section">
     <h2>Pool depth & volume</h2>
     <div class="pure-g">
       <div class="pure-u-2-5">
@@ -39,20 +39,31 @@
       </div>
     </div>
     <div>
-      [Fake chart here as we don't have historical data yet]
+      <h3 style="margin-bottom: 10px;">
+        Liquidity depth over time
+      </h3>
+      <client-only>
+        <highchart :options="areaChartOptions" />
+      </client-only>
     </div>
   </div>
 </template>
 
 <script>
+import moment from 'moment';
 import Highcharts from 'highcharts';
 import variablePie from 'highcharts/modules/variable-pie';
 import RuneUSD from './RuneUSD.vue';
+import { dummyTimeSeriesProgressive } from '../lib/utils.mjs';
 
 // NOTE(Fede): Prevent this from failing when run on server side as it calls 'window'
 if (typeof Highcharts === 'object') {
   variablePie(Highcharts);
 }
+
+const today = new Date();
+const someTimeAgo = new Date(2020, 5, 1);
+const dummyData = dummyTimeSeriesProgressive(someTimeAgo, today, 10);
 
 export default {
   components: {
@@ -64,6 +75,9 @@ export default {
     },
     totalPoolDepth() {
       return this.$store.getters['pools/totalPoolDepth'];
+    },
+    liquidityDepthOverTime() {
+      return dummyData;
     },
     pieChartOptions() {
       const chartData =
@@ -91,6 +105,59 @@ export default {
         },
         series: [{
           data: chartData,
+        }],
+      };
+    },
+    areaChartOptions() {
+      return {
+        chart: {
+          type: 'areaspline',
+          backgroundColor: 'transparent',
+          height: 200,
+        },
+        title: false,
+        labels: false,
+        credits: false,
+        legend: false,
+        plotOptions: {
+          areaspline: {
+            dataLabels: {
+              enabled: false,
+            },
+            fillColor: '#262f51',
+          },
+        },
+        xAxis: {
+          categories: this.liquidityDepthOverTime.map(e => moment(e.date).format('DD MMM YYYY')),
+          labels: {
+            formatter() {
+              if (this.isLast || this.isFirst) {
+                return this.value;
+              }
+              return null;
+            },
+            overflow: 'allow',
+            style: { color: '#fff' },
+          },
+        },
+        yAxis: {
+          title: false,
+          labels: {
+            formatter() {
+              if (this.isLast || this.isFirst) {
+                return `$${this.value}`;
+              }
+              return null;
+            },
+            style: { color: '#fff' },
+          },
+        },
+        series: [{
+          marker: {
+            enabled: false,
+          },
+          color: '#262f51',
+          data: this.liquidityDepthOverTime.map(e => e.value),
         }],
       };
     },
