@@ -1,11 +1,18 @@
 <template>
   <div class="container">
-    <div>
+    <div class="dashboard__header">
       <h1 class="title">
-        delphi-thorchain
+        Dashboard
       </h1>
-      <PoolDepthSummary />
-      <PercentageRuneLocked />
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2" style="padding-right: 15px;">
+        <PoolDepthSummary />
+      </div>
+      <div class="pure-u-1 pure-u-md-1-2" style="padding-left: 15px;">
+        <PercentageRuneLocked />
+      </div>
     </div>
   </div>
 </template>
@@ -43,19 +50,25 @@ export default {
 };
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
+<style lang="scss" scoped>
 .title {
+  display: block;
+  font-weight: bold;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+</style>
+
+<style lang="scss">
+@import '../assets/css/global.scss';
+/*
+* NOTE(Fede): Global styles go here
+*/
+
+/* ELEMENT OVERRIDES */
+
+html {
   font-family:
-    'Quicksand',
     'Source Sans Pro',
     -apple-system,
     BlinkMacSystemFont,
@@ -64,22 +77,81 @@ export default {
     'Helvetica Neue',
     Arial,
     sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+  font-size: 16px;
+  word-spacing: 1px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  color: #fff;
 }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
 }
 
-.links {
-  padding-top: 15px;
+body {
+  background-color: $color-bg-shade;
+}
+
+h1 {
+  margin: 0;
+}
+
+/*
+* HEADER
+*/
+
+.header {
+  width: 100%;
+  background-color: $color-bg;
+  padding: 10px;
+}
+
+.header__content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header__logo {
+  height: 50px;
+}
+
+/*
+* MAIN
+*/
+
+.container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 10px;
+}
+
+
+/*
+ * SECTION
+ */
+
+.section {
+  background-color: $color-bg;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.section__title {
+  margin-bottom: 10px;
+}
+
+.section__subtitle {
+  margin-bottom: 10px;
 }
 </style>
+
