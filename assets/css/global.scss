@@ -1,4 +1,18 @@
+// VARIABLES
 $color-bg-shade: #131624;
 $color-bg: #181c2f;
 $color-bg-tint: #262f51;
+
+
+// FONTS
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+
+// PURE CSS overrides
+// https://purecss.io/grids/#using-grids-with-your-font-family
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+  /* Set your content font stack here: */
+  font-family: Montserrat, sans-serif;
+}
 
