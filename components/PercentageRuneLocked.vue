@@ -21,7 +21,7 @@
       </div>
     </div>
     <div>
-      <h3 style="margin-bottom: 10px;">
+      <h3 class="section__subtitle">
         Percentage RUNE Locked Over Time
       </h3>
       <client-only>

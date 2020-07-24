@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="dashboard__header">
-      <h1 class="title" style="margin-bottom: 10px;">
+      <h1 class="title">
         Dashboard
       </h1>
     </div>
@@ -49,6 +49,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.title {
+  display: block;
+  font-weight: bold;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+</style>
 
 <style lang="scss">
 @import '../assets/css/global.scss';
@@ -126,23 +135,6 @@ h1 {
   padding: 10px;
 }
 
-.title {
-  display: block;
-  font-weight: bold;
-  font-size: 28px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
 
 /*
  * SECTION
@@ -153,4 +145,13 @@ h1 {
   padding: 20px;
   border-radius: 10px;
 }
+
+.section__title {
+  margin-bottom: 10px;
+}
+
+.section__subtitle {
+  margin-bottom: 10px;
+}
 </style>
+

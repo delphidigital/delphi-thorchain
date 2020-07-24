@@ -39,7 +39,7 @@
       </div>
     </div>
     <div>
-      <h3 style="margin-bottom: 10px;">
+      <h3 class="section__subtitle">
         Liquidity depth over time
       </h3>
       <client-only>
