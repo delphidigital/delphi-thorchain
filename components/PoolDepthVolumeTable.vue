@@ -8,7 +8,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in poolVolumeAndDepth" :key="item.poolId" class="table__row">
+      <tr v-for="item in data" :key="item.poolId" class="table__row">
         <td class="table__highlight">
           <span class="marker" :style="{backgroundColor: item.color}" />{{ item.poolId }}
         </td>
@@ -17,6 +17,17 @@
         </td>
         <td class="table__data">
           <RuneUSD :rune="item.poolDepth" />
+        </td>
+      </tr>
+      <tr class="table__row table__row--aggregate">
+        <td class="table__highlight">
+          <span class="marker" :style="{backgroundColor: aggregate.color}" />{{ aggregate.poolId }}
+        </td>
+        <td class="table__data">
+          <RuneUSD :rune="aggregate.poolVolume" />
+        </td>
+        <td class="table__data">
+          <RuneUSD :rune="aggregate.poolDepth" />
         </td>
       </tr>
       <tr class="table__footer">
@@ -41,6 +52,12 @@ export default {
   computed: {
     poolVolumeAndDepth() {
       return this.$store.getters['pools/poolVolumeAndDepth'];
+    },
+    data() {
+      return this.poolVolumeAndDepth.filter(d => d.poolId !== 'Other');
+    },
+    aggregate() {
+      return this.poolVolumeAndDepth.find(d => d.poolId === 'Other');
     },
     totalPoolDepth() {
       return this.$store.getters['pools/totalPoolDepth'];
@@ -72,6 +89,10 @@ export default {
   td {
     padding: 7px 0;
   }
+}
+
+.table__row--aggregate {
+  border-top: 1px solid $color-border;
 }
 
 .table__highlight {
