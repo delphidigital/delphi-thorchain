@@ -28,6 +28,7 @@
 }
 
 .header__logo {
-  height: 45px;
+  max-height: 45px;
+  max-width: 45%;
 }
 </style>

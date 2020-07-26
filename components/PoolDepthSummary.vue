@@ -6,10 +6,10 @@
       </h2>
     </div>
     <div class="pure-g section__body section__body--pie-chart">
-      <div class="pure-u-1-2">
+      <div class="pure-u-lg-1-2 pure-u-1">
         <PoolDepthVolumePieChart />
       </div>
-      <div class="pure-u-1-2">
+      <div class="pure-u-lg-1-2 pure-u-1">
         <PoolDepthVolumeTable />
       </div>
     </div>

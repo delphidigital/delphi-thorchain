@@ -118,14 +118,26 @@ h1 {
 .section {
   background-color: $color-bg;
   border-radius: 10px;
+  margin-bottom: 30px;
+
+  @media screen and (max-width: $pureg-md) {
+    margin-bottom: 15px;
+  }
 }
 
 .section--split-left {
   padding-right: 15px;
+
+  @media screen and (max-width: $pureg-md) {
+    padding-right: 0px;
+  }
 }
 
 .section--split-right {
   padding-left: 15px;
+  @media screen and (max-width: $pureg-md) {
+    padding-left: 0px;
+  }
 }
 
 .section__header {
@@ -143,6 +155,11 @@ h1 {
   height: 300px;
   display: flex;
   padding-right: 25px;
+
+  @media screen and (max-width: $pureg-lg) {
+    height: 580px;
+    padding-left: 25px;
+  }
 }
 
 .section__body--area-chart {

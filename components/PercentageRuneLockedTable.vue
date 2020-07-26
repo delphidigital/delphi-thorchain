@@ -3,7 +3,7 @@
     <tbody>
       <tr v-for="item in data" :key="item.name">
         <td><span :style="{borderColor: item.color}" class="marker" />{{ item.name }}</td>
-        <td>
+        <td class="table__percentage">
           <Percentage :value="item.percentage" />
         </td>
       </tr>
@@ -35,6 +35,13 @@ export default {
   width: 100%;
   td {
     padding: 7px 0;
+  }
+
+}
+
+.table__percentage {
+  @media screen and (max-width: $pureg-lg) {
+    text-align: right;
   }
 }
 

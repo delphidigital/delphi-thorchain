@@ -6,10 +6,10 @@
       </h2>
     </div>
     <div class="pure-g section__body section__body--pie-chart">
-      <div class="pure-u-1-2">
+      <div class="pure-u-lg-1-2 pure-u-1">
         <PercentageRuneLockedPieChart :chart-data="pieChartData" />
       </div>
-      <div class="pure-u-1-2">
+      <div class="pure-u-lg-1-2 pure-u-1">
         <PercentageRuneLockedTable :data="runeLockedData" />
       </div>
     </div>
