@@ -1,7 +1,10 @@
 <template>
-  <client-only>
-    <highchart :options="chartOptions" />
-  </client-only>
+  <div class="pie-chart__container">
+    <client-only>
+      <highchart :options="chartOptions" />
+      <div slot="placeholder" class="pie-chart__placeholder" />
+    </client-only>
+  </div>
 </template>
 
 <script>
@@ -19,6 +22,7 @@ export default {
         chart: {
           type: 'pie',
           backgroundColor: 'transparent',
+          height: 220,
           margin: [0, 0, 0, 0],
         },
         title: {

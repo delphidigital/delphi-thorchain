@@ -29,8 +29,13 @@ export default {
 
 <style lang="scss" scoped>
 .table {
+  margin-top: 55px;
   font-weight: 400;
   font-size: 14px;
+  width: 100%;
+  td {
+    padding: 7px 0;
+  }
 }
 
 .marker {

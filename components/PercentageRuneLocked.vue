@@ -5,16 +5,16 @@
         Percentage RUNE locked
       </h2>
     </div>
-    <div class="pure-g section__body">
-      <div class="pure-u-2-5">
+    <div class="pure-g section__body section__body--pie-chart">
+      <div class="pure-u-1-2">
         <PercentageRuneLockedPieChart :chart-data="pieChartData" />
       </div>
-      <div class="pure-u-3-5">
+      <div class="pure-u-1-2">
         <PercentageRuneLockedTable :data="runeLockedData" />
       </div>
     </div>
     <hr class="section__divider"></hr>
-    <div class="section__body">
+    <div class="section__body--area-chart">
       <h3 class="section__subtitle">
         Percentage RUNE Locked Over Time
       </h3>

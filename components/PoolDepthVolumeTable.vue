@@ -53,6 +53,7 @@ export default {
 .table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 25px;
 }
 
 .table__head {

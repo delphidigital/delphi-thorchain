@@ -7,10 +7,10 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2" style="padding-right: 15px;">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-left">
         <PoolDepthSummary />
       </div>
-      <div class="pure-u-1 pure-u-md-1-2" style="padding-left: 15px;">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-right">
         <PercentageRuneLocked />
       </div>
     </div>
@@ -120,6 +120,14 @@ h1 {
   border-radius: 10px;
 }
 
+.section--split-left {
+  padding-right: 15px;
+}
+
+.section--split-right {
+  padding-left: 15px;
+}
+
 .section__header {
   padding: 16px 25px;
   border-bottom: 1px solid $color-border;
@@ -130,7 +138,14 @@ h1 {
   font-weight: 600;
 }
 
-.section__body {
+
+.section__body--pie-chart {
+  height: 300px;
+  display: flex;
+  padding-right: 25px;
+}
+
+.section__body--area-chart {
   padding: 20px 25px;
 }
 
@@ -145,6 +160,15 @@ h1 {
   border-top: 1px solid $color-border;
   height: 1px;
   display: block;
+}
+
+.pie-chart__container {
+  padding-top: 30px;
+}
+
+.pie-chart__placeholder {
+  height: 220px;
+  width: 100%;
 }
 
 </style>

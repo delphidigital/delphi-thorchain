@@ -1,8 +1,11 @@
 <template>
   <div>
-    <client-only>
-      <highchart :options="chartOptions" />
-    </client-only>
+    <div class="pie-chart__container">
+      <client-only>
+        <highchart :options="chartOptions" />
+        <div slot="placeholder" class="pie-chart__placeholder" />
+      </client-only>
+    </div>
     <dl class="legend">
       <dt class="legend__tag">
         Angle:
@@ -45,7 +48,7 @@ export default {
         chart: {
           type: 'variablepie',
           backgroundColor: 'transparent',
-          height: 200,
+          height: 220,
           margin: [0, 0, 0, 0],
         },
         title: false,

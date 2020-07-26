@@ -19,6 +19,7 @@ function aggPoolGetter(state, { attr, min, max }) {
   return ret;
 }
 
+// Show first X pools and then aggregate the rest into "Other"
 function aggPoolsByDepth(pools, numberBeforeAgg) {
   const shallowCopy = [...pools];
   shallowCopy.sort((a, b) => b.poolDepth - a.poolDepth);

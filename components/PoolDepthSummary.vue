@@ -5,16 +5,16 @@
         Pool depth & volume
       </h2>
     </div>
-    <div class="pure-g section__body">
-      <div class="pure-u-2-5">
+    <div class="pure-g section__body section__body--pie-chart">
+      <div class="pure-u-1-2">
         <PoolDepthVolumePieChart />
       </div>
-      <div class="pure-u-3-5">
+      <div class="pure-u-1-2">
         <PoolDepthVolumeTable />
       </div>
     </div>
     <hr class="section__divider">
-    <div class="section__body">
+    <div class="section__body--area-chart">
       <h3 class="section__subtitle">
         Liquidity depth over time
       </h3>
