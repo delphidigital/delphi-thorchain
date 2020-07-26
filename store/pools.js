@@ -19,6 +19,34 @@ function aggPoolGetter(state, { attr, min, max }) {
   return ret;
 }
 
+function aggPoolsByDepth(pools, numberBeforeAgg) {
+  const shallowCopy = [...pools];
+  shallowCopy.sort((a, b) => b.poolDepth - a.poolDepth);
+  const first = shallowCopy.slice(0, numberBeforeAgg);
+  const second = shallowCopy.slice(numberBeforeAgg);
+  const aggregate = {
+    poolId: 'Other',
+  };
+
+  second.forEach((pool) => {
+    aggregate.normPoolDepth = (aggregate.normPoolDepth || 0) + pool.normPoolDepth;
+    aggregate.normPoolVolume = (aggregate.normPoolVolume || 0) + pool.normPoolVolume;
+    aggregate.poolVolume = (aggregate.poolVolume || 0) + pool.poolVolume;
+    aggregate.poolDepth = (aggregate.poolDepth || 0) + pool.poolDepth;
+  });
+
+  return first.concat(aggregate);
+}
+
+const colors = [
+  '#4346D3',
+  '#5E2BBC',
+  '#F7517F',
+  '#2D99FF',
+  '#3F4357',
+  '#16CEB9',
+];
+
 export const getters = {
   maxPoolDepth(state) {
     return aggPoolGetter(state, { attr: 'poolDepth', max: true });
@@ -33,7 +61,7 @@ export const getters = {
     return aggPoolGetter(state, { attr: 'poolVolume', min: true });
   },
   poolVolumeAndDepth(state) {
-    const ret = [];
+    const allPools = [];
 
     const maxPoolVolume = getters.maxPoolVolume(state);
     const minPoolVolume = getters.minPoolVolume(state);
@@ -44,7 +72,7 @@ export const getters = {
       const pool = state.pools[poolId];
       const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
       const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
-      ret.push({
+      allPools.push({
         normPoolDepth,
         normPoolVolume,
         poolVolume: pool.poolVolume,
@@ -53,10 +81,18 @@ export const getters = {
       });
     });
 
-    // NOTE(Fede): Sorting by poolVolume here as that is how it is presented in the charts
-    // maybe the api should give us the results already sorted or we should do this at the
-    // component level?
-    ret.sort((a, b) => b.poolVolume - a.poolVolume);
+
+    const ret = aggPoolsByDepth(allPools, 5);
+
+    // NOTE(Fede): Sorting by poolVolume and adding colors as we use the data
+    // in several components. Not sure if this is the right place to do this though.
+    // Maybe it should be done in a parent component that passes thing as props.
+    ret
+      .sort((a, b) => b.poolVolume - a.poolVolume)
+      .forEach((d, index) => {
+        // eslint-disable-next-line no-param-reassign
+        d.color = colors[index % (colors.length)];
+      });
 
     return ret;
   },

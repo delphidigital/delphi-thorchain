@@ -6,7 +6,7 @@ const app = express();
 function stubJSON(id) {
   const rawdata = fs.readFileSync(`./stubs/${id}.json`);
   return JSON.parse(rawdata);
-};
+}
 
 app.all('/v1/pools', (req, res) => {
   res.json(stubJSON('pools'));
@@ -25,5 +25,5 @@ app.all('/thorchain/nodeaccounts', (req, res) => {
 });
 
 module.exports = {
- handler: app,
+  handler: app,
 };

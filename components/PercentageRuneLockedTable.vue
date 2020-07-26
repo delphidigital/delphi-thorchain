@@ -1,0 +1,45 @@
+<template>
+  <table class="table">
+    <tbody>
+      <tr v-for="item in data" :key="item.name">
+        <td><span :style="{borderColor: item.color}" class="marker" />{{ item.name }}</td>
+        <td>
+          <Percentage :value="item.percentage" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<script>
+import Percentage from './Percentage.vue';
+
+export default {
+  components: {
+    Percentage,
+  },
+  props: {
+    data: {
+      type: Array,
+      default: () => [],
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.table {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 2px solid;
+  display: inline-block;
+  margin-right: 6px;
+}
+</style>

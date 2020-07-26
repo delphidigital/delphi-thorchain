@@ -2,10 +2,10 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    node: true
+    node: true,
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
   },
   extends: [
     '@nuxtjs',
@@ -14,18 +14,18 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    'dot-notation': ['error', { 'allowPattern': '^[a-z]+(_[a-z]+)+$' }],
-    'semi': ['error', 'always'],
+    'dot-notation': ['error', { allowPattern: '^[a-z]+(_[a-z]+)+$' }],
+    semi: ['error', 'always'],
     'import/no-unresolved': 'off',
     'no-console': 0,
     'no-param-reassign': [
       'error',
       {
-        'props': true,
-        'ignorePropertyModificationsFor': [
-          'state'
-        ]
+        props: true,
+        ignorePropertyModificationsFor: [
+          'state',
+        ],
       },
     ],
-  }
-}
+  },
+};

@@ -51,19 +51,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 10px;
+}
+
 .title {
   display: block;
-  font-weight: bold;
-  font-size: 28px;
-  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 22px;
+  margin: 30px 0;
 }
 </style>
 
 <style lang="scss">
-@import '../assets/css/global.scss';
 /*
 * NOTE(Fede): Global styles go here
 */
+// FONTS
+//@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+
+// PURE CSS overrides
+// https://purecss.io/grids/#using-grids-with-your-font-family
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+  /* Set your content font stack here: */
+  font-family: Montserrat, sans-serif;
+}
 
 /* ELEMENT OVERRIDES */
 
@@ -95,55 +112,40 @@ h1 {
 }
 
 /*
-* HEADER
-*/
-
-.header {
-  width: 100%;
-  background-color: $color-bg;
-  padding: 10px;
-}
-
-.header__content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-}
-
-.header__logo {
-  height: 50px;
-}
-
-/*
-* MAIN
-*/
-
-.container {
-  margin: 0 auto;
-  width: 100%;
-  max-width: 1200px;
-  padding: 10px;
-}
-
-
-/*
  * SECTION
  */
 
 .section {
   background-color: $color-bg;
-  padding: 20px;
   border-radius: 10px;
 }
 
+.section__header {
+  padding: 16px 25px;
+  border-bottom: 1px solid $color-border;
+}
+
 .section__title {
-  margin-bottom: 10px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.section__body {
+  padding: 20px 25px;
 }
 
 .section__subtitle {
-  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
+
+.section__divider {
+  border: 0;
+  border-top: 1px solid $color-border;
+  height: 1px;
+  display: block;
+}
+
 </style>
 
