@@ -7,10 +7,10 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2" style="padding-right: 15px;">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-left">
         <PoolDepthSummary />
       </div>
-      <div class="pure-u-1 pure-u-md-1-2" style="padding-left: 15px;">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-right">
         <PercentageRuneLocked />
       </div>
     </div>
@@ -51,32 +51,41 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 10px;
+}
+
 .title {
   display: block;
-  font-weight: bold;
-  font-size: 28px;
-  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 22px;
+  margin: 30px 0;
 }
 </style>
 
 <style lang="scss">
-@import '../assets/css/global.scss';
 /*
 * NOTE(Fede): Global styles go here
 */
+// FONTS
+//@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+
+// PURE CSS overrides
+// https://purecss.io/grids/#using-grids-with-your-font-family
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+  /* Set your content font stack here: */
+  font-family: Montserrat, sans-serif;
+}
 
 /* ELEMENT OVERRIDES */
 
 html {
-  font-family:
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+  font-family: Montserrat, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -103,55 +112,81 @@ h1 {
 }
 
 /*
-* HEADER
-*/
-
-.header {
-  width: 100%;
-  background-color: $color-bg;
-  padding: 10px;
-}
-
-.header__content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-}
-
-.header__logo {
-  height: 50px;
-}
-
-/*
-* MAIN
-*/
-
-.container {
-  margin: 0 auto;
-  width: 100%;
-  max-width: 1200px;
-  padding: 10px;
-}
-
-
-/*
  * SECTION
  */
 
 .section {
   background-color: $color-bg;
-  padding: 20px;
   border-radius: 10px;
+  margin-bottom: 30px;
+
+  @media screen and (max-width: $pureg-md) {
+    margin-bottom: 15px;
+  }
+}
+
+.section--split-left {
+  padding-right: 15px;
+
+  @media screen and (max-width: $pureg-md) {
+    padding-right: 0px;
+  }
+}
+
+.section--split-right {
+  padding-left: 15px;
+  @media screen and (max-width: $pureg-md) {
+    padding-left: 0px;
+  }
+}
+
+.section__header {
+  padding: 16px 25px;
+  border-bottom: 1px solid $color-border;
 }
 
 .section__title {
-  margin-bottom: 10px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+
+.section__body--pie-chart {
+  height: 300px;
+  display: flex;
+  padding-right: 25px;
+
+  @media screen and (max-width: $pureg-lg) {
+    height: 580px;
+    padding-left: 25px;
+  }
+}
+
+.section__body--area-chart {
+  padding: 20px 25px;
 }
 
 .section__subtitle {
-  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
+
+.section__divider {
+  border: 0;
+  border-top: 1px solid $color-border;
+  height: 1px;
+  display: block;
+}
+
+.pie-chart__container {
+  padding-top: 30px;
+}
+
+.pie-chart__placeholder {
+  height: 220px;
+  width: 100%;
+}
+
 </style>
 

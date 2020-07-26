@@ -1,44 +1,31 @@
 <template>
   <div class="section">
-    <h2>Percentage RUNE locked</h2>
-    <div class="pure-g">
-      <div class="pure-u-2-5">
-        <client-only>
-          <highchart :options="pieChartOptions" />
-        </client-only>
+    <div class="section__header">
+      <h2 class="section__title">
+        Percentage RUNE locked
+      </h2>
+    </div>
+    <div class="pure-g section__body section__body--pie-chart">
+      <div class="pure-u-lg-1-2 pure-u-1">
+        <PercentageRuneLockedPieChart :chart-data="pieChartData" />
       </div>
-      <div class="pure-u-3-5">
-        <table>
-          <tbody>
-            <tr v-for="item in runeLockedData" :key="item.name">
-              <td>{{ item.name }}</td>
-              <td>
-                <Percentage :value="item.percentage" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="pure-u-lg-1-2 pure-u-1">
+        <PercentageRuneLockedTable :data="runeLockedData" />
       </div>
     </div>
-    <div>
+    <hr class="section__divider"></hr>
+    <div class="section__body--area-chart">
       <h3 class="section__subtitle">
         Percentage RUNE Locked Over Time
       </h3>
-      <client-only>
-        <highchart :options="areaChartOptions" />
-      </client-only>
+      <AreaChart :data="percentageRuneLockedOverTime" :format-label="e => `${e}%`" :max="100" />
     </div>
   </div>
 </template>
 
 <script>
-import { format } from 'date-fns';
-import Percentage from './Percentage.vue';
 
 export default {
-  components: {
-    Percentage,
-  },
   computed: {
     poolPercentage() {
       const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
@@ -64,128 +51,44 @@ export default {
       const totalUnlocked = circulatingSupply - totalLocked;
       return totalUnlocked / circulatingSupply;
     },
-    lockedDisplayPercentage() {
-      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
-      const totalStandbyBonded = this.$store.getters['nodes/totalStandbyBonded'];
-      const totalActiveBonded = this.$store.getters['nodes/totalActiveBonded'];
-      const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
-      const totalLocked = totalRuneDepth + totalActiveBonded + totalStandbyBonded;
-
-      // NOTE(Fede): using this in the view so rounding for now, also probably better to remove
-      // duplication later.
-      return Math.round((totalLocked / circulatingSupply) * 100);
-    },
     runeLockedData() {
       return [
         {
           name: 'Pools',
           percentage: this.poolPercentage,
+          color: '#2D99FF',
         },
         {
           name: 'Active nodes',
           percentage: this.activeNodePercentage,
+          color: '#16CEB9',
         },
         {
           name: 'Standby nodes',
           percentage: this.standbyNodePercentage,
+          color: '#5E2BBC',
         },
         {
           name: 'Stanby pools',
           percentage: 0,
+          color: '#6648FF',
         },
         {
           name: 'Unlocked',
           percentage: this.unlockedPercentage,
+          color: '#3F4357',
         },
       ];
     },
+    pieChartData() {
+      return this.runeLockedData.map(rld => ({
+        name: rld.name,
+        y: Math.round(rld.percentage * 10000) / 100,
+        color: rld.color,
+      }));
+    },
     percentageRuneLockedOverTime() {
       return this.$store.state.timeSeries.percentageRuneLockedOverTime;
-    },
-    pieChartOptions() {
-      return {
-        chart: {
-          type: 'pie',
-          backgroundColor: 'transparent',
-        },
-        title: {
-          text: `
-            <span style="font-weight: bold; font-size: 32px;">${this.lockedDisplayPercentage}%</span><br /><br />
-            <span style="font-size: 12px;">of total supply locked</span>
-          `,
-          style: { color: '#fff' },
-          useHtml: true,
-          verticalAlign: 'middle',
-          floating: true,
-        },
-        labels: false,
-        credits: false,
-        plotOptions: {
-          pie: {
-            dataLabels: {
-              enabled: false,
-            },
-          },
-        },
-        series: [{
-          innerSize: '92%',
-          data: this.runeLockedData.map(rld => ({ name: rld.name, y: rld.percentage })),
-        }],
-      };
-    },
-    areaChartOptions() {
-      return {
-        chart: {
-          type: 'areaspline',
-          backgroundColor: 'transparent',
-          height: 200,
-        },
-        title: false,
-        labels: false,
-        credits: false,
-        legend: false,
-        plotOptions: {
-          areaspline: {
-            dataLabels: {
-              enabled: false,
-            },
-            fillColor: '#262f51',
-          },
-        },
-        xAxis: {
-          categories: this.percentageRuneLockedOverTime.map(e => format(e.date, 'dd MMM yyyy')),
-          labels: {
-            formatter() {
-              if (this.isLast || this.isFirst) {
-                return this.value;
-              }
-              return null;
-            },
-            overflow: 'allow',
-            style: { color: '#fff' },
-          },
-        },
-        yAxis: {
-          title: false,
-          max: 100,
-          labels: {
-            formatter() {
-              if (this.isLast || this.isFirst) {
-                return `%${this.value}`;
-              }
-              return null;
-            },
-            style: { color: '#fff' },
-          },
-        },
-        series: [{
-          marker: {
-            enabled: false,
-          },
-          color: '#262f51',
-          data: this.percentageRuneLockedOverTime.map(e => e.value),
-        }],
-      };
     },
   },
 };
