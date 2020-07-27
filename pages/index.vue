@@ -188,5 +188,49 @@ h1 {
   width: 100%;
 }
 
+.app-tooltip {
+  background-color: $color-bg-popup;
+  color: #fff;
+  border: none;
+  margin: 0;
+  padding: 0;
+  font-family: Montserrat;
+  font-size: 12px;
+  border-radius: 4px;
+  width: 150px;
+}
+
+.app-tooltip__header {
+  font-weight: 400;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 0px;
+  text-align: center;
+}
+
+.app-tooltip__body {
+  padding: 10px 15px;
+}
+
+.app-tooltip__marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.app-tooltip__table {
+  width: 100%;
+  boarder-collapse: collapse;
+  dt {
+    padding: 6px;
+  }
+}
+
+.app-tooltip__table__data--highlight {
+  font-weight: 600;
+  text-align: right;
+}
+
 </style>
 
