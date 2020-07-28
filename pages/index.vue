@@ -183,8 +183,13 @@ h1 {
   padding-top: 30px;
 }
 
-.pie-chart__placeholder {
+.area-chart__placeholder {
   height: 220px;
+  width: 100%;
+}
+
+.area-chart__placeholder {
+  height: 130px;
   width: 100%;
 }
 

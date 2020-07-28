@@ -1,7 +1,10 @@
 <template>
-  <client-only>
-    <highchart :options="chartOptions" />
-  </client-only>
+  <div>
+    <client-only>
+      <highchart :options="chartOptions" />
+      <div slot="placeholder" class="area-chart__placeholder" />
+    </client-only>
+  </div>
 </template>
 
 <script>
@@ -79,7 +82,7 @@ export default {
               if (this.isLast) {
                 return `
                   <p 
-                    style="${baseStyle} left: -30px;">
+                    style="${baseStyle} left: -31px;">
                     ${this.value}
                   </p>`;
               }
