@@ -197,7 +197,7 @@ h1 {
   font-family: Montserrat;
   font-size: 12px;
   border-radius: 4px;
-  width: 150px;
+  width: 170px;
   box-shadow: 10px 10px 30px 0px rgba(0,0,0,0.4);
 }
 
@@ -223,8 +223,8 @@ h1 {
 .app-tooltip__table {
   width: 100%;
   boarder-collapse: collapse;
-  dt {
-    padding: 6px;
+  td {
+    padding-bottom: 6px;
   }
 }
 
