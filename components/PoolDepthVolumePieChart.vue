@@ -36,14 +36,15 @@ export default {
   computed: {
     data() {
       const pvds = this.$store.getters['pools/poolVolumeAndDepth'];
+      const priceUSD = this.$store.state.runeMarketData.priceUSD;
 
       // TODO(Fede): This is in rune for now, but maybe it should be in another unit?
       // The table means to show everything in USD I think. Show the correct units
       // when it becomes clear what to do where.
       return pvds.map(pvd => ({
         name: pvd.poolId,
-        y: pvd.poolDepth,
-        z: pvd.poolVolume,
+        y: pvd.poolDepth * priceUSD,
+        z: pvd.poolVolume * priceUSD,
         color: pvd.color,
       }));
     },
@@ -67,12 +68,12 @@ export default {
                   <table class="app-tooltip__table">
                     <tbody>
                       <tr>
-                        <td>Depth</td>
-                        <td class="app-tooltip__table__data--highlight">${formatCurrency(this.point.y)}</td>
-                      </tr>
-                      <tr>
                         <td>Volume</td>
                         <td class="app-tooltip__table__data--highlight">${formatCurrency(this.point.z)}</td>
+                      </tr>
+                      <tr>
+                        <td>Depth</td>
+                        <td class="app-tooltip__table__data--highlight">${formatCurrency(this.point.y)}</td>
                       </tr>
                     </tbody>
                   </table>
