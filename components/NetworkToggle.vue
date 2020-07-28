@@ -6,7 +6,12 @@
     >
       Testnet
     </p>
-    <button class="toggle__button" @click="mainnet = !mainnet">
+    <button
+      class="toggle__button"
+      :class="{ 'toggle__button--disabled' : !mainnetEnabled }"
+      :disabled="!mainnetEnabled"
+      @click="mainnet = mainnetEnabled ? !mainnet : mainnet"
+    >
       <div
         class="toggle__inside"
         :class="{ 'toggle__inside--right': mainnet }"
@@ -23,6 +28,12 @@
 
 <script>
 export default {
+  props: {
+    mainnetEnabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       mainnet: false,
@@ -59,6 +70,28 @@ export default {
     margin: 0 12px;
     padding: 0;
     cursor: pointer;
+  }
+
+  .toggle__button--disabled {
+    cursor: not-allowed;
+
+    &:hover, &:focus {
+      &::before {
+        content: "Mainnet is currently under development";
+        top: 30px;
+        left: -100px;
+        position: absolute;
+        color: $color-text-secondary;
+        background-color: $color-bg-popup;
+        font-family: Montserrat, sans-serif;
+        font-weight: 300;
+        font-size: 12px;
+        display: block;
+        width: 200px;
+        padding: 15px;
+        border-radius: 4px;
+      }
+    }
   }
 
   .toggle__inside {
