@@ -2,7 +2,7 @@
 // import { subMonths } from 'date-fns';
 import { loadPools } from '../lib/api.mjs';
 
-const runeDivider = 100000;
+const runeDivider = 10 ** 8;
 
 export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
