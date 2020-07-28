@@ -4,6 +4,7 @@
       <h1 class="title">
         Dashboard
       </h1>
+      <NetworkToggle />
     </div>
 
     <div class="pure-g">
@@ -56,6 +57,18 @@ export default {
   width: 100%;
   max-width: 1200px;
   padding: 0 10px;
+}
+
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media screen and (max-width: 21.5em) {
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 35px;
+  }
 }
 
 .title {
