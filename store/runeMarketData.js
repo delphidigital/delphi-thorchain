@@ -2,6 +2,6 @@
 export const state = () => ({
   // hardcoded for now but should be dynamic from
   // https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false
-  circulatingSupply: 105552528,
+  circulatingSupply: 500000000,
   priceUSD: 0.51944,
 });

@@ -1,22 +1,32 @@
 import { loadPools, loadPoolDetail, loadNodeAccounts, loadStats } from '../lib/api.mjs';
 import axios from 'axios';
 import fs from 'fs';
+import redis from 'redis';
+import { promisify } from 'util';
+const client = redis.createClient();
+const getAsync = promisify(client.get).bind(client);
+const setAsync = promisify(client.set).bind(client);
+
+async function set(key, data) {
+  await setAsync(key, JSON.stringify(data));
+}
 
 async function run() {
   const poolIds = await loadPools({ axios });
-  console.log(poolIds);
-  fs.writeFileSync('stubs/pools.json', JSON.stringify(poolIds));
+  await set('pools', poolIds);
 
   for (const poolId of poolIds) {
     const poolDetail = await loadPoolDetail({ axios, poolId });
-    fs.writeFileSync(`stubs/pools-${poolId}.json`, JSON.stringify(poolDetail));
+    await set(`pools-${poolId}`, poolDetail);
   }
 
   const nodeAccounts = await loadNodeAccounts({ axios });
-  fs.writeFileSync('stubs/nodeAccounts.json', JSON.stringify(nodeAccounts));
+  await set('nodeAccounts', nodeAccounts);
 
   const stats = await loadStats({ axios });
-  fs.writeFileSync('stubs/stats.json', JSON.stringify(stats));
+  await set('stats', stats);
+
+  client.unref();
 }
 
 run();
