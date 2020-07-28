@@ -26,6 +26,7 @@
 <script>
 import Highcharts from 'highcharts';
 import variablePie from 'highcharts/modules/variable-pie';
+import numeral from 'numeral';
 
 if (typeof Highcharts === 'object') {
   variablePie(Highcharts);
@@ -36,6 +37,9 @@ export default {
     data() {
       const pvds = this.$store.getters['pools/poolVolumeAndDepth'];
 
+      // TODO(Fede): This is in rune for now, but maybe it should be in another unit?
+      // The table means to show everything in USD I think. Show the correct units
+      // when it becomes clear what to do where.
       return pvds.map(pvd => ({
         name: pvd.poolId,
         y: pvd.poolDepth,
@@ -44,12 +48,45 @@ export default {
       }));
     },
     chartOptions() {
+      const formatCurrency = number => numeral(number).format('($0,00a)').toUpperCase();
       return {
         chart: {
           type: 'variablepie',
           backgroundColor: 'transparent',
           height: 220,
           margin: [0, 0, 0, 0],
+        },
+        tooltip: {
+          formatter() {
+            return `
+              <div class="app-tooltip">
+                <div class="app-tooltip__header">
+                  <span style="background-color: ${this.point.color}" class="app-tooltip__marker"></span><span>${this.point.name}</span>
+                </div>
+                <div class="app-tooltip__body">
+                  <table class="app-tooltip__table">
+                    <tbody>
+                      <tr>
+                        <td>Depth</td>
+                        <td class="app-tooltip__table__data--highlight">${formatCurrency(this.point.y)}</td>
+                      </tr>
+                      <tr>
+                        <td>Volume</td>
+                        <td class="app-tooltip__table__data--highlight">${formatCurrency(this.point.z)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `;
+          },
+          useHTML: true,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderColor: 'transparent',
+          backgroundColor: 'transparent',
+          shadow: false,
+          padding: 0,
         },
         title: false,
         labels: false,
