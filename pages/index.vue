@@ -198,6 +198,7 @@ h1 {
   font-size: 12px;
   border-radius: 4px;
   width: 150px;
+  box-shadow: 10px 10px 30px 0px rgba(0,0,0,0.4);
 }
 
 .app-tooltip__header {
@@ -225,6 +226,12 @@ h1 {
   dt {
     padding: 6px;
   }
+}
+
+.app-tooltip__text {
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 .app-tooltip__table__data--highlight {

@@ -46,6 +46,29 @@ export default {
           floating: true,
           y: 25,
         },
+        tooltip: {
+          formatter() {
+            return `
+              <div class="app-tooltip">
+                <div class="app-tooltip__header">
+                  <span style="background-color: ${this.point.color}" class="app-tooltip__marker"></span><span>${this.point.name}</span>
+                </div>
+                <div class="app-tooltip__body">
+                  <p class="app-tooltip__text">
+                    ${this.point.y}%
+                  </p>
+                </div>
+              </div>
+            `;
+          },
+          useHTML: true,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderColor: 'transparent',
+          backgroundColor: 'transparent',
+          shadow: false,
+          padding: 0,
+        },
         labels: false,
         credits: false,
         plotOptions: {
