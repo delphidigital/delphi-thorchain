@@ -19,7 +19,7 @@
           <RuneUSD :rune="item.poolDepth" />
         </td>
       </tr>
-      <tr class="table__row table__row--aggregate">
+      <tr class="table__row">
         <td class="table__highlight">
           <span class="marker" :style="{backgroundColor: aggregate.color}" />{{ aggregate.poolId }}
         </td>
@@ -89,10 +89,6 @@ export default {
   td {
     padding: 7px 0;
   }
-}
-
-.table__row--aggregate {
-  border-top: 1px solid $color-border;
 }
 
 .table__highlight {

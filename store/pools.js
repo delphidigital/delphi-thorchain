@@ -44,7 +44,6 @@ const colors = [
   '#5E2BBC',
   '#F7517F',
   '#2D99FF',
-  '#3F4357',
   '#16CEB9',
 ];
 
@@ -88,11 +87,18 @@ export const getters = {
     // NOTE(Fede): Sorting by poolVolume and adding colors as we use the data
     // in several components. Not sure if this is the right place to do this though.
     // Maybe it should be done in a parent component that passes thing as props.
+    let index = 0;
     ret
       .sort((a, b) => b.poolVolume - a.poolVolume)
-      .forEach((d, index) => {
-        // eslint-disable-next-line no-param-reassign
-        d.color = colors[index % (colors.length)];
+      .forEach((d) => {
+        if (d.poolId === 'Other') {
+          // eslint-disable-next-line no-param-reassign
+          d.color = '#3F4357';
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          d.color = colors[index % (colors.length)];
+          index += 1;
+        }
       });
 
     return ret;

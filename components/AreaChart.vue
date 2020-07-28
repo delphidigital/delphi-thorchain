@@ -46,6 +46,30 @@ export default {
             fillColor: areaColor,
           },
         },
+        tooltip: {
+          formatter() {
+            console.log(this.point);
+            return `
+              <div class="app-tooltip">
+                <div class="app-tooltip__header">
+                  <span>${this.point.category}</span>
+                </div>
+                <div class="app-tooltip__body">
+                  <p class="app-tooltip__text">
+                    ${formatLabel(this.point.y)}
+                  </p>
+                </div>
+              </div>
+            `;
+          },
+          useHTML: true,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderColor: 'transparent',
+          backgroundColor: 'transparent',
+          shadow: false,
+          padding: 0,
+        },
         xAxis: {
           categories: this.data.map(e => format(e.date, 'dd MMM yyyy')),
           labels: {
