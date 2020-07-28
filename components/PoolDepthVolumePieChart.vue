@@ -35,11 +35,12 @@ export default {
   computed: {
     data() {
       const pvds = this.$store.getters['pools/poolVolumeAndDepth'];
+      const priceUSD = this.$store.state.runeMarketData.priceUSD;
 
       return pvds.map(pvd => ({
         name: pvd.poolId,
-        y: pvd.poolDepth,
-        z: pvd.poolVolume,
+        y: pvd.poolDepth / priceUSD,
+        z: pvd.poolVolume / priceUSD,
         color: pvd.color,
       }));
     },
