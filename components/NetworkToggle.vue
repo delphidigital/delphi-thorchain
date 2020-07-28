@@ -1,15 +1,21 @@
 <template>
-  <div class="container">
+  <div class="toggle__container">
     <p
       class="toggle__value"
       :class="{ 'toggle__value--active': !mainnet }"
     >
       Testnet
     </p>
-    <button class="toggle__button" @:click="mainnet = !mainnet">
-      <div class="toggle__inside toggle__inside--right" />
+    <button class="toggle__button" @click="mainnet = !mainnet">
+      <div
+        class="toggle__inside"
+        :class="{ 'toggle__inside--right': mainnet }"
+      />
     </button>
-    <p class="toggle__value toggle__value--active">
+    <p
+      class="toggle__value"
+      :class="{ 'toggle__value--active': mainnet }"
+    >
       Mainnet
     </p>
   </div>
@@ -26,7 +32,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .container {
+  .toggle__container {
     display: flex;
     align-items: center;
     font-family: Montserrat, sans-serif;
@@ -35,6 +41,7 @@ export default {
   .toggle__value {
     font-size: 14px;
     opacity: 50%;
+    transition: opacity 0.3s ease-in-out;
   }
 
   .toggle__value--active {
@@ -62,6 +69,7 @@ export default {
     position: absolute;
     top: 2px;
     left: 2px;
+    transition: left 0.3s ease-in-out;
   }
 
   .toggle__inside--right {

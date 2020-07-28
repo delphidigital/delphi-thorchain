@@ -63,6 +63,12 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  @media screen and (max-width: 21.5em) {
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 35px;
+  }
 }
 
 .title {
