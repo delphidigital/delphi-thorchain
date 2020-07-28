@@ -40,7 +40,7 @@ export default {
         axios: this.$axios,
         poolId,
       });
-      this.$store.commit('pools/setPoolDetail', { poolId, poolDetail });
+      this.$store.commit('pools/setPoolDetail', { poolId, poolDetail: poolDetail[0] });
     }));
 
     const nodeAccounts = await loadNodeAccounts({

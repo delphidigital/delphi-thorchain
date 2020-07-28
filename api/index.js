@@ -1,27 +1,35 @@
 import express from 'express';
 import fs from 'fs';
+import redis from 'redis';
+import { promisify } from 'util';
+const client = redis.createClient();
+const getAsync = promisify(client.get).bind(client);
 
 const app = express();
 
-function stubJSON(id) {
-  const rawdata = fs.readFileSync(`./stubs/${id}.json`);
+async function loadCached(id) {
+  const rawdata = await getAsync(id);
   return JSON.parse(rawdata);
 }
 
-app.all('/v1/pools', (req, res) => {
-  res.json(stubJSON('pools'));
+app.all('/v1/pools', async (req, res) => {
+  const data = await loadCached('pools');
+  res.json(data);
 });
 
-app.all('/v1/pools/detail', (req, res) => {
-  res.json(stubJSON(`pools-${req.query.asset}`));
+app.all('/v1/pools/detail', async (req, res) => {
+  const data = await loadCached(`pools-${req.query.asset}`);
+  res.json(data);
 });
 
-app.all('/v1/stats', (req, res) => {
-  res.json(stubJSON('stats'));
+app.all('/v1/stats', async (req, res) => {
+  const data = await loadCached('stats');
+  res.json(data);
 });
 
-app.all('/thorchain/nodeaccounts', (req, res) => {
-  res.json(stubJSON('nodeAccounts'));
+app.all('/thorchain/nodeaccounts', async (req, res) => {
+  const data = await loadCached('nodeAccounts');
+  res.json(data);
 });
 
 module.exports = {
