@@ -225,6 +225,10 @@ h1 {
   background-color: $color-bg-tint;
 }
 
+.section__table__head--right {
+  text-align: right
+}
+
 .section__table__row {
   border-top: 1px solid $color-border;
 }
@@ -262,6 +266,10 @@ $padding-section-table: 25px;
 
 .section__table__data--highlight {
   font-weight: 700;
+}
+
+.section__table__data--right {
+  text-align: right;
 }
 
 /*
