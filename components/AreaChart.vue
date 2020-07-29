@@ -51,7 +51,6 @@ export default {
         },
         tooltip: {
           formatter() {
-            console.log(this.point);
             return `
               <div class="app-tooltip">
                 <div class="app-tooltip__header">

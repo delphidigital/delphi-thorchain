@@ -15,6 +15,15 @@
         <PercentageRuneLocked />
       </div>
     </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-2-3 section--split-left">
+        <PoolList />
+      </div>
+      <div class="pure-u-1 pure-u-md-1-3 section--split-right">
+        <StandbyPools />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -197,6 +206,68 @@ h1 {
   display: block;
 }
 
+/*
+* SECTION TABLE
+*/
+
+.section__table {
+  border-collapse: collapse;
+  padding-bottom: 5px;
+}
+
+.section__table__head {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: $color-text-secondary;
+  text-align: left;
+  padding: 6px 0;
+  background-color: $color-bg-tint;
+}
+
+.section__table__row {
+  border-top: 1px solid $color-border;
+}
+
+.section__table__row:last-child {
+  .section__table__data {
+    padding-bottom: 20px;
+  }
+}
+
+$padding-section-table: 25px;
+
+.section__table__head:first-child {
+  padding-left: $padding-section-table;
+}
+
+.section__table__head:last-child {
+  padding-right: $padding-section-table;
+}
+
+.section__table__data {
+  font-size: 14px;
+  font-weight: 500;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.section__table__data:first-child {
+  padding-left: $padding-section-table;
+}
+
+.section__table__data:last-child {
+  padding-right: $padding-section-table;
+}
+
+.section__table__data--highlight {
+  font-weight: 700;
+}
+
+/*
+ * CHARTS
+ */
+
 .pie-chart__container {
   padding-top: 30px;
 }
@@ -210,6 +281,10 @@ h1 {
   height: 130px;
   width: 100%;
 }
+
+/*
+ * TOOLTIP FOR CHARTS
+ */
 
 .app-tooltip {
   background-color: $color-bg-popup;
