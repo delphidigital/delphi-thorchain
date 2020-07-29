@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { loadPools, loadPoolDetail, loadNodeAccounts } from '../lib/api.mjs';
+import { loadPools, loadPoolDetail, loadMarketData, loadNodeAccounts } from '../lib/api.mjs';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../components/PercentageRuneLocked.vue';
 
@@ -47,6 +47,11 @@ export default {
       axios: this.$axios,
     });
     this.$store.commit('nodes/setNodeAccounts', nodeAccounts);
+
+    const marketData = await loadMarketData({
+      axios: this.$axios,
+    });
+    this.$store.commit('runeMarketData/setData', marketData);
   },
 };
 </script>
