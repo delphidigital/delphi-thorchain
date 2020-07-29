@@ -2,6 +2,15 @@
 export const state = () => ({
   // hardcoded for now but should be dynamic from
   // https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false
-  circulatingSupply: 500000000,
-  priceUSD: 0.51944,
+  circulatingSupply: null,
+  priceUSD: null,
 });
+
+export const mutations = {
+  setData(state, marketData) {
+    const circulatingSupply = parseFloat(marketData.circulating);
+    const priceUSD = parseFloat(marketData.priceUsd);
+    state.circulatingSupply = circulatingSupply;
+    state.priceUSD = priceUSD;
+  },
+};

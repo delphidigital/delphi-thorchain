@@ -11,6 +11,11 @@ async function set(key, data) {
   await setAsync(key, JSON.stringify(data));
 }
 
+async function getRunePrice() {
+  const response = await axios.get('https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
+  return response.data.market_data.current_price.usd;
+}
+
 async function run() {
   const poolIds = await loadPools({ axios });
   await set('pools', poolIds);
@@ -25,6 +30,15 @@ async function run() {
 
   const stats = await loadStats({ axios });
   await set('stats', stats);
+
+  const totalStaked = parseInt(stats.totalStaked);
+  const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
+    total + parseInt(node.bond)
+  ), 0);
+  const circulating = ((totalBonded + totalStaked) / (10 ** 8)).toFixed(2);
+
+  const priceUsd = await getRunePrice();
+  await set('marketData', { priceUsd: priceUsd.toString(), circulating });
 
   client.unref();
 }

@@ -32,6 +32,11 @@ app.all('/thorchain/nodeaccounts', async (req, res) => {
   res.json(data);
 });
 
+app.all('/int/marketdata', async (req, res) => {
+  const data = await loadCached('marketData');
+  res.json(data);
+});
+
 module.exports = {
   handler: app,
 };
