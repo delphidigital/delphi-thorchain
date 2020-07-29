@@ -24,19 +24,31 @@
         <StandbyPools />
       </div>
     </div>
+    <div class="section">
+      <NodeSummary />
+    </div>
   </div>
 </template>
 
 <script>
-import { loadPools, loadPoolDetail, loadMarketData, loadNodeAccounts } from '../lib/api.mjs';
+import {
+  loadPools,
+  loadPoolDetail,
+  loadMarketData,
+  loadConstants,
+  loadNodeAccounts,
+  loadLastBlock,
+} from '../lib/api.mjs';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../components/PercentageRuneLocked.vue';
+import NodeSummary from '../components/NodeSummary.vue';
 
 export default {
   // load data here
   components: {
     PercentageRuneLocked,
     PoolDepthSummary,
+    NodeSummary,
   },
   async fetch() {
     const poolIds = await loadPools({
@@ -57,10 +69,20 @@ export default {
     });
     this.$store.commit('nodes/setNodeAccounts', nodeAccounts);
 
+    const lastBlock = await loadLastBlock({
+      axios: this.$axios,
+    });
+    this.$store.commit('nodes/setLastBlock', lastBlock.thorchain);
+
     const marketData = await loadMarketData({
       axios: this.$axios,
     });
     this.$store.commit('runeMarketData/setData', marketData);
+
+    const constants = await loadConstants({
+      axios: this.$axios,
+    });
+    this.$store.commit('nodes/setOldValidatorRate', constants['int_64_values'].OldValidatorRate);
   },
 };
 </script>

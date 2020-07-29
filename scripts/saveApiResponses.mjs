@@ -1,4 +1,4 @@
-import { loadPools, loadPoolDetail, loadNodeAccounts, loadStats } from '../lib/api.mjs';
+import { loadPools, loadPoolDetail, loadNodeAccounts, loadLastBlock, loadConstants, loadStats } from '../lib/api.mjs';
 import axios from 'axios';
 import fs from 'fs';
 import redis from 'redis';
@@ -28,8 +28,14 @@ async function run() {
   const nodeAccounts = await loadNodeAccounts({ axios });
   await set('nodeAccounts', nodeAccounts);
 
+  const lastBlock = await loadLastBlock({ axios });
+  await set('lastBlock', lastBlock);
+
   const stats = await loadStats({ axios });
   await set('stats', stats);
+
+  const constants = await loadConstants({ axios });
+  await set('constants', constants);
 
   const totalStaked = parseInt(stats.totalStaked);
   const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
