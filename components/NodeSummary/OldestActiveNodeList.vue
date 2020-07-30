@@ -84,6 +84,7 @@
           <td class="section__table__data">
             active since {{ node['status_since'] }}
           </td>
+          <td class="section__table__data" />
         </tr>
       </tbody>
     </table>
