@@ -24,9 +24,8 @@
         <StandbyPools />
       </div>
     </div>
-    <div class="section">
-      <NodeSummary />
-    </div>
+
+    <NodeSummary />
   </div>
 </template>
 
@@ -256,12 +255,6 @@ h1 {
   border-top: 1px solid $color-border;
 }
 
-.section__table__row:last-child {
-  .section__table__data {
-    padding-bottom: 20px;
-  }
-}
-
 $padding-section-table: 25px;
 
 .section__table__head:first-child {
@@ -303,7 +296,7 @@ $padding-section-table: 25px;
   padding-top: 30px;
 }
 
-.area-chart__placeholder {
+.pie-chart__placeholder {
   height: 220px;
   width: 100%;
 }
@@ -367,6 +360,5 @@ $padding-section-table: 25px;
   font-weight: 600;
   text-align: right;
 }
-
 </style>
 

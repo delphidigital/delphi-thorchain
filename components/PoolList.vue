@@ -83,7 +83,7 @@ export default {
         medianFee: 0.001 + (Math.random() / 1000),
         volume: Math.round(Math.random() * 1000000),
         apy: Math.round(Math.random() * 100),
-        apyRealRewards: Math.random() > 0.5 ? 0.5 : 0,
+        apyRealRewards: Math.random(),
       })),
     };
   },
