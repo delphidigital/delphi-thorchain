@@ -217,12 +217,13 @@ h1 {
 
 .section__table__head {
   font-size: 11px;
+  line-height: 15px;
   text-transform: uppercase;
   font-weight: 500;
   color: $color-text-secondary;
   text-align: left;
-  padding: 6px 0;
-  background-color: $color-bg-tint;
+  padding: 8px 0;
+  background-color: $color-bg-table-header;
 }
 
 .section__table__head--right {
