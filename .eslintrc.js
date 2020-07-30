@@ -14,7 +14,7 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    'dot-notation': ['error', { allowPattern: '^[a-z]+(_[a-z]+)+$' }],
+    'dot-notation': ['error', { allowPattern: '^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)+$' }],
     semi: ['error', 'always'],
     'import/no-unresolved': 'off',
     'no-console': 0,
