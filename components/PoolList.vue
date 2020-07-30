@@ -1,9 +1,21 @@
 <template>
   <div class="section">
-    <div class="section__header">
+    <div class="section__header pool-list-header">
       <h2 class="section__title">
         Pool list
       </h2>
+
+      <div class="pool-list-time-selector">
+        <button
+          v-for="option in timeOptions"
+          :key="option"
+          class="pool-list-time-option"
+          :class="{ 'pool-list-time-option--active': option === currentTimeOption }"
+          @click="currentTimeOption = option"
+        >
+          {{ option }}
+        </button>
+      </div>
     </div>
     <div class="section__body">
       <table class="section__table pool-list-table">
@@ -76,6 +88,8 @@ export default {
     // build data here
     const poolIds = this.$store.state.pools.poolIds;
     return {
+      timeOptions: ['24h', '7d', '30d'],
+      currentTimeOption: '24h',
       pools: poolIds.map(pid => ({
         name: pid,
         slipageDepth: Math.round(Math.random() * 40000),
@@ -91,6 +105,42 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pool-list-header {
+  display: flex;
+  align-items: center;
+}
+
+.pool-list-time-selector {
+  display: flex;
+  width: 120px;
+  height: 30px;
+  margin-left: 20px;
+  justify-content: space-between;
+  background-color: $color-bg-tint;
+  border-radius: 15px;
+  padding: 0 16px;
+}
+
+.pool-list-time-option {
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+
+  &:hover, &:focus {
+    border: none;
+    outline: none;
+  }
+}
+
+.pool-list-time-option--active {
+  color: #fff;
+}
+
 .pool-list-table {
   width: 100%;
 }
