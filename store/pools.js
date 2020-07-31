@@ -70,11 +70,10 @@ export const getters = {
         meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
         medianFee: null,
         volume: pool.poolVolume,
-        apy: pool.poolROI.toFixed(4),
+        apy: pool.poolROI,
         apyRealRewards: null,
       };
     });
-    console.log('pools formatted', pools);
     return pools;
   },
   poolVolumeAndDepth(state) {

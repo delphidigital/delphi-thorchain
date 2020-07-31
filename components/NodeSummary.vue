@@ -4,18 +4,7 @@
       <h2 class="section__title">
         Nodes
       </h2>
-
-      <div class="next-churn-point">
-        <p>
-          <time>1d 19h 24m</time> until next churn point
-        </p>
-        <div class="nodes-gauge">
-          <div
-            class="nodes-gauge__primary"
-            :style="{ width: (timeRemaining * 100) + '%' }"
-          />
-        </div>
-      </div>
+      <NextChurnPoint />
     </div>
     <div class="pure-g section__body">
       <div class="pure-u-lg-6-24 pure-u-1 section__body--node-counts">
@@ -41,12 +30,14 @@
 import CircleStat from './NodeSummary/CircleStat.vue';
 import OldestActiveNodeList from './NodeSummary/OldestActiveNodeList.vue';
 import LargestStandbyNodeList from './NodeSummary/LargestStandbyNodeList.vue';
+import NextChurnPoint from './NodeSummary/NextChurnPoint.vue';
 
 export default {
   components: {
     CircleStat,
     LargestStandbyNodeList,
     OldestActiveNodeList,
+    NextChurnPoint,
   },
   computed: {
     activeCount() {
@@ -66,35 +57,6 @@ export default {
 .nodes-header {
   display: flex;
   align-items: center;
-}
-
-.next-churn-point {
-  margin-left: 20px;
-
-  p {
-    font-size: 12px;
-    font-weight: 500;
-    color: $color-text-secondary;
-    margin-bottom: 5px;
-  }
-
-  time {
-    color: $color-green;
-    font-weight: 600;
-  }
-}
-
-.nodes-gauge {
-  width: 100%;
-  background-color: #2e3a59;
-  height: 5px;
-  border-radius: 3px;
-}
-
-.nodes-gauge__primary {
-  height: 5px;
-  border-radius: 3px;
-  background-color: $color-green;
 }
 
 .section__body {
