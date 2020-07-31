@@ -1,5 +1,7 @@
 <template>
   <div class="section">
+    <SlippageCalculator />
+
     <div class="section__header pool-list-header">
       <h2 class="section__title">
         Pool list
@@ -16,7 +18,18 @@
           {{ option }}
         </button>
       </div>
+
+      <div
+        class="slippage-calculator-toggle"
+        @click="$store.commit('modals/toggleSlippageCalculator')"
+      >
+        <img src="calculator.svg"></img>
+        <p>
+          Slippage Calculator
+        </p>
+      </div>
     </div>
+
     <div class="section__body">
       <table class="section__table pool-list-table">
         <thead>
@@ -134,6 +147,29 @@ export default {
   &:hover, &:focus {
     border: none;
     outline: none;
+  }
+}
+
+.slippage-calculator-toggle {
+  padding: 0px 16px;
+  height: 30px;
+  margin-left: auto;
+  display: flex;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: $color-bg-tint;
+  border-radius: 15px;
+  align-items: center;
+  cursor: pointer;
+
+  p {
+    margin: 0;
+    padding: 0;
+    margin-left: 8px;
+  }
+
+  &:hover {
+    border: 1px solid #fff;
   }
 }
 

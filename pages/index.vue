@@ -159,6 +159,26 @@ h1 {
   margin: 0;
 }
 
+ul {
+  display: block;
+  list-style-type: none;
+}
+
+li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  outline: none;
+  cursor: pointer;
+
+  &:hover, &:focus {
+    outline: none;
+  }
+}
+
 /*
  * SECTION
  */
@@ -189,8 +209,11 @@ h1 {
 }
 
 .section__header {
-  padding: 16px 25px;
+  padding: 0px 25px;
   border-bottom: 1px solid $color-border;
+  height: 58px;
+  display: flex;
+  align-items: center;
 }
 
 .section__title {
