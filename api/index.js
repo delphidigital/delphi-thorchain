@@ -27,6 +27,11 @@ app.all('/v1/stats', async (req, res) => {
   res.json(data);
 });
 
+app.all('/v1/network', async (req, res) => {
+  const data = await loadCached('network');
+  res.json(data);
+});
+
 app.all('/v1/thorchain/constants', async (req, res) => {
   const data = await loadCached('constants');
   res.json(data);

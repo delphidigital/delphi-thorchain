@@ -60,6 +60,22 @@ export const getters = {
   minPoolVolume(state) {
     return aggPoolGetter(state, { attr: 'poolVolume', min: true });
   },
+  poolList(state) {
+    const pools = state.poolIds.map((poolId) => {
+      const pool = state.pools[poolId];
+      return {
+        name: poolId,
+        runeDepth: pool.runeDepth,
+        slippageDepth: pool.runeDepth * 0.00504,
+        meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
+        medianFee: null,
+        volume: pool.poolVolume,
+        apy: pool.poolROI,
+        apyRealRewards: null,
+      };
+    });
+    return pools;
+  },
   poolVolumeAndDepth(state) {
     const allPools = [];
 
@@ -123,9 +139,12 @@ export const mutations = {
     state.pools[poolId] = {
       asset: poolDetail.asset,
       poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
-      poolVolume24h: parseInt(poolDetail.poolVolume24h, 10) / runeDivider,
+      poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
+      poolROI: parseFloat(poolDetail.poolROI),
       poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
       runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
+      sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
+      sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
     };
   },
 };
