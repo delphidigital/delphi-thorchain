@@ -1,10 +1,35 @@
 <template>
   <div class="section">
-    <div class="section__header">
+    <SlippageCalculator />
+
+    <div class="section__header pool-list-header">
       <h2 class="section__title">
         Pool list
       </h2>
+
+      <div class="pool-list-time-selector">
+        <button
+          v-for="option in timeOptions"
+          :key="option"
+          class="pool-list-time-option"
+          :class="{ 'pool-list-time-option--active': option === currentTimeOption }"
+          @click="currentTimeOption = option"
+        >
+          {{ option }}
+        </button>
+      </div>
+
+      <div
+        class="slippage-calculator-toggle"
+        @click="$store.commit('modals/toggleSlippageCalculator')"
+      >
+        <img src="calculator.svg"></img>
+        <p>
+          Slippage Calculator
+        </p>
+      </div>
     </div>
+
     <div class="section__body">
       <table class="section__table pool-list-table">
         <thead>
@@ -71,6 +96,12 @@ export default {
     Percentage,
     RuneUSD,
   },
+  data() {
+    return {
+      timeOptions: ['24h', '7d', '30d'],
+      currentTimeOption: '24h',
+    };
+  },
   computed: {
     pools() {
       return this.$store.getters['pools/poolList'];
@@ -80,6 +111,65 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pool-list-header {
+  display: flex;
+  align-items: center;
+}
+
+.pool-list-time-selector {
+  display: flex;
+  width: 120px;
+  height: 30px;
+  margin-left: 20px;
+  justify-content: space-between;
+  background-color: $color-bg-tint;
+  border-radius: 15px;
+  padding: 0 16px;
+}
+
+.pool-list-time-option {
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+
+  &:hover, &:focus {
+    border: none;
+    outline: none;
+  }
+}
+
+.slippage-calculator-toggle {
+  padding: 0px 16px;
+  height: 30px;
+  margin-left: auto;
+  display: flex;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: $color-bg-tint;
+  border-radius: 15px;
+  align-items: center;
+  cursor: pointer;
+
+  p {
+    margin: 0;
+    padding: 0;
+    margin-left: 8px;
+  }
+
+  &:hover {
+    border: 1px solid #fff;
+  }
+}
+
+.pool-list-time-option--active {
+  color: #fff;
+}
+
 .pool-list-table {
   width: 100%;
 }

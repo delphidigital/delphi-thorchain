@@ -81,7 +81,7 @@ export default {
         top: 30px;
         left: -100px;
         position: absolute;
-        color: $color-text-secondary;
+        color: rgba(255, 255, 255, 0.6);
         background-color: $color-bg-popup;
         font-family: Montserrat, sans-serif;
         font-weight: 300;
