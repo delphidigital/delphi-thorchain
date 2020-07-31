@@ -1,9 +1,14 @@
 <template>
   <div class="next-churn-point">
-    <p>
+    <p v-if="!progressToNextChurnPoint.paused">
       <time>
         {{ formatDistance(0, progressToNextChurnPoint.secondsRemaining * 1000) }}
       </time> until next churn point
+    </p>
+    <p v-if="progressToNextChurnPoint.paused">
+      <time>
+        churning paused:
+      </time> vault is retiring
     </p>
     <div class="nodes-gauge">
       <div

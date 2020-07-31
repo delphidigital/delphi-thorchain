@@ -38,6 +38,7 @@ import {
   loadNodeAccounts,
   loadNetwork,
   loadLastBlock,
+  loadAsgardVaults,
 } from '../lib/api.mjs';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../components/PercentageRuneLocked.vue';
@@ -73,6 +74,11 @@ export default {
       axios: this.$axios,
     });
     this.$store.commit('nodes/setLastBlock', lastBlock.thorchain);
+
+    const asgardVaults = await loadAsgardVaults({
+      axios: this.$axios,
+    });
+    this.$store.commit('nodes/setAsgardVaults', asgardVaults);
 
     const network = await loadNetwork({
       axios: this.$axios,

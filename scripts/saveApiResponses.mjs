@@ -1,4 +1,4 @@
-import { loadPools, loadPoolDetail, loadNodeAccounts, loadLastBlock, loadConstants, loadStats, loadNetwork } from '../lib/api.mjs';
+import { loadPools, loadPoolDetail, loadNodeAccounts, loadLastBlock, loadAsgardVaults, loadConstants, loadStats, loadNetwork } from '../lib/api.mjs';
 import axios from 'axios';
 import fs from 'fs';
 import redis from 'redis';
@@ -30,6 +30,9 @@ async function run() {
 
   const lastBlock = await loadLastBlock({ axios });
   await set('lastBlock', lastBlock);
+
+  const asgardVaults = await loadAsgardVaults({ axios });
+  await set('asgardVaults', asgardVaults);
 
   const stats = await loadStats({ axios });
   await set('stats', stats);
