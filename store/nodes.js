@@ -1,11 +1,15 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 
+const secondsPerBlock = 5;
+
 export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
   nodes: {},
   nodeIds: [],
   oldValidatorRate: null,
   lastBlock: 0,
+  nextChurnHeight: 0,
+  rotatePerBlockHeight: null,
 });
 
 export const getters = {
@@ -47,6 +51,16 @@ export const getters = {
       scheduledToLeave,
       oldestValidators: otherValidatorsByAge.slice(0, 1),
       otherValidatorsByAge: otherValidatorsByAge.slice(1),
+    };
+  },
+  progressToNextChurnPoint(state) {
+    const blocksRemaining = (state.nextChurnHeight - state.lastBlock);
+    const percentage = 1 - (blocksRemaining / state.rotatePerBlockHeight);
+    const time = blocksRemaining * secondsPerBlock;
+    return {
+      secondsRemaining: time,
+      blocksRemaining,
+      percentage,
     };
   },
   standbyNodesByBond(state) {
@@ -105,6 +119,9 @@ export const mutations = {
   setLastBlock(state, lastBlock) {
     state.lastBlock = parseInt(lastBlock, 10);
   },
+  setNextChurnHeight(state, nextChurnHeight) {
+    state.nextChurnHeight = parseInt(nextChurnHeight, 10);
+  },
   setNodeAccounts(state, nodeAccounts) {
     const nodeIds = [];
     const nodeMap = {};
@@ -120,5 +137,8 @@ export const mutations = {
 
     state.nodes = nodeMap;
     state.nodeIds = nodeIds;
+  },
+  setRotatePerBlockHeight(state, rotatePerBlockHeight) {
+    state.rotatePerBlockHeight = parseInt(rotatePerBlockHeight, 10);
   },
 };

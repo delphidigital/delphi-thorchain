@@ -60,19 +60,19 @@
               {{ pool.name }}
             </td>
             <td class="section__table__data">
-              <RuneUSD :rune="pool.slipageDepth" />
+              <RuneUSD :rune="pool.slippageDepth" />
             </td>
             <td class="section__table__data">
-              <Percentage :value="pool.meanFee" />
+              <Percentage :value="pool.meanFeeAsPercentage" />
             </td>
             <td class="section__table__data">
-              <Percentage :value="pool.medianFee" />
+              n/a
             </td>
             <td class="section__table__data">
               <RuneUSD :rune="pool.volume" />
             </td>
             <td class="section__table__data pool-list-apy">
-              <div>{{ pool.apy }}%</div>
+              <div><Percentage :value="pool.apy" /></div>
               <div class="apy-gauge">
                 <div
                   class="apy-gauge__primary"
@@ -99,20 +99,15 @@ export default {
   data() {
     // TODO(Fede): this is tmp dummy data for building the front end, probably not a good idea to
     // build data here
-    const poolIds = this.$store.state.pools.poolIds;
     return {
       timeOptions: ['24h', '7d', '30d'],
       currentTimeOption: '24h',
-      pools: poolIds.map(pid => ({
-        name: pid,
-        slipageDepth: Math.round(Math.random() * 40000),
-        meanFee: 0.001 + (Math.random() / 1000),
-        medianFee: 0.001 + (Math.random() / 1000),
-        volume: Math.round(Math.random() * 1000000),
-        apy: Math.round(Math.random() * 100),
-        apyRealRewards: Math.random(),
-      })),
     };
+  },
+  computed: {
+    pools() {
+      return this.$store.getters['pools/poolList'];
+    },
   },
 };
 </script>
