@@ -47,6 +47,11 @@ app.all('/thorchain/lastblock', async (req, res) => {
   res.json(data);
 });
 
+app.all('/thorchain/vaults/asgard', async (req, res) => {
+  const data = await loadCached('asgardVaults');
+  res.json(data);
+});
+
 app.all('/int/marketdata', async (req, res) => {
   const data = await loadCached('marketData');
   res.json(data);

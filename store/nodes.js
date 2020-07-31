@@ -10,6 +10,7 @@ export const state = () => ({
   lastBlock: 0,
   nextChurnHeight: 0,
   rotatePerBlockHeight: null,
+  asgardVaults: [],
 });
 
 export const getters = {
@@ -53,14 +54,19 @@ export const getters = {
       otherValidatorsByAge: otherValidatorsByAge.slice(1),
     };
   },
+  isAsgardVaultRetiring(state) {
+    return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
+  },
   progressToNextChurnPoint(state) {
     const blocksRemaining = (state.nextChurnHeight - state.lastBlock);
     const percentage = 1 - (blocksRemaining / state.rotatePerBlockHeight);
     const time = blocksRemaining * secondsPerBlock;
+    const retiring = getters.isAsgardVaultRetiring(state);
     return {
       secondsRemaining: time,
       blocksRemaining,
-      percentage,
+      percentage: retiring ? 0 : percentage,
+      paused: retiring,
     };
   },
   standbyNodesByBond(state) {
@@ -118,6 +124,9 @@ export const mutations = {
   },
   setLastBlock(state, lastBlock) {
     state.lastBlock = parseInt(lastBlock, 10);
+  },
+  setAsgardVaults(state, asgardVaults) {
+    state.asgardVaults = asgardVaults;
   },
   setNextChurnHeight(state, nextChurnHeight) {
     state.nextChurnHeight = parseInt(nextChurnHeight, 10);
