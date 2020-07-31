@@ -97,8 +97,6 @@ export default {
     RuneUSD,
   },
   data() {
-    // TODO(Fede): this is tmp dummy data for building the front end, probably not a good idea to
-    // build data here
     return {
       timeOptions: ['24h', '7d', '30d'],
       currentTimeOption: '24h',
