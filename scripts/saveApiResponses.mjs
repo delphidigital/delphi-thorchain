@@ -1,4 +1,4 @@
-import { loadPools, loadPoolDetail, loadNodeAccounts, loadLastBlock, loadConstants, loadStats } from '../lib/api.mjs';
+import { loadPools, loadPoolDetail, loadNodeAccounts, loadLastBlock, loadConstants, loadStats, loadNetwork } from '../lib/api.mjs';
 import axios from 'axios';
 import fs from 'fs';
 import redis from 'redis';
@@ -33,6 +33,9 @@ async function run() {
 
   const stats = await loadStats({ axios });
   await set('stats', stats);
+
+  const network = await loadNetwork({ axios });
+  await set('network', network);
 
   const constants = await loadConstants({ axios });
   await set('constants', constants);

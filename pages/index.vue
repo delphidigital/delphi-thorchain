@@ -36,6 +36,7 @@ import {
   loadMarketData,
   loadConstants,
   loadNodeAccounts,
+  loadNetwork,
   loadLastBlock,
 } from '../lib/api.mjs';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
@@ -73,6 +74,11 @@ export default {
     });
     this.$store.commit('nodes/setLastBlock', lastBlock.thorchain);
 
+    const network = await loadNetwork({
+      axios: this.$axios,
+    });
+    this.$store.commit('nodes/setNextChurnHeight', network.nextChurnHeight);
+
     const marketData = await loadMarketData({
       axios: this.$axios,
     });
@@ -82,6 +88,20 @@ export default {
       axios: this.$axios,
     });
     this.$store.commit('nodes/setOldValidatorRate', constants['int_64_values'].OldValidatorRate);
+    this.$store.commit('nodes/setRotatePerBlockHeight', constants['int_64_values'].RotatePerBlockHeight);
+  },
+  mounted() {
+    this.pollData();
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
+  },
+  methods: {
+    pollData() {
+      this.polling = setInterval(() => {
+        this.$fetch();
+      }, process.env.pollingFrequency);
+    },
   },
 };
 </script>
