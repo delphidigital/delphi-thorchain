@@ -409,5 +409,17 @@ $padding-section-table: 25px;
   font-weight: 600;
   text-align: right;
 }
+
+/*
+ * COMMING SOON
+ */
+
+.coming-soon__parent {
+  position: relative;
+}
+
+.coming-soon__target {
+  filter: blur(10px);
+}
 </style>
 

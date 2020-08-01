@@ -4,15 +4,18 @@
       <h2 class="section__title">
         Standby Pools
       </h2>
+      <!--
       <div class="standby-pools-gauge">
         <div
           class="standby-pools-gauge__primary"
           :style="{ width: (nextChurnHeightProgress * 100) + '%' }"
         />
       </div>
+      -->
     </div>
-    <div class="section__body">
-      <table class="section__table standby-pools-table">
+    <div class="section__body coming-soon__parent">
+      <ComingSoon />
+      <table class="section__table standby-pools-table coming-soon__target">
         <thead>
           <tr>
             <th class="section__table__head">
