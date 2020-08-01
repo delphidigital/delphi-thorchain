@@ -1,9 +1,12 @@
 <template>
-  <div>
-    <client-only>
-      <highchart :options="chartOptions" />
-      <div slot="placeholder" class="area-chart__placeholder" />
-    </client-only>
+  <div class="coming-soon__parent">
+    <ComingSoon />
+    <div class="coming-soon__target">
+      <client-only>
+        <highchart :options="chartOptions" />
+        <div slot="placeholder" class="area-chart__placeholder" />
+      </client-only>
+    </div>
   </div>
 </template>
 
