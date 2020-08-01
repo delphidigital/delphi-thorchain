@@ -1,5 +1,9 @@
 <template>
   <div v-if="$store.state.modals.slippageCalculator" class="slippage-calculator">
+    <div
+      class="slippage-calculator__overlay"
+      @click="$store.commit('modals/toggleSlippageCalculator')"
+    />
     <div class="slippage-calculator__body">
       <img
         class="slippage-calculator__close"
@@ -148,12 +152,21 @@ export default {
   justify-content: center;
 }
 
+.slippage-calculator__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .slippage-calculator__body {
   position: relative;
   background-color: $color-bg;
   width: 90%;
   max-width: 555px;
   border-radius: 8px;
+  z-index: 60;
 }
 
 .slippage-calculator__title {
