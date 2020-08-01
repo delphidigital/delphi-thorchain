@@ -17,10 +17,10 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-2-3 section--split-left">
+      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
         <PoolList />
       </div>
-      <div class="pure-u-1 pure-u-md-1-3 section--split-right">
+      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right">
         <StandbyPools />
       </div>
     </div>
@@ -230,6 +230,21 @@ button {
 .section--split-right {
   padding-left: 15px;
   @media screen and (max-width: $pureg-md) {
+    padding-left: 0px;
+  }
+}
+
+.section--lg-split-left {
+  padding-right: 15px;
+
+  @media screen and (max-width: $pureg-lg) {
+    padding-right: 0px;
+  }
+}
+
+.section--lg-split-right {
+  padding-left: 15px;
+  @media screen and (max-width: $pureg-lg) {
     padding-left: 0px;
   }
 }
