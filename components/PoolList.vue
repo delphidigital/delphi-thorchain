@@ -34,23 +34,16 @@
       <table class="section__table pool-list-table">
         <thead>
           <tr>
-            <th class="section__table__head">
-              Name
-            </th>
-            <th class="section__table__head">
-              1% Slippage Depth
-            </th>
-            <th class="section__table__head">
-              Mean Fee
-            </th>
-            <th class="section__table__head">
-              Median Fee
-            </th>
-            <th class="section__table__head">
-              Volume
-            </th>
-            <th class="section__table__head">
-              APY
+            <th
+              v-for="field in fields"
+              :key="field.name"
+              class="section__table__head"
+              @click="toggleSort(field.name)"
+            >
+              {{ field.label }}
+              <span class="pool-list-sort-mark">
+                {{ sortBy === field.name ? (sortDescending ? '▼' : '▲') : '&nbsp;' }}
+              </span>
             </th>
           </tr>
         </thead>
@@ -100,11 +93,49 @@ export default {
     return {
       timeOptions: ['24h', '7d', '30d'],
       currentTimeOption: '24h',
+      sortBy: 'slippage',
+      sortDescending: false,
+      fields: [
+        {
+          name: 'name',
+          label: 'Name',
+        },
+        {
+          name: 'slippage',
+          label: '1% Slippage Depth',
+        },
+        {
+          name: 'meanFee',
+          label: 'Mean Fee',
+        },
+        {
+          name: 'medianFee',
+          label: 'Median Fee',
+        },
+        {
+          name: 'volume',
+          label: 'Volume',
+        },
+        {
+          name: 'apy',
+          label: 'APY',
+        },
+      ],
     };
   },
   computed: {
     pools() {
       return this.$store.getters['pools/poolList'];
+    },
+  },
+  methods: {
+    toggleSort(fieldName) {
+      if (fieldName === this.sortBy) {
+        this.sortDescending = !this.sortDescending;
+      } else {
+        this.sortBy = fieldName;
+        this.sortDescending = true;
+      }
     },
   },
 };
@@ -172,6 +203,21 @@ export default {
 
 .pool-list-table {
   width: 100%;
+
+  th {
+    cursor: pointer;
+  }
+}
+
+.pool-list-sort-mark {
+  font-size: 7px;
+  width: 7px;
+  font-family: sans-serif;
+  margin-left: 4px;
+  color: #fff;
+  opacity: 80%;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .pool-list-apy {
