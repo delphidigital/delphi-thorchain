@@ -66,12 +66,7 @@
             </td>
             <td class="section__table__data pool-list-apy">
               <div><Percentage :value="pool.apy" /></div>
-              <div class="apy-gauge">
-                <div
-                  class="apy-gauge__primary"
-                  :style="{ width: (pool.apyRealRewards * 100) + '%' }"
-                />
-              </div>
+              <ApyGauge :apy-real-rewards="pool.apyRealRewards" :name="pool.name" />
             </td>
           </tr>
         </tbody>
@@ -91,6 +86,7 @@ export default {
   },
   data() {
     return {
+      dummyRealRewards: Math.random(),
       timeOptions: ['24h', '7d', '30d'],
       currentTimeOption: '24h',
       sortBy: 'slippage',
@@ -224,21 +220,5 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.apy-gauge {
-  width: 80px;
-  height: 6px;
-  background-color: $color-green;
-  border-radius: 3px;
-}
-
-.apy-gauge__primary {
-  height: 6px;
-  background-color: $color-purple;
-  z-index: 1;
-  border-radius: 3px;
-  position: relative;
-  left: -1px;
 }
 </style>
