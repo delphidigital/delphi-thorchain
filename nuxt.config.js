@@ -76,6 +76,10 @@ export default {
     '@nuxtjs/axios',
     'nuxt-highcharts',
     '@nuxtjs/style-resources',
+    '@nuxtjs/redirect-module',
+  ],
+  redirect: [
+    { from: '^/$', to: '/thorchain' },
   ],
   styleResources: {
     scss: ['./assets/css/*.scss'],
