@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="active-nodes-container">
     <table class="section__table">
       <thead>
         <tr>
@@ -112,6 +112,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .active-nodes-container {
+    overflow-x: scroll;
+  }
+
   .churn-status--out {
     color: $color-red;
     font-size: 0.6rem;
@@ -120,6 +124,8 @@ export default {
   }
   .section__table {
     width: 100%;
+    min-width: 500px;
+
     &__row {
       &--will-churn {
         .section__table__data {

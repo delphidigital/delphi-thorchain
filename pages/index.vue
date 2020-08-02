@@ -296,8 +296,13 @@ button {
 */
 
 .section__table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   padding-bottom: 5px;
+
+  td {
+    border-top: 1px solid $color-border;
+  }
 }
 
 .section__table__head {

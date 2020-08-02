@@ -7,19 +7,18 @@
       <NextChurnPoint />
     </div>
     <div class="pure-g section__body">
-      <div class="pure-u-lg-6-24 pure-u-1 section__body--node-counts">
-        <div class="pure-u-lg-1 active-node-count">
+      <div class="pure-u-lg-6-24 pure-u-1 node-counts">
+        <div class="node-count node-count--first">
           <CircleStat :number="activeCount" descriptor="Active" />
         </div>
-        <hr class="section__divider"></hr>
-        <div class="pure-u-lg-1 standby-node-count">
+        <div class="node-count">
           <CircleStat :number="standbyCount" descriptor="Standby" />
         </div>
       </div>
-      <div class="pure-u-lg-11-24 pure-u-1 section__body--oldest-active-nodes">
+      <div class="pure-u-lg-11-24 pure-u-1 section__body--active-nodes">
         <OldestActiveNodeList />
       </div>
-      <div class="pure-u-lg-7-24 pure-u-1 section__body--oldest-active-nodes">
+      <div class="pure-u-lg-7-24 pure-u-1 section__body--active-nodes">
         <LargestStandbyNodeList />
       </div>
     </div>
@@ -59,17 +58,42 @@ export default {
   align-items: center;
 }
 
-.section__body {
-  .active-node-count, .standby-node-count {
-    height: 50%;
-    display: flex;align-items: center; justify-content: center;
-  }
-  .active-node-count {
-  }
-  &--oldest-active-nodes {
-    border-left: 1px solid $color-border;
-    min-height: 320px;
+.node-counts {
+  display: flex;
+  flex-direction: column;
+  @media screen and (max-width: $pureg-lg) {
+    flex-direction: row;
+    width: 100%;
   }
 }
+
+.node-count {
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media screen and (max-width: $pureg-lg) {
+    height: 100%;
+    width: 50%;
+  }
+}
+
+.node-count--first {
+  border-bottom: 1px solid $color-border;
+  @media screen and (max-width: $pureg-lg) {
+    border-bottom: none;
+    border-right: 1px solid $color-border;
+  }
+}
+
+.section__body {
+  &--active-nodes {
+    border-left: 1px solid $color-border;
+    @media screen and (max-width: $pureg-lg) {
+      border-left: none;
+    }
+  }
+}
+
 
 </style>

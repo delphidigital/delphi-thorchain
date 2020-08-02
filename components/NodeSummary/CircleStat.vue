@@ -28,6 +28,10 @@ export default {
     height: 140px;
     width: 140px;
 
+    @media screen and (max-width: $pureg-lg) {
+      border: none;
+    }
+
     &--number {
       display: block;
       font-size: 1.4rem;

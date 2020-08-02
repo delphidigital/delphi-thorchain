@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="standby-nodes-container">
     <table class="section__table">
       <thead>
         <tr>
@@ -66,6 +66,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .standby-nodes-container {
+    overflow-x: scroll;
+  }
+
   .churn-status--in {
     color: $color-green;
     font-size: 0.6rem;
@@ -74,6 +78,7 @@ export default {
   }
   .section__table {
     width: 100%;
+    min-width: 320px;
     &__row {
       &--will-churn-in {
         .section__table__data {
