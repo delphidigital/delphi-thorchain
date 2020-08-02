@@ -69,7 +69,7 @@ export default {
           color: '#5E2BBC',
         },
         {
-          name: 'Stanby pools',
+          name: 'Standby pools',
           percentage: 0,
           color: '#6648FF',
         },
