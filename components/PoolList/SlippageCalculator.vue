@@ -256,7 +256,7 @@ export default {
 .money-input-currency {
   display: block;
   position: absolute;
-  top: 9px;
+  top: 10px;
   left: 12px;
   font-size: 11px;
   padding: 3px;
