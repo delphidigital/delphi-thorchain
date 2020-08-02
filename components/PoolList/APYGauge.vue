@@ -93,6 +93,11 @@ export default {
   left: -60px;
   bottom: 18px;
   width: 200px;
+
+  @media screen and (max-width: $pureg-lg) {
+    bottom: -40px;
+    left: -220px;
+  }
 }
 
 .apy-gauge-tooltip-body {
@@ -109,6 +114,13 @@ export default {
   border-top: 6px solid $color-bg-popup;
   bottom: -6px;
   left: calc(50% - 6px);
+  @media screen and (max-width: $pureg-lg) {
+    border-left: 6px solid $color-bg-popup;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    left: calc(100%);
+    top: calc(50% - 16px);
+  }
 }
 
 .apy-gauge-tooltip-data {

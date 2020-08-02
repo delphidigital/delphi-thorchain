@@ -37,13 +37,18 @@
 
           <div class="slippage-calculator__form-control">
             <label class="label">Amount</label>
-            <input
-              v-model="currentAmount"
-              type="number"
-              class="input input--money"
-              min="0"
-            >
-            </input>
+            <div class="money-input-container">
+              <span class="money-input-currency">
+                BTC
+              </span>
+              <input
+                v-model="currentAmount"
+                type="number"
+                class="input input--money"
+                min="0"
+              >
+              </input>
+            </div>
           </div>
         </div>
 
@@ -163,7 +168,7 @@ export default {
 .slippage-calculator__body {
   position: relative;
   background-color: $color-bg;
-  width: 90%;
+  width: 98%;
   max-width: 555px;
   border-radius: 8px;
   z-index: 60;
@@ -185,12 +190,20 @@ export default {
 .slippage-calculator__inputs {
   display: flex;
   justify-content: space-between;
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+  }
 }
 
 .slippage-calculator__form-control {
   display: flex;
   flex-direction: column;
   width: 31%;
+  margin-top: 10px;
+
+  @media screen and (max-width: 600px) {
+    width: 100%;
+  }
 }
 
 /* TODO(Fede): This may be promoted to global
@@ -205,6 +218,7 @@ export default {
 }
 
 .input {
+  position: relative;
   border: 1px solid $color-border;
   background-color: #262e4a;
   border-radius: 4px;
@@ -214,11 +228,41 @@ export default {
   padding-right: 13px;
   padding-left: 13px;
   height: 37px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 
   &:focus {
     outline: none;
     border: 1px solid $color-border;
   }
+}
+
+.input--select {
+  background-image: url('/arrow_down.svg');
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+}
+
+.input--money {
+  padding-left: 45px;
+  width: 100%;
+}
+
+.money-input-container {
+  position: relative;
+}
+
+.money-input-currency {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 11px;
+  padding: 3px;
+  background-color: $color-bg-tint;
+  z-index: 10;
+  border-radius: 4px;
 }
 
 .slippage-calculator__submit {

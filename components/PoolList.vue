@@ -20,7 +20,7 @@
       </div>
 
       <div
-        class="slippage-calculator-toggle"
+        class="slippage-calculator-toggle slippage-calculator-toggle--desktop"
         @click="$store.commit('modals/toggleSlippageCalculator')"
       >
         <img src="calculator.svg"></img>
@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div class="section__body">
+    <div class="section__body pool-list-section">
       <table class="section__table pool-list-table">
         <thead>
           <tr>
@@ -71,6 +71,17 @@
           </tr>
         </tbody>
       </table>
+      <div class="slippage-calculator-toggle--mobile">
+        <div
+          class="slippage-calculator-toggle"
+          @click="$store.commit('modals/toggleSlippageCalculator')"
+        >
+          <img src="calculator.svg"></img>
+          <p>
+            Slippage Calculator
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -141,6 +152,9 @@ export default {
 .pool-list-header {
   display: flex;
   align-items: center;
+  @media screen and (max-width: 500px) {
+    justify-content: space-between;
+  }
 }
 
 .pool-list-time-selector {
@@ -180,6 +194,7 @@ export default {
   background-color: $color-bg-tint;
   border-radius: 15px;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   p {
@@ -193,8 +208,29 @@ export default {
   }
 }
 
+.slippage-calculator-toggle--desktop {
+  @media screen and (max-width: 500px) {
+    display: none;
+  }
+}
+
+.slippage-calculator-toggle--mobile {
+  display: none;
+  @media screen and (max-width: 500px) {
+    display: block;
+    padding: 10px;
+    border-top: 1px solid $color-border;
+  }
+}
+
 .pool-list-time-option--active {
   color: #fff;
+}
+
+.pool-list-section {
+  @media screen and (max-width: $pureg-lg) {
+    overflow-x: scroll;
+  }
 }
 
 .pool-list-table {
@@ -202,6 +238,10 @@ export default {
 
   th {
     cursor: pointer;
+  }
+
+  @media screen and (max-width: $pureg-lg) {
+    min-width: 700px;
   }
 }
 

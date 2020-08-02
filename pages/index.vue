@@ -17,10 +17,10 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-2-3 section--split-left">
+      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
         <PoolList />
       </div>
-      <div class="pure-u-1 pure-u-md-1-3 section--split-right">
+      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right">
         <StandbyPools />
       </div>
     </div>
@@ -234,6 +234,21 @@ button {
   }
 }
 
+.section--lg-split-left {
+  padding-right: 15px;
+
+  @media screen and (max-width: $pureg-lg) {
+    padding-right: 0px;
+  }
+}
+
+.section--lg-split-right {
+  padding-left: 15px;
+  @media screen and (max-width: $pureg-lg) {
+    padding-left: 0px;
+  }
+}
+
 .section__header {
   padding: 0px 25px;
   border-bottom: 1px solid $color-border;
@@ -281,8 +296,13 @@ button {
 */
 
 .section__table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   padding-bottom: 5px;
+
+  td {
+    border-top: 1px solid $color-border;
+  }
 }
 
 .section__table__head {
