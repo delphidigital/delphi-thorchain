@@ -51,7 +51,7 @@ export default {
 
   .toggle__value {
     font-size: 14px;
-    opacity: 50%;
+    opacity: 0.5;
     transition: opacity 0.3s ease-in-out;
   }
 
