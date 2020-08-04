@@ -40,6 +40,21 @@
             {{ Math.round(node.bond) }}
           </td>
         </tr>
+        <tr
+          v-for="node in standbyNodesByBond.belowMinBond"
+          :key="node['node_address']"
+          class="section__table__row section__table__row--will-churn"
+        >
+          <td class="section__table__data section__table__data--address">
+            {{ node['node_address'] }}
+          </td>
+          <td class="section__table__data">
+            {{ Math.round(node.bond) }}
+          </td>
+          <td class="section__table__data">
+            <span class="churn-status churn-status--out">Bond too low</span>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -64,42 +79,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-  .standby-nodes-container {
-    overflow-x: scroll;
-  }
-
-  .churn-status--in {
-    color: $color-green;
-    font-size: 0.6rem;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  .section__table {
-    width: 100%;
-    min-width: 320px;
-    &__row {
-      &--will-churn-in {
-        .section__table__data {
-          background-color: $color-green-overlay;
-        }
-      }
-    }
-    &__head {
-      text-align: left;
-      &--address {
-        max-width: 10rem;
-      }
-    }
-    &__data {
-      &--address {
-        padding-right: 20px;
-        max-width: 10rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-</style>

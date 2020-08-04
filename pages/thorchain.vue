@@ -38,6 +38,7 @@ import {
   loadNodeAccounts,
   loadNetwork,
   loadLastBlock,
+  loadMimir,
   loadAsgardVaults,
 } from '../lib/api.mjs';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
@@ -74,6 +75,11 @@ export default {
       axios: this.$axios,
     });
     this.$store.commit('nodes/setLastBlock', lastBlock.thorchain);
+
+    const mimir = await loadMimir({
+      axios: this.$axios,
+    });
+    this.$store.commit('nodes/setMinBond', mimir['mimir//MINIMUMBONDINRUNE']);
 
     const asgardVaults = await loadAsgardVaults({
       axios: this.$axios,

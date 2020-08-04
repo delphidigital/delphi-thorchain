@@ -1,6 +1,7 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 
 const secondsPerBlock = 5;
+const runeDivider = 10 ** 8;
 
 export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
@@ -11,6 +12,7 @@ export const state = () => ({
   nextChurnHeight: 0,
   rotatePerBlockHeight: null,
   asgardVaults: [],
+  minBond: null,
 });
 
 export const getters = {
@@ -71,6 +73,8 @@ export const getters = {
   },
   standbyNodesByBond(state) {
     const toChurnIn = getters.expectedNodeCountToChurnOut(state) + 1;
+    const belowMinBondNodes = [];
+    const otherNodes = [];
     const nodes = Object.values(state.nodes).filter(node => (
       node.status === 'standby' || node.status === 'ready'
     )).sort((a, b) => {
@@ -80,9 +84,19 @@ export const getters = {
       if (aBlock > bBlock) return -1;
       return 0;
     });
+    nodes.forEach((node) => {
+      console.log(node.bond, state.minBond);
+      if (node.bond < state.minBond) {
+        belowMinBondNodes.push(node);
+        return;
+      }
+
+      otherNodes.push(node);
+    });
     return {
-      toChurnIn: nodes.slice(0, toChurnIn),
-      otherValidatorsByBond: nodes.slice(toChurnIn),
+      belowMinBond: belowMinBondNodes,
+      toChurnIn: otherNodes.slice(0, toChurnIn),
+      otherValidatorsByBond: otherNodes.slice(toChurnIn),
     };
   },
   expectedNodeCountToChurnOut(state) {
@@ -125,6 +139,9 @@ export const mutations = {
   setLastBlock(state, lastBlock) {
     state.lastBlock = parseInt(lastBlock, 10);
   },
+  setMinBond(state, minBond) {
+    state.minBond = parseInt(minBond, 10) / runeDivider;
+  },
   setAsgardVaults(state, asgardVaults) {
     state.asgardVaults = asgardVaults;
   },
@@ -140,7 +157,7 @@ export const mutations = {
       nodeIds.push(nodeId);
       nodeMap[nodeId] = {
         ...node,
-        bond: parseInt(node.bond, 10) / 100000000,
+        bond: parseInt(node.bond, 10) / runeDivider,
       };
     });
 

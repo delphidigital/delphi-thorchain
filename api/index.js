@@ -42,6 +42,11 @@ app.all('/thorchain/nodeaccounts', async (req, res) => {
   res.json(data);
 });
 
+app.all('/thorchain/mimir', async (req, res) => {
+  const data = await loadCached('mimir');
+  res.json(data);
+});
+
 app.all('/thorchain/lastblock', async (req, res) => {
   const data = await loadCached('lastBlock');
   res.json(data);

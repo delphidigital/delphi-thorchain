@@ -52,7 +52,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .nodes-header {
   display: flex;
   align-items: center;
@@ -95,5 +95,66 @@ export default {
   }
 }
 
+.standby-nodes-container, .active-nodes-container {
+  overflow-x: scroll;
+}
 
+.churn-status--in {
+  color: $color-green;
+  font-size: 0.6rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.churn-status--out {
+  color: $color-red;
+  font-size: 0.6rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.section__table {
+  width: 100%;
+  min-width: 320px;
+  &__row {
+    &--will-churn-in {
+      .section__table__data {
+        background-color: $color-green-overlay;
+      }
+    }
+    &--will-churn {
+      .section__table__data {
+        background-color: $color-red-overlay;
+      }
+    }
+  }
+  &__head {
+    text-align: left;
+    &--address {
+      max-width: 10rem;
+    }
+  }
+  &__data {
+    &--address {
+      padding-right: 20px;
+      max-width: 10rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .active-nodes-container {
+    .section__table {
+      &__head {
+        &--address {
+          max-width: 13rem;
+        }
+      }
+      &__data {
+        &--address {
+          max-width: 13rem;
+        }
+      }
+    }
+  }
+}
 </style>
