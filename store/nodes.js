@@ -85,7 +85,6 @@ export const getters = {
       return 0;
     });
     nodes.forEach((node) => {
-      console.log(node.bond, state.minBond);
       if (node.bond < state.minBond) {
         belowMinBondNodes.push(node);
         return;

@@ -19,7 +19,7 @@
         <div class="slippage-calculator__inputs">
           <div class="slippage-calculator__form-control">
             <label class="label">Pool</label>
-            <select v-model="currentPool" class="input input--select">
+            <select class="input input--select" :value="currentPool" @change="setPool">
               <option v-for="pool in pools" :key="pool">
                 {{ pool }}
               </option>
@@ -28,9 +28,13 @@
 
           <div class="slippage-calculator__form-control">
             <label class="label">Buy or Sell</label>
-            <select v-model="currentBuyOrSell" class="input input--select">
-              <option v-for="opt in ['Buy', 'Sell']" :key="opt">
-                {{ opt }}
+            <select
+              class="input input--select"
+              :value="currentSide"
+              @change="setSide"
+            >
+              <option v-for="opt in sides" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
               </option>
             </select>
           </div>
@@ -39,13 +43,13 @@
             <label class="label">Amount</label>
             <div class="money-input-container">
               <span class="money-input-currency">
-                BTC
+                {{ inputSymbol }}
               </span>
               <input
-                v-model="currentAmount"
                 type="number"
                 class="input input--money"
                 min="0"
+                @change="setAmount"
               >
               </input>
             </div>
@@ -64,7 +68,7 @@
         <div class="slippage-calculator__result-group">
           <div class="item item--big border-bottom">
             <p class="text-lg">
-              <Percentage :value="result.slippage" />
+              <Percentage :value="calculationResult.totalPercentage" />
             </p>
             <p class="slippage-calculator__item-label">
               Slippage
@@ -73,7 +77,7 @@
 
           <div class="item item--small border-right">
             <p class="text-md">
-              <Percentage :value="result.fee" />
+              <Percentage :value="calculationResult.feePercentage" />
             </p>
             <p class="text-xs">
               Fee
@@ -82,7 +86,7 @@
 
           <div class="item item--small">
             <p class="text-md">
-              <Percentage :value="result.slip" />
+              <Percentage :value="calculationResult.slipPercentage" />
             </p>
             <p class="text-sm">
               Slip
@@ -92,7 +96,7 @@
         <div class="slippage-calculator__result-group">
           <div class="item item--big">
             <p class="text-lg">
-              {{ `${result.expectedAmount.toFixed(6)} ${result.currency}` }}
+              {{ outputSymbol }} {{ calculationResult.expectedAmount.toFixed(6) }}
             </p>
             <p class="text-sm">
               Expected amount you would receive
@@ -105,6 +109,7 @@
 </template>
 
 <script>
+import { assetFromString, AssetSymbol } from '@thorchain/asgardex-util';
 import Percentage from '../Percentage.vue';
 
 export default {
@@ -115,29 +120,61 @@ export default {
     const poolIds = this.$store.state.pools.poolIds;
     return {
       pools: poolIds,
-      currentPool: poolIds[0],
-      currentBuyOrSell: 'Buy',
-      currentAmount: 0,
-      result: {
-        slippage: 0,
-        fee: 0,
-        slip: 0,
-        expectedAmount: 0,
-        currency: '',
-      },
+      sides: [{
+        label: 'Buy',
+        value: 'buy',
+      }, {
+        label: 'Sell',
+        value: 'sell',
+      }],
     };
+  },
+  computed: {
+    assetSymbol() {
+      const asset = assetFromString(this.currentPool);
+      const symbol = asset.symbol.split('-')[0];
+      return AssetSymbol[symbol] || symbol;
+    },
+    currentAmount() {
+      return this.$store.state.slippageCalculator.amount || 5;
+    },
+    currentPool() {
+      return this.$store.state.slippageCalculator.pool || this.pools[0];
+    },
+    currentSide() {
+      return this.$store.state.slippageCalculator.side || 'buy';
+    },
+    calculationResult() {
+      return this.$store.state.slippageCalculator.calculationResult;
+    },
+    inputSymbol() {
+      if (this.currentSide === 'buy') {
+        return AssetSymbol.RUNE;
+      }
+      return this.assetSymbol;
+    },
+    outputSymbol() {
+      if (this.currentSide === 'buy') {
+        return this.assetSymbol;
+      }
+      return AssetSymbol.RUNE;
+    },
   },
   methods: {
     refreshResults() {
-      // TODO(Fede): This would get results based on the
-      // corresponding params. Showing random stuff for now
-      this.result = {
-        slippage: Math.random() * 0.1,
-        fee: Math.random() * 0.1,
-        slip: Math.random() * 0.1,
-        expectedAmount: Math.random(),
-        currency: this.currentPool,
-      };
+      const amount = this.currentAmount;
+      const pool = this.currentPool;
+      const side = this.currentSide;
+      this.$store.dispatch('slippageCalculator/calculate', { amount, side, pool });
+    },
+    setPool(e) {
+      this.$store.commit('slippageCalculator/setPool', e.target.value);
+    },
+    setSide(e) {
+      this.$store.commit('slippageCalculator/setSide', e.target.value);
+    },
+    setAmount(e) {
+      this.$store.commit('slippageCalculator/setAmount', e.target.value);
     },
   },
 };

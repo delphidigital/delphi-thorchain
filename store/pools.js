@@ -138,11 +138,14 @@ export const mutations = {
   setPoolDetail(state, { poolId, poolDetail }) {
     state.pools[poolId] = {
       asset: poolDetail.asset,
+      assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
+      assetDepthRaw: poolDetail.assetDepth,
       poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
       poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
       poolROI: parseFloat(poolDetail.poolROI),
       poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
       runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
+      runeDepthRaw: poolDetail.runeDepth,
       sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
       sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
     };
