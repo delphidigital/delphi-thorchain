@@ -22,7 +22,8 @@
     "numeral": "^2.0.6",
     "nuxt": "^2.13.0",
     "nuxt-highcharts": "^1.0.1",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "sort-by": "^1.2.0"
   },
   "browser": {
     "fs": false

@@ -100,19 +100,17 @@ export default {
       dummyRealRewards: Math.random(),
       timeOptions: ['24h', '7d', '30d'],
       currentTimeOption: '24h',
-      sortBy: 'slippage',
-      sortDescending: false,
       fields: [
         {
           name: 'name',
           label: 'Name',
         },
         {
-          name: 'slippage',
+          name: 'slippageDepth',
           label: '1% Slippage Depth',
         },
         {
-          name: 'meanFee',
+          name: 'meanFeeAsPercentage',
           label: 'Mean Fee',
         },
         {
@@ -134,14 +132,19 @@ export default {
     pools() {
       return this.$store.getters['pools/poolList'];
     },
+    sortBy() {
+      return this.$store.state.pools.sortBy;
+    },
+    sortDescending() {
+      return this.$store.state.pools.sortDescending;
+    },
   },
   methods: {
     toggleSort(fieldName) {
       if (fieldName === this.sortBy) {
-        this.sortDescending = !this.sortDescending;
+        this.$store.commit('pools/toggleSortDescending');
       } else {
-        this.sortBy = fieldName;
-        this.sortDescending = true;
+        this.$store.commit('pools/setSortBy', fieldName);
       }
     },
   },

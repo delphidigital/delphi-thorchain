@@ -1,5 +1,6 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 // import { subMonths } from 'date-fns';
+import sortBy from 'sort-by';
 import { loadPools } from '../lib/api.mjs';
 
 const runeDivider = 10 ** 8;
@@ -8,6 +9,8 @@ export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
   pools: {},
   poolIds: [],
+  sortBy: 'name',
+  sortDescending: false,
 });
 
 function aggPoolGetter(state, { attr, min, max }) {
@@ -74,7 +77,9 @@ export const getters = {
         apyRealRewards: null,
       };
     });
-    return pools;
+    const descChar = state.sortDescending ? '-' : '';
+    const sortedPools = pools.sort(sortBy(`${descChar}${state.sortBy}`));
+    return sortedPools;
   },
   poolVolumeAndDepth(state) {
     const allPools = [];
@@ -149,6 +154,13 @@ export const mutations = {
       sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
       sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
     };
+  },
+  setSortBy(state, fieldName) {
+    state.sortBy = fieldName;
+    state.sortAscending = true;
+  },
+  toggleSortDescending(state) {
+    state.sortDescending = !state.sortDescending;
   },
 };
 
