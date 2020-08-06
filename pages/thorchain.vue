@@ -26,6 +26,8 @@
     </div>
 
     <NodeSummary />
+
+    <Footer />
   </div>
 </template>
 
@@ -41,6 +43,7 @@ import {
   loadMimir,
   loadAsgardVaults,
 } from '../lib/api.mjs';
+import Footer from '../components/Footer.vue';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../components/PercentageRuneLocked.vue';
 import NodeSummary from '../components/NodeSummary.vue';
@@ -48,6 +51,7 @@ import NodeSummary from '../components/NodeSummary.vue';
 export default {
   // load data here
   components: {
+    Footer,
     PercentageRuneLocked,
     PoolDepthSummary,
     NodeSummary,
