@@ -62,10 +62,20 @@
               n/a
             </td>
             <td class="section__table__data">
-              <RuneUSD :rune="pool.volume" />
+              <div v-if="pool.volume >= 1">
+                <RuneUSD :rune="pool.volume" />
+              </div>
+              <div v-if="pool.volume < 1">
+                n/a
+              </div>
             </td>
             <td class="section__table__data pool-list-apy">
-              <div><Percentage :value="pool.apy" /></div>
+              <div v-if="pool.apy < 1000">
+                <Percentage :value="pool.apy" />
+              </div>
+              <div v-if="pool.apy >= 1000">
+                n/a
+              </div>
               <ApyGauge :apy-real-rewards="pool.apyRealRewards" :name="pool.name" />
             </td>
           </tr>
