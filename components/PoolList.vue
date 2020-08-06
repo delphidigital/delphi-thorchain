@@ -218,10 +218,6 @@ export default {
     padding: 0;
     margin-left: 8px;
   }
-
-  &:hover {
-    border: 1px solid #fff;
-  }
 }
 
 .slippage-calculator-toggle--desktop {
