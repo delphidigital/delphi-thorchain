@@ -137,8 +137,6 @@ export default {
       padding-right: 20px;
       max-width: 10rem;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
   }
 

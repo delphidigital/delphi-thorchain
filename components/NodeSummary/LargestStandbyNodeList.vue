@@ -19,7 +19,7 @@
           class="section__table__row section__table__row--will-churn-in"
         >
           <td class="section__table__data section__table__data--address">
-            {{ node['node_address'] }}
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             {{ Math.round(node.bond) }}
@@ -34,7 +34,7 @@
           class="section__table__row"
         >
           <td class="section__table__data section__table__data--address">
-            {{ node['node_address'] }}
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             {{ Math.round(node.bond) }}
@@ -46,7 +46,7 @@
           class="section__table__row section__table__row--will-churn"
         >
           <td class="section__table__data section__table__data--address">
-            {{ node['node_address'] }}
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             {{ Math.round(node.bond) }}
@@ -67,6 +67,7 @@ export default {
   data() {
     return {
       formatDistance,
+      maxChars: 16,
     };
   },
   computed: {
