@@ -62,6 +62,9 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    ['@nuxtjs/google-analytics', {
+      id: 'G-SC8BNHWS34',
+    }],
   ],
   env: {
     nodeBaseUrl: process.env.NODE_BASE_URL || 'http://44.231.128.98',
