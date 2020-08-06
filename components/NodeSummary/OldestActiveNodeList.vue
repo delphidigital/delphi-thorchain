@@ -19,7 +19,7 @@
           class="section__table__row section__table__row--will-churn"
         >
           <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :maxChars="maxChars" />
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             forced to leave
@@ -34,7 +34,7 @@
           class="section__table__row section__table__row--will-churn"
         >
           <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :maxChars="maxChars" />
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             requested to leave
@@ -49,7 +49,7 @@
           class="section__table__row section__table__row--will-churn"
         >
           <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :maxChars="maxChars" />
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             scheduled to leave at block {{ node['leave_height'] }}
@@ -64,7 +64,7 @@
           class="section__table__row section__table__row--will-churn"
         >
           <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :maxChars="maxChars" />
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             will churn due to age
@@ -79,7 +79,7 @@
           class="section__table__row"
         >
           <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :maxChars="maxChars" />
+            <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
             active since {{ node['status_since'] }}
