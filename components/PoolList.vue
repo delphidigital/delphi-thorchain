@@ -162,6 +162,8 @@ export default {
   width: 120px;
   height: 30px;
   margin-left: 20px;
+  opacity: 0.2;
+  cursor: not-allowed;
   justify-content: space-between;
   background-color: $color-bg-tint;
   border-radius: 15px;
@@ -171,7 +173,8 @@ export default {
 .pool-list-time-option {
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
+  cursor: not-allowed;
+  // cursor: pointer;
   color: rgba(255, 255, 255, 0.5);
   background-color: transparent;
   border: none;
