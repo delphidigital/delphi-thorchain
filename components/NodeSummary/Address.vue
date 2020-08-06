@@ -21,7 +21,6 @@ export default {
     truncatedAddress() {
       if (this.maxChars >= 43) return this.address;
       const startPortionChars = this.maxChars - endPortionChars - 3;
-      console.log(this.address, startPortionChars, endPortionChars);
       const startPortion = this.address.slice(0, startPortionChars - 1);
       const endPortion = this.address.slice(this.address.length - endPortionChars);
       return `${startPortion}…${endPortion}`;
