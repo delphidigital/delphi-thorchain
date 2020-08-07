@@ -133,7 +133,15 @@ export default {
     }
   }
   &__data {
+    &--no-nodes {
+      color: $color-text-secondary;
+      padding: 1rem;
+      font-size: 15px;
+      letter-spacing: 1px;
+      text-align: center;
+    }
     &--address {
+      font-family: monospace;
       padding-right: 20px;
       max-width: 10rem;
       white-space: nowrap;

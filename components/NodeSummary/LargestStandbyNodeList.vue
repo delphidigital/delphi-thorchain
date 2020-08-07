@@ -55,6 +55,11 @@
             <span class="churn-status churn-status--out">Bond too low</span>
           </td>
         </tr>
+        <tr :v-if="!emptyList">
+          <td colspan="3" class="section__table__data--no-nodes">
+            No eligible standby nodes
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -71,6 +76,9 @@ export default {
     };
   },
   computed: {
+    emtpyList() {
+      return this.$store.getters['nodes/totalStandbyCount'] > 0;
+    },
     standbyNodesByBond() {
       return this.$store.getters['nodes/standbyNodesByBond'];
     },
