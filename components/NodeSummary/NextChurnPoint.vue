@@ -5,10 +5,15 @@
         {{ formatDistance(0, progressToNextChurnPoint.secondsRemaining * 1000) }}
       </time> until next churn point
     </p>
-    <p v-if="progressToNextChurnPoint.paused">
+    <p v-if="progressToNextChurnPoint.retiring">
       <time>
         churning paused:
       </time> vault is retiring
+    </p>
+    <p v-if="progressToNextChurnPoint.noEligible">
+      <time>
+        churning paused:
+      </time> no standby nodes
     </p>
     <div class="nodes-gauge">
       <div

@@ -1,0 +1,53 @@
+churning
+
+
+  progressToNextChurnPoint(state) {
+    const blocksRemaining = (state.nextChurnHeight - state.lastBlock);
+    const percentage = 1 - (blocksRemaining / state.rotatePerBlockHeight);
+    const time = blocksRemaining * secondsPerBlock;
+    const retiring = getters.isAsgardVaultRetiring(state);
+    return {
+      secondsRemaining: time,
+      blocksRemaining,
+      percentage: retiring ? 0 : percentage,
+      paused: retiring,
+    };
+  },
+
+  New Block
+    - if retiring asgard vault
+      - churning paused
+
+    - if no eligible standby nodes
+      - churning paused
+
+    - if any nodes requested to leave or were forced to leave
+      - churn every 240 blocks
+
+    - if any nodes are old or bad
+      - churn every 17280 blocks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    - if 6 or more active nodes
+      - if blockheight % 17280 = 0
+        - churn old nodes
+        - mark bad nodes
+    (last churn was at highest asgard vault block_height)
+    // (retry churn is true if we are due a churn -  we are due a churn is the last churn was more than 240 blocks ago)
+    - blockheight % 240 = 0
+
+
+    

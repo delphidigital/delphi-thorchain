@@ -60,15 +60,28 @@ export const getters = {
     return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
   },
   progressToNextChurnPoint(state) {
-    const blocksRemaining = (state.nextChurnHeight - state.lastBlock);
-    const percentage = 1 - (blocksRemaining / state.rotatePerBlockHeight);
+    let blocksRemaining;
+    let percentage;
+    if (getters.activeRequestedToLeaveCount(state)) {
+      const blocksSince = state.lastBlock % state.rotatePerBlockHeight;
+      blocksRemaining = state.rotatePerBlockHeight - blocksSince;
+      percentage = blocksSince / state.rotatePerBlockHeight;
+    } else {
+      const blocksSince = state.lastBlock % state.oldValidatorRate;
+      blocksRemaining = state.oldValidatorRate - blocksSince;
+      percentage = blocksSince / state.oldValidatorRate;
+    }
     const time = blocksRemaining * secondsPerBlock;
     const retiring = getters.isAsgardVaultRetiring(state);
+    const standby = getters.standbyNodesByBond(state);
+    const noEligible = standby.toChurnIn.length === 0;
     return {
       secondsRemaining: time,
       blocksRemaining,
-      percentage: retiring ? 0 : percentage,
-      paused: retiring,
+      percentage: retiring || noEligible ? 0 : percentage,
+      paused: retiring || noEligible,
+      retiring,
+      noEligible,
     };
   },
   standbyNodesByBond(state) {
@@ -87,6 +100,10 @@ export const getters = {
     nodes.forEach((node) => {
       if (node.bond < state.minBond) {
         belowMinBondNodes.push(node);
+        return;
+      }
+
+      if (node['requested_to_leave']) {
         return;
       }
 
@@ -126,7 +143,12 @@ export const getters = {
   },
   totalStandbyCount(state) {
     return Object.values(state.nodes).reduce((total, node) => (
-      node.status === 'standby' ? total + 1 : total
+      node.status === 'standby' && !node['requested_to_leave'] ? total + 1 : total
+    ), 0);
+  },
+  activeRequestedToLeaveCount(state) {
+    return Object.values(state.nodes).reduce((total, node) => (
+      node.status === 'active' && node['requested_to_leave'] ? total + 1 : total
     ), 0);
   },
 };
