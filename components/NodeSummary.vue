@@ -136,7 +136,7 @@ export default {
     &--no-nodes {
       color: $color-text-secondary;
       padding: 1rem;
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: 1px;
       text-align: center;
     }
