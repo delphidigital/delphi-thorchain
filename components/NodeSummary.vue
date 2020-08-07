@@ -135,7 +135,7 @@ export default {
   &__data {
     &--no-nodes {
       color: $color-text-secondary;
-      padding-top: 10rem;
+      padding: 10rem 0;
       font-size: 14px;
       letter-spacing: 1px;
       text-align: center;
