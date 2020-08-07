@@ -40,11 +40,6 @@ export const getters = {
         return;
       }
 
-      if (parseInt(node['leave_height'], 10) > 0) {
-        requestedToLeave.push(node);
-        return;
-      }
-
       otherValidatorsByAge.push(node);
     });
 
