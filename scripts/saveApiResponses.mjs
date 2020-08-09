@@ -3,6 +3,9 @@ import axios from 'axios';
 import fs from 'fs';
 import redis from 'redis';
 import { promisify } from 'util';
+
+process.on('unhandledRejection', up => { throw up });
+
 const client = redis.createClient();
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
