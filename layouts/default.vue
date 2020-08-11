@@ -218,6 +218,14 @@ button {
 }
 
 /*
+* TEXT
+*/
+.text__label {
+  font-size: 12px;
+  color: $color-text-secondary;
+}
+
+/*
 * SECTION TABLE
 */
 
