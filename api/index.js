@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'fs';
 import redis from 'redis';
 import { promisify } from 'util';
+
 const client = redis.createClient();
 const getAsync = promisify(client.get).bind(client);
 

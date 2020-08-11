@@ -12,6 +12,7 @@
     "lint": "yarn lint:js"
   },
   "dependencies": {
+    "@highcharts/map-collection": "^1.1.3",
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/google-analytics": "^2.4.0",
     "@nuxtjs/redirect-module": "^0.3.1",
