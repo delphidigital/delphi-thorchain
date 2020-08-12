@@ -9,16 +9,7 @@
 
     <div class="pure-g">
       <div class="pure-u-1 pure-u-md-1-3 section--split-left">
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              Node Status
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
+        <NodeStatus />
       </div>
 
       <div class="pure-u-1 pure-u-md-1-3">
