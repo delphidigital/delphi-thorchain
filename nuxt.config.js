@@ -38,6 +38,11 @@ export default {
         rel: 'stylesheet',
       },
     ],
+    script: [
+      {
+        src: "https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js",
+      },
+    ]
   },
   /*
   ** Global CSS

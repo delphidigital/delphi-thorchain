@@ -7,7 +7,7 @@
     </div>
     <div class="section__body churn-info">
       <div class="countdown__gauge">
-        <svg height="120" width="230">
+        <svg height="125" width="240">
           <line
             v-for="n in 40"
             :key="n"
@@ -37,11 +37,11 @@
           Next churn height
         </span>
       </div>
-    </div>
 
-    <p class="rotates-legend text__label">
-      *Rotates every 240 blocks or 15 minutes
-    </p>
+      <p class="rotates-legend text__label">
+        *Rotates every 240 blocks or 15 minutes
+      </p>
+    </div>
   </div>
 </template>
 
@@ -49,16 +49,16 @@
 export default {
   computed: {
     minRadius() {
-      return 98;
+      return 105;
     },
     maxRadius() {
-      return 110;
+      return 120;
     },
     gaugeWidth() {
-      return 230;
+      return 240;
     },
     gaugeHeight() {
-      return 120;
+      return 125;
     },
     currentBreakpoint() {
       // TODO(Fede): Do this dynamically based on time remaining
@@ -82,6 +82,10 @@ export default {
 <style lang="scss" scoped>
 .churn-info {
   padding: 0 25px;
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  align-items: flex-start;
 }
 .countdown__gauge {
   display: flex;
@@ -114,13 +118,14 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 15px 0;
+  margin-top: 5px;
   border-radius: 8px;
 }
 
 .next-churn-height__value {
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .rotates-legend {
