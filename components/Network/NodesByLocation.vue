@@ -6,7 +6,10 @@
       </h2>
     </div>
     <div class="section__body nodes-by-location">
-      <highmap :options="chartOptions" />
+      <client-only>
+        <highmap :options="chartOptions" />
+        <div slot="placeholder" class="map__placeholder" />
+      </client-only>
     </div>
   </div>
 </template>
@@ -269,5 +272,10 @@ export default {
 <style lang="scss" scoped>
 .nodes-by-location {
   height: 300px;
+}
+
+.map__placeholder {
+  height: 300px;
+  width: 100%;
 }
 </style>
