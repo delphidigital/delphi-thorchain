@@ -80,3 +80,34 @@
     <Footer />
   </div>
 </template>
+
+<script>
+import fetchCommon from '../lib/fetchCommon.mjs';
+import NodesByLocation from '../components/Network/NodesByLocation.vue';
+import ChurnInfo from '../components/Network/ChurnInfo.vue';
+
+export default {
+  // load data here
+  components: {
+    NodesByLocation,
+    ChurnInfo,
+  },
+  async fetch() {
+    await fetchCommon(this);
+  },
+  mounted() {
+    this.pollData();
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
+  },
+  methods: {
+    pollData() {
+      this.polling = setInterval(() => {
+        this.$fetch();
+      }, process.env.pollingFrequency);
+    },
+  },
+};
+</script>
+

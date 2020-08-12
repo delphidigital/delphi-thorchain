@@ -1,25 +1,22 @@
-import geoip from 'geoip-lite';
 import redis from 'redis';
+import { lookupGeoIP } from '../lib/geoIP.mjs';
+import { promisify } from 'util';
 
 const client = redis.createClient();
+const getAsync = promisify(client.get).bind(client);
+const setAsync = promisify(client.set).bind(client);
 
-client.get('nodeAccounts', function(error, result) {
-  if(error) {
-    console.log(error);
-  } else {
-    const json = JSON.parse(result);
-    const out = 
-      json
-        .map(n => n["ip_address"])
-        .map(ip => {
-          const lkp = geoip.lookup(ip);
-          lkp.ip = ip;
-          return lkp;
-        });
-
-    console.log(out);
+async function run() {
+  const result = await getAsync('nodeAccounts');
+  const json = JSON.parse(result);
+  console.log(json);
+  for (const i of json) {
+    const ip = i['ip_address'];
+    const lookup = await lookupGeoIP(ip);
+    console.log({ ip, lookup });
   }
-});
 
-const ip = '18.158.69.134';
-console.log(geoip.lookup(ip));
+  process.exit();
+}
+
+run();

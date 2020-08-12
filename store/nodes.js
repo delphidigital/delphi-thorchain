@@ -79,6 +79,11 @@ export const getters = {
       noEligible,
     };
   },
+  locations(state) {
+    const locs = Object.values(state.nodes).map(n => n.location);
+    console.log('locs', locs, state.nodes);
+    return locs;
+  },
   standbyNodesByBond(state) {
     const toChurnIn = getters.expectedNodeCountToChurnOut(state) + 1;
     const belowMinBondNodes = [];

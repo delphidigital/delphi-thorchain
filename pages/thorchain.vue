@@ -32,17 +32,7 @@
 </template>
 
 <script>
-import {
-  loadPools,
-  loadPoolDetail,
-  loadMarketData,
-  loadConstants,
-  loadNodeAccounts,
-  loadNetwork,
-  loadLastBlock,
-  loadMimir,
-  loadAsgardVaults,
-} from '../lib/api.mjs';
+import fetchCommon from '../lib/fetchCommon.mjs';
 import Footer from '../components/Footer.vue';
 import PoolDepthSummary from '../components/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../components/PercentageRuneLocked.vue';
@@ -57,54 +47,7 @@ export default {
     NodeSummary,
   },
   async fetch() {
-    const poolIds = await loadPools({
-      axios: this.$axios,
-    });
-    this.$store.commit('pools/setPoolIds', poolIds);
-
-    await Promise.all(poolIds.map(async (poolId) => {
-      const poolDetail = await loadPoolDetail({
-        axios: this.$axios,
-        poolId,
-      });
-      this.$store.commit('pools/setPoolDetail', { poolId, poolDetail: poolDetail[0] });
-    }));
-
-    const nodeAccounts = await loadNodeAccounts({
-      axios: this.$axios,
-    });
-    this.$store.commit('nodes/setNodeAccounts', nodeAccounts);
-
-    const lastBlock = await loadLastBlock({
-      axios: this.$axios,
-    });
-    this.$store.commit('nodes/setLastBlock', lastBlock.thorchain);
-
-    const mimir = await loadMimir({
-      axios: this.$axios,
-    });
-    this.$store.commit('nodes/setMinBond', mimir['mimir//MINIMUMBONDINRUNE']);
-
-    const asgardVaults = await loadAsgardVaults({
-      axios: this.$axios,
-    });
-    this.$store.commit('nodes/setAsgardVaults', asgardVaults);
-
-    const network = await loadNetwork({
-      axios: this.$axios,
-    });
-    this.$store.commit('nodes/setNextChurnHeight', network.nextChurnHeight);
-
-    const marketData = await loadMarketData({
-      axios: this.$axios,
-    });
-    this.$store.commit('runeMarketData/setData', marketData);
-
-    const constants = await loadConstants({
-      axios: this.$axios,
-    });
-    this.$store.commit('nodes/setOldValidatorRate', constants['int_64_values'].OldValidatorRate);
-    this.$store.commit('nodes/setRotatePerBlockHeight', constants['int_64_values'].RotatePerBlockHeight);
+    await fetchCommon();
   },
   mounted() {
     this.pollData();
