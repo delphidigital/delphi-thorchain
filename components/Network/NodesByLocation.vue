@@ -5,7 +5,7 @@
         Nodes distributed by location
       </h2>
     </div>
-    <div class="section__body">
+    <div class="section__body nodes-by-location">
       <highmap :options="chartOptions" />
     </div>
   </div>
@@ -67,6 +67,7 @@ export default {
           backgroundColor: 'transparent',
           borderColor: 'transparent',
           lineWidth: 2,
+          height: 300,
         },
         title: false,
         mapNavigation: {
@@ -264,3 +265,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.nodes-by-location {
+  height: 300px;
+}
+</style>
