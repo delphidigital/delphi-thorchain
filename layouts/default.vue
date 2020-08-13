@@ -145,6 +145,12 @@ button {
   }
 }
 
+.section__title__note {
+  font-size: 0.8rem;
+  color: $color-text-secondary;
+  padding-left: 2rem;
+}
+
 .section--split-left {
   padding-right: 15px;
 
