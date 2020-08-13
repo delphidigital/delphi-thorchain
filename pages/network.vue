@@ -12,48 +12,10 @@
         <NodeStatus />
       </div>
 
-      <div class="pure-u-1 pure-u-md-1-3">
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              Latest Blocks
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              Bond
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
-      </div>
-
-      <div class="pure-u-1 pure-u-md-1-3 section--split-right">
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              System Security
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              System Solvency
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
+      <div class="pure-u-1 pure-u-md-2-3">
+        <div class="pure-g">
+          <div class="pure-u-1 pure-u-md-5-8">
+            <NetworkSecurity />
           </div>
         </div>
       </div>
