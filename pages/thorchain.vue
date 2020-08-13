@@ -47,7 +47,7 @@ export default {
     NodeSummary,
   },
   async fetch() {
-    await fetchCommon();
+    await fetchCommon(this);
   },
   mounted() {
     this.pollData();
