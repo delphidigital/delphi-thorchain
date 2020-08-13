@@ -165,9 +165,7 @@ export default {
       };
     },
     nodesGeo() {
-      const l = this.$store.getters['nodes/locations'];
-      console.log('lllll', l);
-      return l;
+      return this.$store.getters['nodes/locations'];
     },
   },
 };

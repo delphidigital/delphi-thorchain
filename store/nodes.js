@@ -81,7 +81,6 @@ export const getters = {
   },
   locations(state) {
     const locs = Object.values(state.nodes).map(n => n.location);
-    console.log('locs', locs, state.nodes);
     return locs;
   },
   standbyNodesByBond(state) {
