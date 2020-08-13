@@ -11,6 +11,7 @@
           <table class="section__table">
             <thead>
               <tr>
+                <th class="section__table__head section__table__head--star" />
                 <th class="section__table__head section__table__head--address">
                   Address
                 </th>

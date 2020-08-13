@@ -43,11 +43,13 @@
               :nodes="standbyNodesByBond.belowMinBond"
               type="belowMinBond"
             />
-            <tr v-if="emptyList">
-              <td colspan="6" class="section__table__data--no-nodes">
-                No eligible standby nodes
-              </td>
-            </tr>
+            <tbody>
+              <tr v-if="emptyList">
+                <td colspan="6" class="section__table__data--no-nodes">
+                  No eligible standby nodes
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
