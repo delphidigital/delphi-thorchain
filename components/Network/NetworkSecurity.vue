@@ -12,8 +12,8 @@
         </p>
         <div class="status-value">
           <img :src="level >= optimal ? '/security_yes.svg' : '/security_no.svg'"></img>
-          <span v-if="level >= optimal" class="value--success">Good</span>
-          <span v-else class="value--danger">Risky</span>
+          <span v-if="level >= optimal" class="value--success">{{ status }}</span>
+          <span v-else class="value--danger">{{ status }}</span>
         </div>
       </div>
       <svg viewBox="0 0 400 50">
@@ -31,7 +31,7 @@
           y1="9"
           :x2="level * (390)"
           y2="9"
-          stroke="#16CEB9"
+          :stroke="level >= optimal ? '#16ceb9' : '#f7517f'"
           stroke-width="12"
           style="stroke-linecap: round;"
         />
@@ -63,10 +63,26 @@
 export default {
   computed: {
     level() {
-      return 0.5;
+      // TODO(Fede): RUNE bonded by nodes / RUNE staked in pools
+      return 0.8;
     },
     optimal() {
-      return 0.7;
+      return 0.6;
+    },
+    status() {
+      if (this.level < 0.5) {
+        return 'Insecure';
+      }
+      if (this.level < 0.6) {
+        return 'Underbonded';
+      }
+      if (this.level < 0.75) {
+        return 'Optimal';
+      }
+      if (this.level < 0.9) {
+        return 'Overbonded';
+      }
+      return 'Inefficient';
     },
   },
 };
