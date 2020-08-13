@@ -77,6 +77,8 @@
       </div>
     </div>
 
+    <NodeDetailList />
+
     <Footer />
   </div>
 </template>
@@ -85,11 +87,13 @@
 import fetchCommon from '../lib/fetchCommon.mjs';
 import NodesByLocation from '../components/Network/NodesByLocation.vue';
 import ChurnInfo from '../components/Network/ChurnInfo.vue';
+import NodeDetailList from '../components/Network/NodeDetailList.vue';
 
 export default {
   // load data here
   components: {
     NodesByLocation,
+    NodeDetailList,
     ChurnInfo,
   },
   async fetch() {
