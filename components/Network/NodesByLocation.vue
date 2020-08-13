@@ -44,14 +44,11 @@ export default {
         if (index !== -1) {
           cities[index].count += 1;
         } else {
-          // TODO(Fede): Adding 'Unknown' if city name is not there but we should handle
-          // this in a smarter way, probably better to do it when we define the geoip
-          // method we use for good
           cities.push({
             lat,
             lon,
             count: 1,
-            city: ng.city.length > 0 ? ng.city : 'Unknown',
+            city: ng.city,
             country: ng['country_code'],
           });
         }
