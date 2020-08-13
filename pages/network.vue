@@ -12,7 +12,7 @@
         <NodeStatus />
       </div>
 
-      <div class="pure-u-1 pure-u-md-2-3 section--split-right">
+      <div class="pure-u-1 pure-u-md-2-3 section--split-right network-top-right">
         <div class="pure-g">
           <div class="pure-u-1 pure-u-md-5-8 section--split-left">
             <NetworkSecurity />
@@ -21,6 +21,8 @@
             <NetworkLatestBlocks />
           </div>
         </div>
+
+        <NetworkSolvency />
       </div>
     </div>
 
@@ -36,3 +38,10 @@
     <Footer />
   </div>
 </template>
+
+<style lang="scss" scoped>
+.network-top-right {
+  display: flex;
+  flex-direction: column;
+}
+</style>
