@@ -93,6 +93,7 @@ export default {
   padding-left: 25px;
   padding-right: 25px;
   padding-top: 20px;
+  height: 105px;
 }
 .security-status {
   display: flex;

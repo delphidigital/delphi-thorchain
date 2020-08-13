@@ -48,6 +48,7 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 20px 25px;
+  height: 105px;
 }
 
 .latest-block {
