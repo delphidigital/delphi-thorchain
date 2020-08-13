@@ -9,62 +9,20 @@
 
     <div class="pure-g">
       <div class="pure-u-1 pure-u-md-1-3 section--split-left">
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              Node Status
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
+        <NodeStatus />
       </div>
 
-      <div class="pure-u-1 pure-u-md-1-3">
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              Latest Blocks
-            </h2>
+      <div class="pure-u-1 pure-u-md-2-3 section--split-right network-top-right">
+        <div class="pure-g">
+          <div class="pure-u-1 pure-u-md-5-8 section--split-left">
+            <NetworkSecurity />
           </div>
-          <div class="section__body">
-            Some content over here
+          <div class="pure-u-1 pure-u-md-3-8 section--split-right">
+            <NetworkLatestBlocks />
           </div>
         </div>
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              Bond
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
-      </div>
 
-      <div class="pure-u-1 pure-u-md-1-3 section--split-right">
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              System Security
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
-        <div class="section">
-          <div class="section__header">
-            <h2 class="section__title">
-              System Solvency
-            </h2>
-          </div>
-          <div class="section__body">
-            Some content over here
-          </div>
-        </div>
+        <NetworkSolvency />
       </div>
     </div>
 
@@ -115,3 +73,9 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+.network-top-right {
+  display: flex;
+  flex-direction: column;
+}
+</style>
