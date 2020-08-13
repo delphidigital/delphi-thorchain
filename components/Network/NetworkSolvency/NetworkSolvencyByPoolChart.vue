@@ -2,7 +2,7 @@
   <div class="bar-chart-container">
     <client-only>
       <highchart :options="chartOptions" />
-      <div slot="placeholder" class="area-chart__placeholder" />
+      <div slot="placeholder" class="chart-placeholder" />
     </client-only>
   </div>
 </template>
@@ -97,5 +97,10 @@ export default {
 .bar-chart-container {
   width: 100%;
   height: 200px;
+}
+
+.chart-placeholder {
+  height: 200px;
+  width: 100%;
 }
 </style>

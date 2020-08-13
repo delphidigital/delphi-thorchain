@@ -2,7 +2,7 @@
   <div>
     <client-only>
       <highchart :options="chartOptions" />
-      <div slot="placeholder" class="pie-chart__placeholder" />
+      <div slot="placeholder" class="chart-placeholder" />
     </client-only>
   </div>
 </template>
@@ -87,3 +87,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.chart-placeholder {
+  height: 250px;
+}
+</style>
