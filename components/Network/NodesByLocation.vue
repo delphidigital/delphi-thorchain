@@ -28,29 +28,28 @@ const countryColors = [
 export default {
   computed: {
     chartData() {
+      const nodesGeo = this.$store.getters['nodes/locations'];
       const countries = [];
-      for (let i = 0; i < this.nodesGeo.length; i += 1) {
-        if (!(countries.includes(this.nodesGeo[i].country))) {
-          countries.push(this.nodesGeo[i].country);
+      for (let i = 0; i < nodesGeo.length; i += 1) {
+        if (!(countries.includes(nodesGeo[i]['country_code']))) {
+          countries.push(nodesGeo[i]['country_code']);
         }
       }
 
       const cities = [];
-      this.nodesGeo.forEach((ng) => {
-        const [lat, lon] = ng.ll;
+      nodesGeo.forEach((ng) => {
+        const lat = ng.latitude;
+        const lon = ng.longitude;
         const index = cities.findIndex(el => el.lat === lat && el.lon === lon);
         if (index !== -1) {
           cities[index].count += 1;
         } else {
-          // TODO(Fede): Adding 'Unknown' if city name is not there but we should handle
-          // this in a smarter way, probably better to do it when we define the geoip
-          // method we use for good
           cities.push({
             lat,
             lon,
             count: 1,
-            city: ng.city.length > 0 ? ng.city : 'Unknown',
-            country: ng.country,
+            city: ng.city,
+            country: ng['country_code'],
           });
         }
       });
@@ -163,107 +162,7 @@ export default {
       };
     },
     nodesGeo() {
-      return [
-        {
-          range: [752877568, 754974719],
-          country: 'US',
-          region: 'OR',
-          eu: '0',
-          timezone: 'America/Los_Angeles',
-          city: 'Boardman',
-          ll: [45.8491, -119.7143],
-          metro: 810,
-          area: 1000,
-        },
-        {
-          range: [316407808, 316473343],
-          country: 'US',
-          region: 'OH',
-          eu: '0',
-          timezone: 'America/New_York',
-          city: 'Columbus',
-          ll: [39.9653, -83.0235],
-          metro: 535,
-          area: 1000,
-        },
-        {
-          range: [1679032320, 1679294463],
-          country: 'US',
-          region: 'OR',
-          eu: '0',
-          timezone: 'America/Los_Angeles',
-          city: 'Boardman',
-          ll: [45.8491, -119.7143],
-          metro: 810,
-          area: 1000,
-        },
-        {
-          range: [916193280, 916455423],
-          country: 'US',
-          region: 'VA',
-          eu: '0',
-          timezone: 'America/New_York',
-          city: 'Ashburn',
-          ll: [39.0481, -77.4728],
-          metro: 511,
-          area: 1000,
-        },
-        {
-          range: [915898368, 915931135],
-          country: 'SG',
-          region: '',
-          eu: '0',
-          timezone: 'Asia/Singapore',
-          city: 'Singapore',
-          ll: [1.2996, 103.8549],
-          metro: 0,
-          area: 50,
-        },
-        {
-          range: [312213504, 312475647],
-          country: 'US',
-          region: '',
-          eu: '0',
-          timezone: 'America/Chicago',
-          city: '',
-          ll: [37.751, -97.822],
-          metro: 0,
-          area: 1000,
-        },
-        {
-          range: [50888704, 50921471],
-          country: 'GB',
-          region: 'ENG',
-          eu: '1',
-          timezone: 'Europe/London',
-          city: 'London',
-          ll: [51.5164, -0.093],
-          metro: 0,
-          area: 200,
-        },
-        {
-          range: [312213504, 312475647],
-          country: 'US',
-          region: '',
-          eu: '0',
-          timezone: 'America/Chicago',
-          city: '',
-          ll: [37.751, -97.822],
-          metro: 0,
-          area: 1000,
-        },
-        {
-          range: [918028288, 918552575],
-          country: 'US',
-          region: 'OR',
-          eu: '0',
-          timezone: 'America/Los_Angeles',
-          city: 'Boardman',
-          ll: [45.8491, -119.7143],
-          metro: 810,
-          area: 1000,
-        },
-      ];
+      return this.$store.getters['nodes/locations'];
     },
   },
 };

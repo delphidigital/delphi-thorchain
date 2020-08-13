@@ -35,9 +35,43 @@
       </div>
     </div>
 
+    <NodeDetailList />
+
     <Footer />
   </div>
 </template>
+
+<script>
+import fetchCommon from '../lib/fetchCommon.mjs';
+import NodesByLocation from '../components/Network/NodesByLocation.vue';
+import ChurnInfo from '../components/Network/ChurnInfo.vue';
+import NodeDetailList from '../components/Network/NodeDetailList.vue';
+
+export default {
+  // load data here
+  components: {
+    NodesByLocation,
+    NodeDetailList,
+    ChurnInfo,
+  },
+  async fetch() {
+    await fetchCommon(this);
+  },
+  mounted() {
+    this.pollData();
+  },
+  beforeDestroy() {
+    clearInterval(this.polling);
+  },
+  methods: {
+    pollData() {
+      this.polling = setInterval(() => {
+        this.$fetch();
+      }, process.env.pollingFrequency);
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 .network-top-right {

@@ -1,25 +1,24 @@
-import geoip from 'geoip-lite';
 import redis from 'redis';
+import { promisify } from 'util';
+import { lookupGeoIP } from '../lib/geoIP.mjs';
+import { withCache } from '../lib/cacheUtils.mjs';
 
 const client = redis.createClient();
+const getAsync = promisify(client.get).bind(client);
+const setAsync = promisify(client.set).bind(client);
 
-client.get('nodeAccounts', function(error, result) {
-  if(error) {
-    console.log(error);
-  } else {
-    const json = JSON.parse(result);
-    const out = 
-      json
-        .map(n => n["ip_address"])
-        .map(ip => {
-          const lkp = geoip.lookup(ip);
-          lkp.ip = ip;
-          return lkp;
-        });
+async function run() {
+  const result = await getAsync('nodeAccounts');
+  const nodeAccounts = JSON.parse(result);
+  const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
+    const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
+    const lookup = await withCache(cacheKey, async () => {
+      return await lookupGeoIP(nodeAccount['ip_address']);
+    });
+    return { ...nodeAccount, location: lookup };
+  }));
+  await setAsync('nodeAccounts', JSON.stringify(nodeAccountsWithLocation));
+  process.exit();
+}
 
-    console.log(out);
-  }
-});
-
-const ip = '18.158.69.134';
-console.log(geoip.lookup(ip));
+run();

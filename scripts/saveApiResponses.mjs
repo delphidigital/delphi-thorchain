@@ -3,6 +3,8 @@ import axios from 'axios';
 import fs from 'fs';
 import redis from 'redis';
 import { promisify } from 'util';
+import { lookupGeoIP } from '../lib/geoIP.mjs';
+import { withCache } from '../lib/cacheUtils.mjs';
 
 process.on('unhandledRejection', up => { throw up });
 
@@ -29,7 +31,14 @@ async function run() {
   }
 
   const nodeAccounts = await loadNodeAccounts({ axios });
-  await set('nodeAccounts', nodeAccounts);
+  const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
+    const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
+    const lookup = await withCache(cacheKey, async () => {
+      return await lookupGeoIP(ip);
+    });
+    return { ...nodeAccount, location: lookup };
+  }));
+  await set('nodeAccounts', nodeAccountsWithLocation);
 
   const lastBlock = await loadLastBlock({ axios });
   await set('lastBlock', lastBlock);
@@ -59,6 +68,7 @@ async function run() {
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
 
   client.unref();
+  process.exit();
 }
 
 run();

@@ -13,6 +13,7 @@ export const state = () => ({
   rotatePerBlockHeight: null,
   asgardVaults: [],
   minBond: null,
+  secondsPerBlock,
 });
 
 export const getters = {
@@ -51,6 +52,17 @@ export const getters = {
       otherValidatorsByAge: otherValidatorsByAge.slice(1),
     };
   },
+  disabledNodes(state) {
+    return Object.values(state.nodes).filter(node => (
+      node.status === 'disabled'
+    )).sort((a, b) => {
+      const aBlock = parseInt(a['status_since'], 10);
+      const bBlock = parseInt(b['status_since'], 10);
+      if (aBlock < bBlock) return -1;
+      if (aBlock > bBlock) return 1;
+      return 0;
+    });
+  },
   isAsgardVaultRetiring(state) {
     return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
   },
@@ -78,6 +90,10 @@ export const getters = {
       retiring,
       noEligible,
     };
+  },
+  locations(state) {
+    const locs = Object.values(state.nodes).map(n => n.location);
+    return locs;
   },
   standbyNodesByBond(state) {
     const toChurnIn = getters.expectedNodeCountToChurnOut(state) + 1;
