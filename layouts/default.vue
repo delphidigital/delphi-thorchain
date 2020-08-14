@@ -148,7 +148,13 @@ button {
 .section__title__note {
   font-size: 0.8rem;
   color: $color-text-secondary;
-  padding-left: 2rem;
+  margin-left: 2rem;
+  @media screen and (max-width: 600px) {
+    font-size: 0.55rem;
+    text-align: center;
+    width: 120px;
+    margin-left: auto;
+  }
 }
 
 .section--split-left {
