@@ -32,6 +32,10 @@
 .header__logo {
   max-height: 45px;
   max-width: 45%;
+  display: block;
+  img {
+    width: 100%;
+  }
 }
 
 </style>
