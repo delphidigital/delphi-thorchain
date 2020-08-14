@@ -50,6 +50,7 @@ export default {
             count: 1,
             city: ng.city,
             country: ng['country_code'],
+            countryName: ng.country,
           });
         }
       });
@@ -63,6 +64,8 @@ export default {
     },
     chartOptions() {
       const citiesData = this.chartData.cities;
+      const countriesData = this.chartData.countries;
+
       return {
         chart: {
           map: worldMap,
@@ -82,34 +85,59 @@ export default {
         legend: false,
         tooltip: {
           formatter() {
+            let country;
+            let color;
+            let city;
             if (this.series.name === 'countries') {
-              const country = this.point.code;
-              const cities =
-                citiesData
-                  .filter(c => c.country === country);
+              country = this.point.code;
+              color = this.point.color;
+              city = null;
+            } else if (this.series.name === 'cities') {
+              city =
+                citiesData.find(c => c.lat === this.point.lat && c.lon === this.point.lon);
 
-              const cityRows =
-                cities.reduce(
-                  (acc, ct) => `${acc}<tr><td>${ct.city}</td><td>${ct.count}</td></tr>`,
-                  '',
-                );
-
-              return `
-                <div class="app-tooltip">
-                  <div class="app-tooltip__header">
-                    <span style="background-color: ${this.point.color};" class="app-tooltip__marker"></span><span>${country}</span>
-                  </div>
-                  <div class="app-tooltip__body">
-                    <table class="app-tooltip__table">
-                      <tbody>
-                        ${cityRows}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              `;
+              color = countriesData.find(c => c.country === city.country).color;
+              country = city.country;
+            } else {
+              return false;
             }
-            return false;
+
+            const cities =
+              citiesData
+                .filter(c => c.country === country);
+
+            const countryName = cities[0].countryName;
+
+            const cityRows =
+              cities.reduce(
+                (acc, ct) => {
+                  if (city && (ct.city === city.city)) {
+                    return `
+                      ${acc}<tr style="font-weight: 600;">
+                        <td>${ct.city}</td>
+                        <td>${ct.count}</td>
+                      </tr>
+                    `;
+                  }
+                  return `${acc}<tr><td>${ct.city}</td><td>${ct.count}</td></tr>`;
+                },
+                '',
+              );
+
+            return `
+              <div class="app-tooltip">
+                <div class="app-tooltip__header">
+                  <span style="background-color: ${color};" class="app-tooltip__marker"></span><span>${countryName}</span>
+                </div>
+                <div class="app-tooltip__body">
+                  <table class="app-tooltip__table">
+                    <tbody>
+                      ${cityRows}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `;
           },
           useHTML: true,
           borderWidth: 0,
@@ -143,7 +171,6 @@ export default {
               lineWidth: 1,
               radius: 3,
             },
-            enableMouseTracking: false,
             states: {
               inactive: {
                 opacity: 1,
@@ -153,9 +180,6 @@ export default {
               enabled: false,
             },
             showInLegend: false,
-            tooltip: {
-              enabled: false,
-            },
             data: citiesData.map(el => ({ lat: el.lat, lon: el.lon })),
           },
         ],
