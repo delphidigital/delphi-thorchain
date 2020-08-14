@@ -70,7 +70,9 @@ export default {
 
 <style lang="scss">
   .disabled-nodes-container {
+    overflow-x: scroll;
     table {
+      min-width: 900px;
       color: $color-white-opacity;
       .status-since-time {
         color: $color-white-opacity;

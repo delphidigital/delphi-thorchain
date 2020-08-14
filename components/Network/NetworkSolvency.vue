@@ -27,10 +27,18 @@
   display: flex;
   flex-direction: row;
   flex-grow: 1;
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+  }
 }
 
 .overall-container {
   border-right: 1px solid $color-border;
+
+  @media screen and (max-width: 600px) {
+    border-right: none;
+  }
 }
 
 .by-pool-container {

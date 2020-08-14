@@ -74,6 +74,12 @@ h4 {
   display: flex;
   width: 190px;
   justify-content: space-between;
+
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    justify-content: space-around;
+    margin-bottom: 5px;
+  }
 }
 
 .solvency-value {

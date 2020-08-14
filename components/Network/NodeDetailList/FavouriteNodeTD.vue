@@ -24,7 +24,8 @@ export default {
   },
   computed: {
     starred() {
-      return this.$store.state.nodeStarred.starredMap[this.nodeAddress];
+      // return this.$store.state.nodeStarred.starredMap[this.nodeAddress];
+      return false;
     },
   },
   methods: {
