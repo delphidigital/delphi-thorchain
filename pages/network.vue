@@ -8,11 +8,11 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-3 section--split-left">
+      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-left">
         <NodeStatus />
       </div>
 
-      <div class="pure-u-1 pure-u-md-2-3 section--split-right network-top-right">
+      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-right network-top-right">
         <div class="pure-g">
           <div class="pure-u-1 pure-u-md-5-8 section--split-left">
             <NetworkSecurity />

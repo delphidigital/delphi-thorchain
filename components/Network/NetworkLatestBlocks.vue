@@ -5,14 +5,16 @@
         Latest blocks
       </h2>
     </div>
-    <div class="section__body latest-blocks">
-      <div v-for="block in latestBlocks" :key="block.name" class="latest-block">
-        <p class="latest__value">
-          {{ block.value }}
-        </p>
-        <p class="text__label">
-          {{ block.name }}
-        </p>
+    <div class="section__body">
+      <div class="latest-blocks">
+        <div v-for="block in latestBlocks" :key="block.name" class="latest-block">
+          <p class="latest__value">
+            {{ block.value }}
+          </p>
+          <p class="text__label">
+            {{ block.name }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -49,6 +51,8 @@ export default {
   justify-content: space-between;
   padding: 20px 25px;
   height: 105px;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .latest-block {

@@ -95,7 +95,7 @@ export default {
 
 .section__table {
   width: 100%;
-  min-width: 320px;
+  min-width: 600px;
   &__row {
     &--will-churn-in {
       .section__table__data {
