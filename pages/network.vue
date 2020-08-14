@@ -59,6 +59,7 @@ export default {
   },
   mounted() {
     this.pollData();
+    this.$store.commit('nodeStarred/initializeStore');
   },
   beforeDestroy() {
     clearInterval(this.polling);

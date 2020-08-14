@@ -39,7 +39,7 @@
               type="disabled"
             />
             <tr v-if="emptyList">
-              <td colspan="6" class="section__table__data--no-nodes">
+              <td colspan="7" class="section__table__data--no-nodes">
                 No disabled nodes
               </td>
             </tr>
