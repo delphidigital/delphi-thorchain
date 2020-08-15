@@ -4,7 +4,10 @@
       <div class="header__content">
         <img src="/thorchain.svg" class="header__logo"></img>
         <div class="header__navigation">
-          <nav class="header__nav">
+          <nav
+            class="header__nav"
+            :class="{ 'header__nav--mobile-active': mobileMenuOpen }"
+          >
             <nuxt-link
               class="header__link"
               :class="{'header__link--active': currentPage === '/thorchain'}"
@@ -24,16 +27,29 @@
         <a href="https://www.delphidigital.io/" target="_blank" class="header__logo header__logo--right">
           <img src="/powered_by_delphi.svg"></img>
         </a>
+        <button class="menu-mobile-toggle" @click="mobileMenuOpen = !mobileMenuOpen">
+          <img src="/menu.svg"></img>
+        </button>
       </div>
     </header>
     <main>
       <Nuxt />
     </main>
+    <div
+      class="menu-mobile-overlay"
+      :class="{'menu-mobile-overlay--active': mobileMenuOpen}"
+      @click="mobileMenuOpen = !mobileMenuOpen"
+    />
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      mobileMenuOpen: false,
+    };
+  },
   computed: {
     currentPage() {
       return this.$route.path;
@@ -46,7 +62,10 @@ export default {
 .header {
   width: 100%;
   background-color: $color-bg;
-  padding: 12px;
+  padding: 0 12px;
+  height: 65px;
+  position: relative;
+  z-index: 8;
 }
 
 .header__content {
@@ -54,12 +73,16 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .header__logo {
   max-height: 45px;
-  max-width: 45%;
-  display: block;
+  max-width: 43%;
+  margin: 0;
+  display: flex;
+  align-items: center;
   img {
     width: 100%;
   }
@@ -67,6 +90,9 @@ export default {
 
 .header__logo--right {
   margin-left: auto;
+  @media screen and (max-width: 750px) {
+    margin-left: 10px;
+  }
 }
 
 .header__navigation {
@@ -77,6 +103,62 @@ export default {
 .header__nav {
   display: flex;
   flex-direction: row;
+
+  @media screen and (max-width: 750px) {
+    display: none;
+  }
+}
+
+.menu-mobile-toggle {
+  background-color: transparent;
+  height: 25px;
+  width: 25px;
+  outline: none;
+  border: none;
+  padding: 0;
+  margin-left: auto;
+  display: none;
+
+  img {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 750px) {
+    display: block;
+  }
+}
+
+.menu-mobile-overlay {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 7;
+  background-color: rgba(11, 14, 22, 0.8);
+  display: none;
+}
+
+.menu-mobile-overlay--active {
+  display: block;
+}
+
+.header__nav--mobile-active {
+  position: absolute;
+  width: 100%;
+  top: 65px;
+  left: 0px;
+  background-color: $color-bg-popup;
+  flex-direction: column;
+  z-index: 10;
+  display: flex;
+
+  .header__link {
+    margin-left: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 150px;
+  }
 }
 
 .header__link {
