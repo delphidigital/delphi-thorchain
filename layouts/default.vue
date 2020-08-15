@@ -241,6 +241,10 @@ button {
   color: $color-text-secondary;
 }
 
+.text--bold {
+  font-weight: 700;
+}
+
 /*
 * SECTION TABLE
 */
