@@ -3,7 +3,25 @@
     <header class="header">
       <div class="header__content">
         <img src="/thorchain.svg" class="header__logo"></img>
-        <a href="https://www.delphidigital.io/" target="_blank" class="header__logo">
+        <div class="header__navigation">
+          <nav class="header__nav">
+            <nuxt-link
+              class="header__link"
+              :class="{'header__link--active': currentPage === '/thorchain'}"
+              to="/thorchain"
+            >
+              Pool Overview
+            </nuxt-link>
+            <nuxt-link
+              class="header__link"
+              :class="{'header__link--active': currentPage === '/network'}"
+              to="/network"
+            >
+              Network & Nodes
+            </nuxt-link>
+          </nav>
+        </div>
+        <a href="https://www.delphidigital.io/" target="_blank" class="header__logo header__logo--right">
           <img src="/powered_by_delphi.svg"></img>
         </a>
       </div>
@@ -13,6 +31,16 @@
     </main>
   </div>
 </template>
+
+<script>
+export default {
+  computed: {
+    currentPage() {
+      return this.$route.path;
+    },
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 .header {
@@ -26,7 +54,6 @@
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
 }
 
 .header__logo {
@@ -36,6 +63,40 @@
   img {
     width: 100%;
   }
+}
+
+.header__logo--right {
+  margin-left: auto;
+}
+
+.header__navigation {
+  display: flex;
+  align-items: center;
+}
+
+.header__nav {
+  display: flex;
+  flex-direction: row;
+}
+
+.header__link {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.6;
+  margin-left: 60px;
+  color: #fff;
+  text-decoration: none;
+  line-height: 21px;
+
+  &:hover, &:visited, &:focus {
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.header__link--active {
+  opacity: 1;
+  border-bottom: 2px solid $color-green;
 }
 
 </style>
