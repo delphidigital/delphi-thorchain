@@ -16,11 +16,20 @@
         </div>
       </div>
       <div class="pure-u-lg-11-24 pure-u-1 section__body--active-nodes">
-        <OldestActiveNodeList />
+        <OldestActiveNodeList :show-max="initialViewMax" :show-all="showAll" />
       </div>
       <div class="pure-u-lg-7-24 pure-u-1 section__body--active-nodes">
-        <LargestStandbyNodeList />
+        <LargestStandbyNodeList :show-max="initialViewMax" :show-all="showAll" />
       </div>
+    </div>
+    <div class="pure-u-1 node-summary-show-all" @click="showAll = !showAll">
+      <p>
+        {{ visibleCount }} / {{ totalCount }} nodes
+      </p>
+      <button v-if="quotaExceeded">
+        <span>{{ showAll ? 'View Less Nodes' : 'View All Nodes' }}</span>
+        <img src="/external_link.svg"></img>
+      </button>
     </div>
   </div>
 </template>
@@ -38,6 +47,11 @@ export default {
     OldestActiveNodeList,
     NextChurnPoint,
   },
+  data() {
+    return {
+      showAll: false,
+    };
+  },
   computed: {
     activeCount() {
       return this.$store.getters['nodes/totalActiveCount'];
@@ -45,8 +59,22 @@ export default {
     standbyCount() {
       return this.$store.getters['nodes/totalStandbyCount'];
     },
-    timeRemaining() {
-      return Math.random();
+    initialViewMax() {
+      return 2;
+    },
+    quotaExceeded() {
+      return (this.activeCount > this.initialViewMax) ||
+        (this.standbyCount > this.initialViewMax);
+    },
+    totalCount() {
+      return this.standbyCount + this.activeCount;
+    },
+    visibleCount() {
+      if (!this.showAll) {
+        return Math.min(this.initialViewMax, this.activeCount) +
+          Math.min(this.initialViewMax, this.standbyCount);
+      }
+      return this.totalCount;
     },
   },
 };
@@ -161,6 +189,36 @@ export default {
         }
       }
     }
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.node-summary-show-all {
+  display: flex;
+  width: 100%;
+  border-top: 1px solid $color-border;
+  padding: 15px 25px;
+  color: $color-text-secondary;
+  background-color: $color-bg-table-header;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+
+  p {
+    width: 20%;
+    font-size: 12px;
+  }
+
+  button {
+    width: 60%;
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    color: $color-text-secondary;
+  }
+
+  img {
+    height: 12px;
   }
 }
 </style>

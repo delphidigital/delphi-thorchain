@@ -69,6 +69,16 @@
 import formatDistance from 'date-fns/formatDistance';
 
 export default {
+  props: {
+    showMax: {
+      type: Number,
+      default: () => 10,
+    },
+    showAll: {
+      type: Boolean,
+      default: () => false,
+    },
+  },
   data() {
     return {
       formatDistance,
@@ -80,7 +90,30 @@ export default {
       return this.$store.getters['nodes/totalStandbyCount'] === 0;
     },
     standbyNodesByBond() {
-      return this.$store.getters['nodes/standbyNodesByBond'];
+      const allNodes = this.$store.getters['nodes/standbyNodesByBond'];
+
+      if (this.showAll) {
+        return allNodes;
+      }
+
+      const keys = [
+        'toChurnIn',
+        'otherValidatorsByBond',
+        'belowMinBond',
+      ];
+
+      let quota = this.showMax;
+      const result = {};
+      keys.forEach((k) => { result[k] = []; });
+
+      for (let i = 0; i < keys.length && quota > 0; i += 1) {
+        const targetNodes = allNodes[keys[i]] || [];
+        const amountToGet = targetNodes.length > quota ? quota : targetNodes.length;
+
+        result[keys[i]] = targetNodes.slice(0, amountToGet);
+        quota -= amountToGet;
+      }
+      return result;
     },
     currentDate() {
       return new Date();
