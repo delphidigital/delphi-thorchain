@@ -110,7 +110,7 @@
 
 <script>
 import { assetFromString, AssetSymbol } from '@thorchain/asgardex-util';
-import Percentage from '../Percentage.vue';
+import Percentage from '../../Common/Percentage.vue';
 
 export default {
   components: {

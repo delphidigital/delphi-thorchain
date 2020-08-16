@@ -3,6 +3,7 @@
     <table class="section__table">
       <thead>
         <tr>
+          <th class="section__table__head" />
           <th class="section__table__head section__table__head--address">
             Active validators
           </th>
@@ -18,6 +19,7 @@
           :key="node['node_address']"
           class="section__table__row section__table__row--will-churn"
         >
+          <FavouriteNodeTD :node-address="node['node_address']" />
           <td class="section__table__data section__table__data--address">
             <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
@@ -33,6 +35,7 @@
           :key="node['node_address']"
           class="section__table__row section__table__row--will-churn"
         >
+          <FavouriteNodeTD :node-address="node['node_address']" />
           <td class="section__table__data section__table__data--address">
             <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
@@ -48,6 +51,7 @@
           :key="node['node_address']"
           class="section__table__row section__table__row--will-churn"
         >
+          <FavouriteNodeTD :node-address="node['node_address']" />
           <td class="section__table__data section__table__data--address">
             <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
@@ -63,6 +67,7 @@
           :key="node['node_address']"
           class="section__table__row section__table__row--will-churn"
         >
+          <FavouriteNodeTD :node-address="node['node_address']" />
           <td class="section__table__data section__table__data--address">
             <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
@@ -78,6 +83,7 @@
           :key="node['node_address']"
           class="section__table__row"
         >
+          <FavouriteNodeTD :node-address="node['node_address']" />
           <td class="section__table__data section__table__data--address">
             <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
@@ -94,10 +100,12 @@
 <script>
 import formatDistance from 'date-fns/formatDistance';
 import Address from './Address.vue';
+import FavouriteNodeTD from '../../Common/FavouriteNodeTD.vue';
 
 export default {
   components: {
     Address,
+    FavouriteNodeTD,
   },
   props: {
     showMax: {
