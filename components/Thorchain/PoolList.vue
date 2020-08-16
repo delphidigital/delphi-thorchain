@@ -97,8 +97,8 @@
 </template>
 
 <script>
-import Percentage from './Percentage.vue';
-import RuneUSD from './RuneUSD.vue';
+import Percentage from './../Common/Percentage.vue';
+import RuneUSD from './../Common/RuneUSD.vue';
 
 export default {
   components: {

@@ -100,23 +100,23 @@ export default {
       statusData: {
         insecure: {
           color: '#f7517f',
-          icon: './security_no.svg',
+          icon: '/security_no.svg',
         },
         underbonded: {
           color: '#f7c951',
-          icon: './security_yellow.svg',
+          icon: '/security_yellow.svg',
         },
         optimal: {
           color: '#16CEB9',
-          icon: './security_yes.svg',
+          icon: '/security_yes.svg',
         },
         overbonded: {
           color: '#f77651',
-          icon: './security_orange.svg',
+          icon: '/security_orange.svg',
         },
         inefficient: {
           color: '#f7517f',
-          icon: './security_no.svg',
+          icon: '/security_no.svg',
         },
       },
     };

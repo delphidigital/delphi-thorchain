@@ -16,11 +16,20 @@
         </div>
       </div>
       <div class="pure-u-lg-11-24 pure-u-1 section__body--active-nodes">
-        <OldestActiveNodeList />
+        <OldestActiveNodeList :show-max="viewMax" />
       </div>
       <div class="pure-u-lg-7-24 pure-u-1 section__body--active-nodes">
-        <LargestStandbyNodeList />
+        <LargestStandbyNodeList :show-max="viewMax" />
       </div>
+    </div>
+    <div class="pure-u-1 node-summary-show-all">
+      <p>
+        {{ visibleCount }} / {{ totalCount }} nodes
+      </p>
+      <nuxt-link to="/network">
+        <span>View All Nodes</span>
+        <img src="/external_link.svg"></img>
+      </nuxt-link>
     </div>
   </div>
 </template>
@@ -45,8 +54,15 @@ export default {
     standbyCount() {
       return this.$store.getters['nodes/totalStandbyCount'];
     },
-    timeRemaining() {
-      return Math.random();
+    viewMax() {
+      return 10;
+    },
+    totalCount() {
+      return this.standbyCount + this.activeCount;
+    },
+    visibleCount() {
+      return Math.min(this.viewMax, this.activeCount) +
+        Math.min(this.viewMax, this.standbyCount);
     },
   },
 };
@@ -161,6 +177,38 @@ export default {
         }
       }
     }
+  }
+}
+</style>
+
+<style lang="scss" scoped>
+.node-summary-show-all {
+  display: flex;
+  width: 100%;
+  border-top: 1px solid $color-border;
+  padding: 15px 25px;
+  color: $color-text-secondary;
+  background-color: $color-bg-table-header;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+
+  p {
+    width: 20%;
+    font-size: 12px;
+  }
+
+  a {
+    width: 60%;
+    display: block;
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    color: $color-text-secondary;
+    text-align: center;
+  }
+
+  img {
+    height: 12px;
   }
 }
 </style>

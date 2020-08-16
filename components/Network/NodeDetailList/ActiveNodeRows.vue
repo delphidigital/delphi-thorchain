@@ -57,7 +57,7 @@
 <script>
 import { formatDistance } from 'date-fns';
 import numeral from 'numeral';
-import FavouriteNodeTD from './FavouriteNodeTD.vue';
+import FavouriteNodeTD from './../../Common/FavouriteNodeTD.vue';
 
 export default {
   components: {

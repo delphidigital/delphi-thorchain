@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import Percentage from '../Percentage.vue';
+import Percentage from '../../Common/Percentage.vue';
 
 export default {
   components: {
