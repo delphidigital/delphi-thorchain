@@ -74,10 +74,6 @@ export default {
       type: Number,
       default: () => 10,
     },
-    showAll: {
-      type: Boolean,
-      default: () => false,
-    },
   },
   data() {
     return {
@@ -91,10 +87,6 @@ export default {
     },
     standbyNodesByBond() {
       const allNodes = this.$store.getters['nodes/standbyNodesByBond'];
-
-      if (this.showAll) {
-        return allNodes;
-      }
 
       const keys = [
         'toChurnIn',

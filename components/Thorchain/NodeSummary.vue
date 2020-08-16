@@ -16,20 +16,20 @@
         </div>
       </div>
       <div class="pure-u-lg-11-24 pure-u-1 section__body--active-nodes">
-        <OldestActiveNodeList :show-max="initialViewMax" :show-all="showAll" />
+        <OldestActiveNodeList :show-max="viewMax" />
       </div>
       <div class="pure-u-lg-7-24 pure-u-1 section__body--active-nodes">
-        <LargestStandbyNodeList :show-max="initialViewMax" :show-all="showAll" />
+        <LargestStandbyNodeList :show-max="viewMax" />
       </div>
     </div>
-    <div class="pure-u-1 node-summary-show-all" @click="showAll = !showAll">
+    <div class="pure-u-1 node-summary-show-all">
       <p>
         {{ visibleCount }} / {{ totalCount }} nodes
       </p>
-      <button v-if="quotaExceeded">
-        <span>{{ showAll ? 'View Less Nodes' : 'View All Nodes' }}</span>
+      <nuxt-link to="/network">
+        <span>View All Nodes</span>
         <img src="/external_link.svg"></img>
-      </button>
+      </nuxt-link>
     </div>
   </div>
 </template>
@@ -47,11 +47,6 @@ export default {
     OldestActiveNodeList,
     NextChurnPoint,
   },
-  data() {
-    return {
-      showAll: false,
-    };
-  },
   computed: {
     activeCount() {
       return this.$store.getters['nodes/totalActiveCount'];
@@ -59,22 +54,15 @@ export default {
     standbyCount() {
       return this.$store.getters['nodes/totalStandbyCount'];
     },
-    initialViewMax() {
+    viewMax() {
       return 10;
-    },
-    quotaExceeded() {
-      return (this.activeCount > this.initialViewMax) ||
-        (this.standbyCount > this.initialViewMax);
     },
     totalCount() {
       return this.standbyCount + this.activeCount;
     },
     visibleCount() {
-      if (!this.showAll) {
-        return Math.min(this.initialViewMax, this.activeCount) +
-          Math.min(this.initialViewMax, this.standbyCount);
-      }
-      return this.totalCount;
+      return Math.min(this.viewMax, this.activeCount) +
+        Math.min(this.viewMax, this.standbyCount);
     },
   },
 };
@@ -209,12 +197,14 @@ export default {
     font-size: 12px;
   }
 
-  button {
+  a {
     width: 60%;
+    display: block;
     background-color: transparent;
     border: none;
     font-size: 14px;
     color: $color-text-secondary;
+    text-align: center;
   }
 
   img {

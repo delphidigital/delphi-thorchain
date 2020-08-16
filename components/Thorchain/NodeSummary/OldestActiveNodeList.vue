@@ -112,10 +112,6 @@ export default {
       type: Number,
       default: () => 10,
     },
-    showAll: {
-      type: Boolean,
-      default: () => false,
-    },
   },
   data() {
     return {
@@ -126,9 +122,6 @@ export default {
   computed: {
     activeNodesSegmentedForChurn() {
       const allNodes = this.$store.getters['nodes/activeNodesSegmentedForChurn'];
-      if (this.showAll) {
-        return allNodes;
-      }
       const keys = [
         'forcedToLeave',
         'requestedToLeave',

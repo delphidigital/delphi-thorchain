@@ -248,6 +248,14 @@ button {
   }
 }
 
+a {
+  text-decoration: none;
+
+  &:hover, &:focus {
+    text-decoration: none;
+  }
+}
+
 /*
 * PAGE
 */
