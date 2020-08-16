@@ -60,7 +60,7 @@ export default {
       return this.$store.getters['nodes/totalStandbyCount'];
     },
     initialViewMax() {
-      return 2;
+      return 10;
     },
     quotaExceeded() {
       return (this.activeCount > this.initialViewMax) ||
