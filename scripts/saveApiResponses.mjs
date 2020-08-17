@@ -34,7 +34,7 @@ async function run() {
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
     const lookup = await withCache(cacheKey, async () => {
-      return await lookupGeoIP(ip);
+      return await lookupGeoIP(nodeAccount['ip_address']);
     });
     return { ...nodeAccount, location: lookup };
   }));
