@@ -35,14 +35,17 @@
               </tr>
             </thead>
             <GeneralNodeRows
+              v-if="!emptyList"
               :nodes="disabledNodes"
               type="disabled"
             />
-            <tr v-if="emptyList">
-              <td colspan="7" class="section__table__data--no-nodes">
-                No disabled nodes
-              </td>
-            </tr>
+            <tbody v-if="emptyList">
+              <tr>
+                <td colspan="7" class="section__table__data--no-nodes">
+                  No disabled nodes
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
