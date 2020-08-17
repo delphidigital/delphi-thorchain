@@ -5,6 +5,7 @@
       :key="node['node_address']"
       class="section__table__row"
     >
+      <FavouriteNodeTD :node-address="node['node_address']" />
       <td class="section__table__data section__table__data--address">
         <Address :address="node['node_address']" :max-chars="20" />
       </td>
@@ -31,8 +32,12 @@
 <script>
 import { formatDistance } from 'date-fns';
 import numeral from 'numeral';
+import FavouriteNodeTD from './../../Common/FavouriteNodeTD.vue';
 
 export default {
+  components: {
+    FavouriteNodeTD,
+  },
   props: {
     nodes: {
       type: Array,
