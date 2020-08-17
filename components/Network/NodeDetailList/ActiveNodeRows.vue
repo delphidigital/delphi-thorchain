@@ -10,13 +10,7 @@
         <Address :address="node['node_address']" :max-chars="20" />
       </td>
       <td class="section__table__data section__table__data--location">
-        <span v-if="node.location.org && node.location.org.length">
-          {{ node.location.org }},
-        </span>
-        <span v-if="node.location.city && node.location.city.length">
-          {{ node.location.city }},
-        </span>
-        {{ node.location.country }}
+        {{ formatLocation(node.location) }}
       </td>
       <td class="section__table__data section__table__data--version">
         {{ node.version }}
@@ -64,6 +58,7 @@
 import { formatDistance } from 'date-fns';
 import numeral from 'numeral';
 import FavouriteNodeTD from './../../Common/FavouriteNodeTD.vue';
+import { formatLocation } from './../../../lib/formatHelpers.mjs';
 
 export default {
   components: {
@@ -81,6 +76,7 @@ export default {
   },
   data() {
     return {
+      formatLocation,
       isInJail(node) {
         return (node.jail['release_height'] > this.lastBlock);
       },
