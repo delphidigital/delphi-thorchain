@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     lastBlock() {
-      return this.$store.state.nodes.lastBlock;
+      return this.$store.state.networkHealth.lastThorchainBlock;
     },
   },
 };

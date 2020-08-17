@@ -8,7 +8,6 @@ export const state = () => ({
   nodes: {},
   nodeIds: [],
   oldValidatorRate: null,
-  lastBlock: 0,
   nextChurnHeight: 0,
   rotatePerBlockHeight: null,
   asgardVaults: [],
@@ -74,15 +73,15 @@ export const getters = {
   isAsgardVaultRetiring(state) {
     return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
   },
-  progressToNextChurnPoint(state) {
+  progressToNextChurnPoint(state, rootState) {
     let blocksRemaining;
     let percentage;
     if (getters.activeRequestedToLeaveCount(state)) {
-      const blocksSince = state.lastBlock % state.rotatePerBlockHeight;
+      const blocksSince = rootState.lastThorchainBlock % state.rotatePerBlockHeight;
       blocksRemaining = state.rotatePerBlockHeight - blocksSince;
       percentage = blocksSince / state.rotatePerBlockHeight;
     } else {
-      const blocksSince = state.lastBlock % state.oldValidatorRate;
+      const blocksSince = rootState.lastThorchainBlock % state.oldValidatorRate;
       blocksRemaining = state.oldValidatorRate - blocksSince;
       percentage = blocksSince / state.oldValidatorRate;
     }
@@ -175,9 +174,6 @@ export const getters = {
 export const mutations = {
   setOldValidatorRate(state, oldValidatorRate) {
     state.oldValidatorRate = oldValidatorRate;
-  },
-  setLastBlock(state, lastBlock) {
-    state.lastBlock = parseInt(lastBlock, 10);
   },
   setMinBond(state, minBond) {
     state.minBond = parseInt(minBond, 10) / runeDivider;

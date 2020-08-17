@@ -33,11 +33,11 @@ export default {
       return [
         {
           name: 'Thorchain',
-          value: formatValue(53132),
+          value: formatValue(this.$store.state.networkHealth.lastThorchainBlock),
         },
         {
           name: 'Binance',
-          value: formatValue(112153),
+          value: formatValue(this.$store.state.networkHealth.lastBinanceBlock),
         },
       ];
     },
