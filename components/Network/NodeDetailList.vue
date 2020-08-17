@@ -20,64 +20,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.nodes-header {
+<style lang="scss">
+.network-nodes-header {
   display: flex;
   align-items: center;
-}
-
-.node-counts {
-  display: flex;
-  flex-direction: column;
-  @media screen and (max-width: $pureg-lg) {
-    flex-direction: row;
-    width: 100%;
-  }
-}
-
-.node-count {
-  height: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  @media screen and (max-width: $pureg-lg) {
-    height: 100%;
-    width: 50%;
-  }
-}
-
-.node-count--first {
-  border-bottom: 1px solid $color-border;
-  @media screen and (max-width: $pureg-lg) {
-    border-bottom: none;
-    border-right: 1px solid $color-border;
-  }
-}
-
-.section__body {
-  &--active-nodes {
-    border-left: 1px solid $color-border;
-    @media screen and (max-width: $pureg-lg) {
-      border-left: none;
-    }
-  }
 }
 
 .standby-nodes-container, .active-nodes-container {
   overflow-x: scroll;
-}
-
-.churn-status--in {
-  color: $color-green;
-  font-size: 0.6rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-.churn-status--out {
-  color: $color-red;
-  font-size: 0.6rem;
-  font-weight: bold;
-  text-transform: uppercase;
 }
 
 .jailed {
@@ -89,58 +39,58 @@ export default {
   padding-top: 0.4rem;
   font-size: 12px;
 }
+
 .status-since-time {
   color: $color-text-secondary;
 }
 
-.section__table {
+.network-nodes-table {
   width: 100%;
   min-width: 600px;
-  &__row {
-    &--will-churn-in {
-      .section__table__data {
-        background-color: $color-green-overlay;
-      }
-    }
-    &--will-churn {
-      .section__table__data {
-        background-color: $color-red-overlay;
-      }
+
+  .section__table__row--will-churn-in {
+    .section__table__data {
+      background-color: $color-green-overlay;
     }
   }
-  &__head {
+
+  .section__table__row--will-churn {
+    .section__table__data {
+      background-color: $color-red-overlay;
+    }
+  }
+
+  .section__table__head {
     text-align: left;
     &--address {
       max-width: 10rem;
     }
   }
-  &__data {
-    &--no-nodes {
-      color: $color-text-secondary;
-      padding: 5rem 0;
-      font-size: 14px;
-      letter-spacing: 1px;
-      text-align: center;
-    }
-    &--address {
-      font-family: monospace;
-      padding-right: 20px;
-      max-width: 10rem;
-      white-space: nowrap;
-    }
+
+  .section__table__data--no-nodes {
+    color: $color-text-secondary;
+    padding: 5rem 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .section__table--address {
+    font-family: monospace;
+    padding-right: 20px;
+    max-width: 10rem;
+    white-space: nowrap;
   }
 
   .active-nodes-container {
-    .section__table {
-      &__head {
-        &--address {
-          max-width: 13rem;
-        }
+    .section__table__head {
+      section__table__head--address {
+        max-width: 13rem;
       }
-      &__data {
-        &--address {
-          max-width: 13rem;
-        }
+    }
+    .section__table__data {
+      &--address {
+        max-width: 13rem;
       }
     }
   }

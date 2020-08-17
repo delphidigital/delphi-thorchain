@@ -1,6 +1,6 @@
 <template>
   <div class="active-nodes-container">
-    <table class="section__table">
+    <table class="section__table node-summary-table">
       <thead>
         <tr>
           <th class="section__table__head" />

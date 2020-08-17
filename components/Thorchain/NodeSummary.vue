@@ -127,54 +127,52 @@ export default {
   font-weight: bold;
   text-transform: uppercase;
 }
-.section__table {
+.node-summary-table {
   width: 100%;
   min-width: 320px;
-  &__row {
-    &--will-churn-in {
-      .section__table__data {
-        background-color: $color-green-overlay;
-      }
-    }
-    &--will-churn {
-      .section__table__data {
-        background-color: $color-red-overlay;
-      }
+  td {
+    height: 50px;
+  }
+
+  .section__table__row--will-churn-in {
+    .section__table__data {
+      background-color: $color-green-overlay;
     }
   }
-  &__head {
+  .section__table__row--will-churn {
+    .section__table__data {
+      background-color: $color-red-overlay;
+    }
+  }
+  .section__table__head {
     text-align: left;
-    &--address {
+    section__table__head--address {
       max-width: 10rem;
     }
   }
-  &__data {
-    &--no-nodes {
-      color: $color-text-secondary;
-      padding: 10rem 0;
-      font-size: 14px;
-      letter-spacing: 1px;
-      text-align: center;
-    }
-    &--address {
-      font-family: monospace;
-      padding-right: 20px;
-      max-width: 10rem;
-      white-space: nowrap;
-    }
+  .section__table__data--no-nodes {
+    color: $color-text-secondary;
+    padding: 10rem 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .section__table__data--address {
+    font-family: monospace;
+    padding-right: 20px;
+    max-width: 10rem;
+    white-space: nowrap;
   }
 
   .active-nodes-container {
-    .section__table {
-      &__head {
-        &--address {
-          max-width: 13rem;
-        }
+    .section__table__head {
+      section__table__data--address {
+        max-width: 13rem;
       }
-      &__data {
-        &--address {
-          max-width: 13rem;
-        }
+    }
+    .section__table__data {
+      section__table__data--address {
+        max-width: 13rem;
       }
     }
   }
