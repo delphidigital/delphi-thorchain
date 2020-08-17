@@ -48,18 +48,6 @@ export default {
   width: 100%;
   min-width: 600px;
 
-  .section__table__row--will-churn-in {
-    .section__table__data {
-      background-color: $color-green-overlay;
-    }
-  }
-
-  .section__table__row--will-churn {
-    .section__table__data {
-      background-color: $color-red-overlay;
-    }
-  }
-
   .section__table__head {
     text-align: left;
     &--address {

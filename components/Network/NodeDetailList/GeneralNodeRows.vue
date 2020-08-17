@@ -3,7 +3,7 @@
     <tr
       v-for="node in nodes"
       :key="node['node_address']"
-      class="section__table__row"
+      :class="`section__table__row ${rowClass()}`"
     >
       <FavouriteNodeTD :node-address="node['node_address']" />
       <td class="section__table__data section__table__data--address">
@@ -17,6 +17,14 @@
       </td>
       <td class="section__table__data section__table__data--status">
         {{ node.status }}
+      </td>
+      <td class="section__table__data section__table__data--status-desc">
+        <span v-if="type === 'toChurnIn'" class="churn-status churn-status--in">
+          Will churn in
+        </span>
+        <span v-if="type === 'belowMinBond'" class="churn-status churn-status--out">
+          Bond too low
+        </span>
       </td>
       <td class="section__table__data section__table__data--bond">
         {{ numeral(Math.round(node.bond)).format('0,0') }}
@@ -56,6 +64,15 @@ export default {
         const blocksSince = this.lastBlock - sinceBlock;
         const secondsSince = blocksSince * secondsPerBlock;
         return formatDistance(0, secondsSince * 1000);
+      },
+      rowClass() {
+        if (['toChurnIn'].includes(this.type)) {
+          return 'section__table__row--will-churn-in';
+        }
+        if (['belowMinBond'].includes(this.type)) {
+          return 'section__table__row--will-churn';
+        }
+        return '';
       },
     };
   },

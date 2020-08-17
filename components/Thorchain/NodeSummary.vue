@@ -115,18 +115,6 @@ export default {
   overflow-x: scroll;
 }
 
-.churn-status--in {
-  color: $color-green;
-  font-size: 0.6rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-.churn-status--out {
-  color: $color-red;
-  font-size: 0.6rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
 .node-summary-table {
   width: 100%;
   min-width: 320px;
@@ -134,16 +122,6 @@ export default {
     height: 50px;
   }
 
-  .section__table__row--will-churn-in {
-    .section__table__data {
-      background-color: $color-green-overlay;
-    }
-  }
-  .section__table__row--will-churn {
-    .section__table__data {
-      background-color: $color-red-overlay;
-    }
-  }
   .section__table__head {
     text-align: left;
     section__table__head--address {

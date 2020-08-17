@@ -24,6 +24,7 @@
                 <th class="section__table__head section__table__head--status">
                   Status
                 </th>
+                <th class="section__table__head section__table__head--status-desc" />
                 <th class="section__table__head section__table__head--bond">
                   Bond
                 </th>

@@ -429,6 +429,18 @@ a {
   border-top: 1px solid $color-border;
 }
 
+.section__table__row--will-churn-in {
+  .section__table__data {
+    background-color: $color-green-overlay;
+  }
+}
+.section__table__row--will-churn {
+  .section__table__data {
+    background-color: $color-red-overlay;
+  }
+}
+
+
 $padding-section-table: 25px;
 
 .section__table__head:first-child {
@@ -444,6 +456,19 @@ $padding-section-table: 25px;
   font-weight: 500;
   padding-top: 15px;
   padding-bottom: 15px;
+
+  .churn-status--in {
+    color: $color-green;
+    font-size: 0.6rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  .churn-status--out {
+    color: $color-red;
+    font-size: 0.6rem;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
 }
 
 .section__table__data:first-child {
