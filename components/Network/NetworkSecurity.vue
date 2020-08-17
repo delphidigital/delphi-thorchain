@@ -59,28 +59,30 @@
           <div class="security-bar-tooltip">
             <div class="app-tooltip__body">
               <table class="app-tooltip__table">
-                <tr>
-                  <td>
-                    RUNE Bonded
-                  </td>
-                  <td class="align-right">
-                    {{ formatMoneyAmount(runeBonded) }}
-                    <span class="text--bold">
-                      ({{ runeBondedPercentage }}%)
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    RUNE Staked
-                  </td>
-                  <td class="align-right">
-                    {{ formatMoneyAmount(runeStaked) }}
-                    <span class="text--bold">
-                      ({{ runeStakedPercentage }}%)
-                    </span>
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td>
+                      RUNE Bonded
+                    </td>
+                    <td class="align-right">
+                      {{ formatMoneyAmount(runeBonded) }}
+                      <span class="text--bold">
+                        ({{ runeBondedPercentage }}%)
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      RUNE Staked
+                    </td>
+                    <td class="align-right">
+                      {{ formatMoneyAmount(runeStaked) }}
+                      <span class="text--bold">
+                        ({{ runeStakedPercentage }}%)
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </div>
