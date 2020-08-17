@@ -67,7 +67,7 @@
                     <td class="align-right">
                       {{ formatMoneyAmount(runeBonded) }}
                       <span class="text--bold">
-                        ({{ runeBondedPercentage }}%)
+                        (<Percentage :value="runeBondedPercentage" />)
                       </span>
                     </td>
                   </tr>
@@ -78,7 +78,7 @@
                     <td class="align-right">
                       {{ formatMoneyAmount(runeStaked) }}
                       <span class="text--bold">
-                        ({{ runeStakedPercentage }}%)
+                        (<Percentage :value="runeStakedPercentage" />)
                       </span>
                     </td>
                   </tr>
@@ -93,12 +93,14 @@
 </template>
 <script>
 import { formatMoneyAmount } from '../../lib/utils.mjs';
+import Percentage from '../Common/Percentage.vue';
 
 export default {
+  components: {
+    Percentage,
+  },
   data() {
     return {
-      runeBonded: 2000000,
-      runeStaked: 3000000,
       statusData: {
         insecure: {
           color: '#f7517f',
@@ -126,16 +128,22 @@ export default {
   computed: {
     level() {
       // TODO(Fede): RUNE bonded by nodes / RUNE staked in pools
-      return Math.min(1, this.runeBonded / this.runeStaked);
+      return this.runeBondedPercentage;
     },
     totalRune() {
       return this.runeBonded + this.runeStaked;
     },
+    runeBonded() {
+      return this.$store.state.networkHealth.totalReserve;
+    },
     runeBondedPercentage() {
-      return Math.round((this.runeBonded / this.totalRune) * 100);
+      return this.runeBonded / this.totalRune;
+    },
+    runeStaked() {
+      return this.$store.state.networkHealth.totalStaked;
     },
     runeStakedPercentage() {
-      return Math.round((this.runeStaked / this.totalRune) * 100);
+      return this.runeStaked / this.totalRune;
     },
     optimal() {
       return 0.6;
