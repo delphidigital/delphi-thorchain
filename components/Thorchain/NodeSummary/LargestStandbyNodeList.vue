@@ -1,6 +1,6 @@
 <template>
   <div class="standby-nodes-container">
-    <table class="section__table">
+    <table class="section__table node-summary-table">
       <thead>
         <tr>
           <th class="section__table__head section__table__head--address">
@@ -39,6 +39,7 @@
           <td class="section__table__data">
             {{ Math.round(node.bond) }}
           </td>
+          <td class="section__table__data" />
         </tr>
         <tr
           v-for="node in standbyNodesByBond.belowMinBond"

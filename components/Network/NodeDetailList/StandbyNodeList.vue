@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="section">
-      <div class="section__header nodes-header">
+      <div class="section__header network-nodes-header">
         <h2 class="section__title">
           Standby Nodes
         </h2>
       </div>
       <div class="section__body">
         <div class="standby-nodes-container">
-          <table class="section__table">
+          <table class="section__table network-nodes-table">
             <thead>
               <tr>
                 <th class="section__table__head section__table__head--address">

@@ -40,18 +40,20 @@ export default {
       nodesGeo.forEach((ng) => {
         const lat = ng.latitude;
         const lon = ng.longitude;
-        const index = cities.findIndex(el => el.lat === lat && el.lon === lon);
-        if (index !== -1) {
-          cities[index].count += 1;
-        } else {
-          cities.push({
-            lat,
-            lon,
-            count: 1,
-            city: ng.city,
-            country: ng['country_code'],
-            countryName: ng.country,
-          });
+        if (lat && lon) {
+          const index = cities.findIndex(el => el.lat === lat && el.lon === lon);
+          if (index !== -1) {
+            cities[index].count += 1;
+          } else {
+            cities.push({
+              lat,
+              lon,
+              count: 1,
+              city: ng.city || '',
+              country: ng['country_code'],
+              countryName: ng.country,
+            });
+          }
         }
       });
 
@@ -80,6 +82,9 @@ export default {
         },
         path: {
           stroke: '#ff0000',
+        },
+        boost: {
+          enabled: false,
         },
         credits: false,
         legend: false,
