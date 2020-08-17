@@ -52,6 +52,14 @@ export const getters = {
       otherValidatorsByAge: otherValidatorsByAge.slice(1),
     };
   },
+  countsByStatus(state) {
+    const statusMap = {};
+    Object.values(state.nodes).forEach((node) => {
+      if (!statusMap[node.status]) statusMap[node.status] = 0;
+      statusMap[node.status] += 1;
+    });
+    return statusMap;
+  },
   disabledNodes(state) {
     return Object.values(state.nodes).filter(node => (
       node.status === 'disabled'

@@ -16,35 +16,46 @@
 export default {
   computed: {
     nodeStatusData() {
-      return [
+      const countsByStatus = this.$store.getters['nodes/countsByStatus'];
+      const statusDisplay = [
         {
           status: 'Active',
-          value: 22,
+          key: 'active',
           color: '#16CEB9',
         },
         {
           status: 'Standby',
-          value: 2,
+          key: 'standby',
           color: '#2D99FF',
         },
         {
           status: 'Ready',
-          value: 3,
+          key: 'ready',
           color: '#5E2BBC',
         },
         {
           status: 'Disabled',
-          value: 5,
+          key: 'disabled',
           color: '#3F4357',
         },
-      ];
+      ].map((statusDisplayItem) => {
+        const value = countsByStatus[statusDisplayItem.key] || 0;
+        return {
+          ...statusDisplayItem,
+          value,
+        };
+      });
+
+      return statusDisplay;
     },
     pieChartData() {
-      return this.nodeStatusData.map(nsd => ({
-        name: nsd.status,
-        y: nsd.value,
-        color: nsd.color,
-      }));
+      return this.nodeStatusData.map(statusDisplayItem => (
+        {
+          name: statusDisplayItem.status,
+          y: statusDisplayItem.value,
+          color: statusDisplayItem.color,
+        }
+      ));
     },
   },
 };
