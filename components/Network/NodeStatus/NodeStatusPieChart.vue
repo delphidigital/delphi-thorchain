@@ -1,7 +1,7 @@
 <template>
   <div>
     <client-only>
-      <highchart :options="chartOptions" />
+      <highchart :options="chartOptions" :update="[]" />
       <div slot="placeholder" class="chart-placeholder" />
     </client-only>
   </div>
