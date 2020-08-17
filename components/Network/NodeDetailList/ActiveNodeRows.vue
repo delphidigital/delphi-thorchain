@@ -10,7 +10,13 @@
         <Address :address="node['node_address']" :max-chars="20" />
       </td>
       <td class="section__table__data section__table__data--location">
-        {{ node.location.city }}, {{ node.location.country }}
+        <span v-if="node.location.org && node.location.org.length">
+          {{ node.location.org }},
+        </span>
+        <span v-if="node.location.city && node.location.city.length">
+          {{ node.location.city }},
+        </span>
+        {{ node.location.country }}
       </td>
       <td class="section__table__data section__table__data--version">
         {{ node.version }}
