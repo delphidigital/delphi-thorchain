@@ -67,8 +67,9 @@ async function run() {
   const priceUsd = await getRunePrice();
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
 
-  client.unref();
-  process.exit();
+  setTimeout(() => {
+    run();
+  }, 1000);
 }
 
 run();
