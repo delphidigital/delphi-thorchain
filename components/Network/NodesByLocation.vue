@@ -49,7 +49,7 @@ export default {
               lat,
               lon,
               count: 1,
-              city: ng.city || '',
+              city: ng.city || 'N/A',
               country: ng['country_code'],
               countryName: ng.country,
             });

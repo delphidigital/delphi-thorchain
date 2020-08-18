@@ -5,16 +5,29 @@
         Solvency
       </h2>
     </div>
-    <div class="section__body solvency-body">
-      <div class="overall-container">
-        <NetworkSolvencyOverall />
-      </div>
-      <div class="by-pool-container">
-        <NetworkSolvencyByPool />
+    <div class="section__body coming-soon__parent">
+      <ComingSoon />
+      <div class="coming-soon__target solvency-body">
+        <div class="overall-container">
+          <NetworkSolvencyOverall />
+        </div>
+        <div class="by-pool-container">
+          <NetworkSolvencyByPool />
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+import ComingSoon from '../Common/ComingSoon.vue';
+
+export default {
+  components: {
+    ComingSoon,
+  },
+};
+</script>
 
 <style lang="scss" scoped>
 .solvency {

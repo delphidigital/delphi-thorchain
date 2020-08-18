@@ -23,9 +23,6 @@
       </div>
     </div>
     <div class="pure-u-1 node-summary-show-all">
-      <p>
-        {{ visibleCount }} / {{ totalCount }} nodes
-      </p>
       <nuxt-link to="/network">
         <span>View All Nodes</span>
         <img src="/external_link.svg"></img>
@@ -77,6 +74,7 @@ export default {
 .node-counts {
   display: flex;
   flex-direction: column;
+  border-bottom: 1px solid $color-border;
   @media screen and (max-width: $pureg-lg) {
     flex-direction: row;
     width: 100%;
@@ -100,6 +98,13 @@ export default {
     border-bottom: none;
     border-right: 1px solid $color-border;
   }
+}
+
+.node-summary-node-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .section__body {
@@ -155,26 +160,31 @@ export default {
     }
   }
 }
+
+.node-summary-amount-shown {
+  font-size: 12px;
+  color: $color-text-secondary;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  border-top: 1px solid $color-border;
+  background-color: $color-bg-table-header;
+  border-bottom: 1px solid $color-border;
+}
 </style>
 
 <style lang="scss" scoped>
 .node-summary-show-all {
   display: flex;
   width: 100%;
-  border-top: 1px solid $color-border;
+  // border-top: 1px solid $color-border;
   padding: 15px 25px;
   color: $color-text-secondary;
-  background-color: $color-bg-table-header;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 
-  p {
-    width: 20%;
-    font-size: 12px;
-  }
-
   a {
-    width: 60%;
+    width: 100%;
     display: block;
     background-color: transparent;
     border: none;
