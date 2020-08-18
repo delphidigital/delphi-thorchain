@@ -74,7 +74,7 @@ export default {
   env: {
     nodeBaseUrl: process.env.NODE_BASE_URL || 'http://44.231.128.98',
     midgardBaseUrl: process.env.MIDGARD_BASE_URL || 'http://44.231.128.98',
-    pollingFrequency: process.env.POLLING_FREQUENCY || 10000,
+    pollingFrequency: process.env.POLLING_FREQUENCY || 5000,
   },
   /*
   ** Nuxt.js modules
