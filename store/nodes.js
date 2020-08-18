@@ -86,9 +86,9 @@ export const getters = {
       percentage = blocksSince / state.oldValidatorRate;
     }
     const time = blocksRemaining * secondsPerBlock;
-    const retiring = false; // getters.isAsgardVaultRetiring(state);
-    // const standby = getters.standbyNodesByBond(state);
-    const noEligible = true; // standby.toChurnIn.length === 0;
+    const retiring = getters.isAsgardVaultRetiring(state);
+    const standby = getters.standbyNodesByBond(state);
+    const noEligible = standby.toChurnIn.length === 0;
     return {
       secondsRemaining: time,
       updatedAt: new Date(),
