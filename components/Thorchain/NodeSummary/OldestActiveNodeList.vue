@@ -1,5 +1,5 @@
 <template>
-  <div class="active-nodes-container">
+  <div class="active-nodes-container node-summary-node-list">
     <table class="section__table node-summary-table">
       <thead>
         <tr>
@@ -94,6 +94,9 @@
         </tr>
       </tbody>
     </table>
+    <div class="node-summary-amount-shown">
+      showing {{ showAmount }} / {{ activeCount }}
+    </div>
   </div>
 </template>
 
@@ -121,6 +124,15 @@ export default {
   },
   computed: {
     activeNodesSegmentedForChurn() {
+      return this.matchNodesToQuota.nodes;
+    },
+    showAmount() {
+      return this.matchNodesToQuota.count;
+    },
+    activeCount() {
+      return this.$store.getters['nodes/totalActiveCount'];
+    },
+    matchNodesToQuota() {
       const allNodes = this.$store.getters['nodes/activeNodesSegmentedForChurn'];
       const keys = [
         'forcedToLeave',
@@ -141,7 +153,7 @@ export default {
         result[keys[i]] = targetNodes.slice(0, amountToGet);
         quota -= amountToGet;
       }
-      return result;
+      return { nodes: result, count: this.showMax - quota };
     },
     currentDate() {
       return new Date();
