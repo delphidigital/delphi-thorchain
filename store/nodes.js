@@ -73,15 +73,15 @@ export const getters = {
   isAsgardVaultRetiring(state) {
     return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
   },
-  progressToNextChurnPoint(state, rootState) {
+  progressToNextChurnPoint(state, g, rootState) {
     let blocksRemaining;
     let percentage;
     if (getters.activeRequestedToLeaveCount(state)) {
-      const blocksSince = rootState.lastThorchainBlock % state.rotatePerBlockHeight;
+      const blocksSince = rootState.networkHealth.lastThorchainBlock % state.rotatePerBlockHeight;
       blocksRemaining = state.rotatePerBlockHeight - blocksSince;
       percentage = blocksSince / state.rotatePerBlockHeight;
     } else {
-      const blocksSince = rootState.lastThorchainBlock % state.oldValidatorRate;
+      const blocksSince = rootState.networkHealth.lastThorchainBlock % state.oldValidatorRate;
       blocksRemaining = state.oldValidatorRate - blocksSince;
       percentage = blocksSince / state.oldValidatorRate;
     }
@@ -91,6 +91,7 @@ export const getters = {
     const noEligible = standby.toChurnIn.length === 0;
     return {
       secondsRemaining: time,
+      updatedAt: new Date(),
       blocksRemaining,
       percentage: retiring || noEligible ? 0 : percentage,
       paused: retiring || noEligible,

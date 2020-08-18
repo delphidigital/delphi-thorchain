@@ -20,43 +20,58 @@
             :stroke-width="n === currentBreakpoint ? 3 : 1"
           />
         </svg>
-        <p class="countdown__gauge__text">
+        <p v-if="progressToNextChurnPoint.paused" class="countdown__gauge__text">
           <span class="countdown__gauge__time">
-            {{ formatTime(timeRemaining) }}
+            <img src="/pause.svg"></img>
           </span>
+          <span class="text__label">
+            churning is paused
+          </span>
+        </p>
+        <p v-else class="countdown__gauge__text">
+          <time class="countdown__gauge__time">
+            {{ formatTime(timeRemaining) }}
+          </time>
           <span class="text__label">
             time remaining
           </span>
         </p>
+
       </div>
 
       <div class="next-churn-height">
         <span class="next-churn-height__value">
-          15,825
+          {{ nextChurnHeight }} 
         </span>
         <span class="text__label">
-          Next churn height
+          Next churn height *
         </span>
       </div>
 
       <p class="rotates-legend text__label">
-        *Rotates every 240 blocks or 15 minutes
+      *Rotates every {{ rotatePerBlockHeight }} blocks or {{ rotatePerMinutes }} minutes
       </p>
     </div>
   </div>
 </template>
 
 <script>
-const seconds = 1000;
-const minutes = 60 * seconds;
 
 export default {
   data() {
     return {
-      timeRemaining: 1 * minutes,
+      // TODO(Fede): Maybe this belongs to a store so we have global access
+      now: new Date(),
     };
   },
   computed: {
+    timeRemaining() {
+      if (this.progressToNextChurnPoint.paused) {
+        return 0;
+      }
+      const diff = Math.floor((this.now - this.progressToNextChurnPoint.updatedAt) / 1000);
+      return this.progressToNextChurnPoint.secondsRemaining - diff;
+    },
     minRadius() {
       return 105;
     },
@@ -70,16 +85,42 @@ export default {
       return 125;
     },
     maxTime() {
-      return 15 * minutes;
+      // NOTE(Fede): This would use
+      // (rotatePerBlockHeight || oldValidatorRate) * secondsPerBlock
+      if (this.progressToNextChurnPoint.paused) {
+        // NOTE(Fede): does not really matter for now
+        return 2;
+      }
+      return Math.round(
+        this.progressToNextChurnPoint.secondsRemaining / this.progressToNextChurnPoint.percentage);
     },
     breakPoints() {
       return 40;
     },
     currentBreakpoint() {
-      // TODO(Fede): Do this dynamically based on time remaining
       return (
         this.breakPoints - Math.ceil((this.timeRemaining / this.maxTime) * this.breakPoints)
       ) + 1;
+    },
+    progressToNextChurnPoint() {
+      return this.$store.getters['nodes/progressToNextChurnPoint'];
+    },
+    nextChurnHeight() {
+      if (this.progressToNextChurnPoint.retiring) {
+        return 'Vault is retiring';
+      } else if (this.progressToNextChurnPoint.noEligible) {
+        return 'No eligible nodes';
+      }
+      return this.$store.state.nodes.nextChurnHeight;
+    },
+    rotatePerBlockHeight() {
+      // TODO(Fede): Check if its fine to use this value
+      return this.$store.state.nodes.rotatePerBlockHeight;
+    },
+    rotatePerMinutes() {
+      // TODO(Fede): Check if its fine to use this value
+      const seconds = this.$store.state.nodes.secondsPerBlock;
+      return Math.round((seconds * this.rotatePerBlockHeight) / 60);
     },
   },
   mounted() {
@@ -96,19 +137,16 @@ export default {
     breakPointColor(bp) {
       return bp < this.currentBreakpoint ? '#fff' : '#16CEB9';
     },
-    formatTime(milliseconds) {
-      const minsRemaining = Math.floor(milliseconds / minutes);
-      const secondsRemaining = milliseconds % minutes;
+    formatTime(seconds) {
+      const minsRemaining = Math.floor(seconds / 60);
+      const secondsRemaining = seconds % 60;
 
-      return `${minsRemaining}m : ${secondsRemaining / 1000}s`;
+      return `${minsRemaining}m : ${secondsRemaining}s`;
     },
     tick() {
       setInterval(() => {
-        this.timeRemaining -= 1 * seconds;
-        if (this.timeRemaining < 0) {
-          this.timeRemaining = this.maxTime;
-        }
-      }, 1 * seconds);
+        this.now = new Date();
+      }, 1000);
     },
   },
 };
