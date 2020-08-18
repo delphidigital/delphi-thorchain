@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>pause</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="elements-for-network-dashboard" transform="translate(-838.000000, -366.000000)" fill="#DCE3FF" fill-rule="nonzero">
+            <g id="Group-5" transform="translate(571.000000, 209.000000)">
+                <g id="Indicator" transform="translate(158.000000, 87.000000)">
+                    <g id="pause" transform="translate(109.000000, 70.000000)">
+                        <path d="M6.42857143,20 L2.14285714,20 C0.959821429,20 0,19.0401786 0,17.8571429 L0,2.14285714 C0,0.959821429 0.959821429,0 2.14285714,0 L6.42857143,0 C7.61160714,0 8.57142857,0.959821429 8.57142857,2.14285714 L8.57142857,17.8571429 C8.57142857,19.0401786 7.61160714,20 6.42857143,20 Z M20,17.8571429 L20,2.14285714 C20,0.959821429 19.0401786,0 17.8571429,0 L13.5714286,0 C12.3883929,0 11.4285714,0.959821429 11.4285714,2.14285714 L11.4285714,17.8571429 C11.4285714,19.0401786 12.3883929,20 13.5714286,20 L17.8571429,20 C19.0401786,20 20,19.0401786 20,17.8571429 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

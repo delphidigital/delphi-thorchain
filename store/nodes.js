@@ -91,6 +91,7 @@ export const getters = {
     const noEligible = standby.toChurnIn.length === 0;
     return {
       secondsRemaining: time,
+      updatedAt: new Date(),
       blocksRemaining,
       percentage: retiring || noEligible ? 0 : percentage,
       paused: retiring || noEligible,
