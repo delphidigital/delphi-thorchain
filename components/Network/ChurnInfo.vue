@@ -21,20 +21,20 @@
           />
         </svg>
 
-        <p v-if="progressToNextChurnPoint.noEligible" class="countdown__gauge__text">
-          <span class="countdown__gauge__time">
-            <img src="/pause.svg"></img>
-          </span>
-          <span class="text__label">
-            churning is paused
-          </span>
-        </p>
-        <p v-else-if="progressToNextChurnPoint.retiring" class="countdown__gauge__text">
+        <p v-if="progressToNextChurnPoint.retiring" class="countdown__gauge__text">
           <span class="countdown__gauge__time">
             <img src="/rings.svg"></img>
           </span>
           <span class="text__label">
             churning in progress
+          </span>
+        </p>
+        <p v-else-if="progressToNextChurnPoint.noEligible" class="countdown__gauge__text">
+          <span class="countdown__gauge__time">
+            <img src="/pause.svg"></img>
+          </span>
+          <span class="text__label">
+            churning is paused
           </span>
         </p>
         <p v-else class="countdown__gauge__text">
