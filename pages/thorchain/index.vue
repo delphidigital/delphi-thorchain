@@ -32,11 +32,11 @@
 </template>
 
 <script>
-import fetchCommon from '../lib/fetchCommon.mjs';
-import Footer from '../components/Common/Footer.vue';
-import PoolDepthSummary from '../components/Thorchain/PoolDepthSummary.vue';
-import PercentageRuneLocked from '../components/Thorchain/PercentageRuneLocked.vue';
-import NodeSummary from '../components/Thorchain/NodeSummary.vue';
+import fetchCommon from '../../lib/fetchCommon.mjs';
+import Footer from '../../components/Common/Footer.vue';
+import PoolDepthSummary from '../../components/Thorchain/PoolDepthSummary.vue';
+import PercentageRuneLocked from '../../components/Thorchain/PercentageRuneLocked.vue';
+import NodeSummary from '../../components/Thorchain/NodeSummary.vue';
 
 export default {
   // load data here

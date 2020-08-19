@@ -18,7 +18,7 @@
             <nuxt-link
               class="header__link"
               :class="{'header__link--active': currentPage === '/network'}"
-              to="/network"
+              to="/thorchain/network"
             >
               Network & Nodes
             </nuxt-link>
