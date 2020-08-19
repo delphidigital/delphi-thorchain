@@ -20,12 +20,21 @@
             :stroke-width="n === currentBreakpoint ? 3 : 1"
           />
         </svg>
-        <p v-if="progressToNextChurnPoint.paused" class="countdown__gauge__text">
+
+        <p v-if="progressToNextChurnPoint.noEligible" class="countdown__gauge__text">
           <span class="countdown__gauge__time">
             <img src="/pause.svg"></img>
           </span>
           <span class="text__label">
             churning is paused
+          </span>
+        </p>
+        <p v-else-if="progressToNextChurnPoint.retiring" class="countdown__gauge__text">
+          <span class="countdown__gauge__time">
+            <img src="/rings.svg"></img>
+          </span>
+          <span class="text__label">
+            churning in progress
           </span>
         </p>
         <p v-else class="countdown__gauge__text">
@@ -36,19 +45,19 @@
             time remaining
           </span>
         </p>
-
       </div>
+
 
       <div class="next-churn-height">
         <span class="next-churn-height__value">
           {{ nextChurnHeight }} 
         </span>
         <span class="text__label">
-          Next churn height *
+          Next churn height{{ progressToNextChurnPoint.paused ? ': unknown' : ' *' }}
         </span>
       </div>
 
-      <p class="rotates-legend text__label">
+      <p v-if="!progressToNextChurnPoint.paused" class="rotates-legend text__label">
       *Rotates every {{ rotatePerBlockHeight }} blocks or {{ rotatePerMinutes }} minutes
       </p>
     </div>
@@ -114,11 +123,9 @@ export default {
       return this.$store.state.nodes.nextChurnHeight;
     },
     rotatePerBlockHeight() {
-      // TODO(Fede): Check if its fine to use this value
       return this.$store.state.nodes.rotatePerBlockHeight;
     },
     rotatePerMinutes() {
-      // TODO(Fede): Check if its fine to use this value
       const seconds = this.$store.state.nodes.secondsPerBlock;
       return Math.round((seconds * this.rotatePerBlockHeight) / 60);
     },
