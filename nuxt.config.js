@@ -109,5 +109,8 @@ export default {
     extend(config, ctx) {
     },
   },
-  serverMiddleware: ['~/api'],
+  serverMiddleware: [
+    '~/api',
+    '~/serverMiddleware/redirects.js',
+  ],
 };
