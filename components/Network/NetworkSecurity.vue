@@ -228,11 +228,11 @@ export default {
   display: none;
   position: absolute;
   top: -80px;
-  right: calc(50% - 110px);
+  right: calc(50% - 125px);
   background-color: $color-bg-popup;
   font-size: 12px;
   border-radius: 4px;
-  width: 220px;
+  width: 250px;
 }
 
 .security-bar-tooltip:before {

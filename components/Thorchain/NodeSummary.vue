@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="pure-u-1 node-summary-show-all">
-      <nuxt-link to="/network">
+      <nuxt-link to="/thorchain/network">
         <span>View All Nodes</span>
         <img src="/external_link.svg"></img>
       </nuxt-link>
