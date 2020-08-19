@@ -86,7 +86,7 @@ export default {
   },
   watch: {
     chartOptions(newData) {
-      // NOTE(Fede): It seems that on some conditions Highcharts fails so init some internal
+      // NOTE(Fede): It seems that on some conditions Highcharts fails to init some internal
       // stuff properly and fails if called at the wrong time. Just retrying the update
       // seems to work just fine. Not worth it to dig deeper into the issue for now.
       try {
