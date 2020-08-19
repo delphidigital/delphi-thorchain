@@ -10,7 +10,7 @@
         churning paused:
       </time> vault is retiring
     </p>
-    <p v-if="progressToNextChurnPoint.noEligible">
+    <p v-else-if="progressToNextChurnPoint.noEligible">
       <time>
         churning paused:
       </time> no standby nodes

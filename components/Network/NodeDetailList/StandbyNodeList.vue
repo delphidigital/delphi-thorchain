@@ -47,7 +47,7 @@
             />
             <tbody>
               <tr v-if="emptyList">
-                <td colspan="6" class="section__table__data--no-nodes">
+                <td colspan="8" class="section__table__data--no-nodes">
                   No eligible standby nodes
                 </td>
               </tr>
