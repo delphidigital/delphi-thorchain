@@ -6,15 +6,13 @@
       </h2>
     </div>
     <div class="section__body nodes-by-location">
-      <client-only>
-        <highmap :options="chartOptions" />
-        <div slot="placeholder" class="map__placeholder" />
-      </client-only>
+      <div id="location-map" ref="map" :options="chartOptions" class="map__placeholder" />
     </div>
   </div>
 </template>
 
 <script>
+import * as Highcharts from 'highcharts/highmaps';
 import worldMap from '@highcharts/map-collection/custom/world.geo.json';
 
 const countryColors = [
@@ -193,6 +191,28 @@ export default {
     nodesGeo() {
       return this.$store.getters['nodes/locations'];
     },
+  },
+  watch: {
+    chartOptions(newData) {
+      // NOTE(Fede): It seems that on some conditions Highcharts fails to init some internal
+      // stuff properly and fails if called at the wrong time. Just retrying the update
+      // seems to work just fine. Not worth it to dig deeper into the issue for now.
+      try {
+        this.map.update(newData);
+      } catch (e) {
+        this.map.update(newData);
+      }
+    },
+  },
+  mounted() {
+    if (typeof window === 'object') {
+      this.map = Highcharts.mapChart('location-map', this.chartOptions);
+    }
+  },
+  beforeDestroy() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
   },
 };
 </script>
