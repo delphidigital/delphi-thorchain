@@ -50,16 +50,18 @@ export default {
     await fetchCommon(this);
   },
   mounted() {
-    this.pollData();
+    this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+    this.$store.commit('nodeStarred/initializeStore');
   },
   beforeDestroy() {
-    clearInterval(this.polling);
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
   },
   methods: {
-    pollData() {
-      this.polling = setInterval(() => {
-        this.$fetch();
-      }, process.env.pollingFrequency);
+    async pollData() {
+      await this.$fetch();
+      this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
     },
   },
 };
