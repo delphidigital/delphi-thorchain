@@ -14,12 +14,16 @@
       </div>
     </div>
     <hr class="section__divider"></hr>
+
+    <IncentivePendulum />
+    <!--
     <div class="section__body--area-chart">
       <h3 class="section__subtitle">
         Percentage RUNE Locked Over Time
       </h3>
       <AreaChart :data="percentageRuneLockedOverTime" :format-label="e => `${e}%`" :max="100" />
     </div>
+    -->
   </div>
 </template>
 
