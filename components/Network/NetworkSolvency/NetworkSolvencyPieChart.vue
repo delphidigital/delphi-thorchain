@@ -16,6 +16,9 @@ export default {
     },
   },
   computed: {
+    styling() {
+      return 'font-family: Montserrat; font-size: 12px; font-weight: 600;';
+    },
     chartOptions() {
       return {
         chart: {
@@ -31,8 +34,8 @@ export default {
         },
         title: {
           text: `
-            <span style="font-family: Montserrat; font-size: 12px; font-weight: 600;">
-              ${this.solvency * 100}%
+            <span style="${this.styling}">
+              ${this.solvency * 100}<span style="${this.styling}">%</span>
             </span>
             `,
           style: { color: '#fff' },

@@ -1,4 +1,18 @@
-import { loadPools, loadPoolDetail, loadNodeAccounts, loadLastBlock, loadMimir, loadAsgardVaults, loadConstants, loadStats, loadNetwork } from '../lib/api.mjs';
+import {
+  loadPools,
+  loadPoolDetail,
+  loadNodeAccounts,
+  loadLastBlock,
+  loadMimir,
+  loadAsgardVaults,
+  loadPoolAddresses,
+  loadConstants,
+  loadStats,
+  loadNetwork,
+} from '../lib/api.mjs';
+
+import { loadBinanceChain } from '../lib/binanceApi.mjs';
+
 import axios from 'axios';
 import fs from 'fs';
 import redis from 'redis';
@@ -48,6 +62,12 @@ async function run() {
 
   const asgardVaults = await loadAsgardVaults({ axios });
   await set('asgardVaults', asgardVaults);
+
+  const poolAddresses = await loadPoolAddresses({ axios });
+  await set('poolAddresses', poolAddresses);
+
+  const binanceChain = await loadBinanceChain({ axios });
+  await set('binanceChain', binanceChain);
 
   const stats = await loadStats({ axios });
   await set('stats', stats);

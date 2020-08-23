@@ -8,18 +8,21 @@
 </template>
 
 <script>
+import numeral from 'numeral';
+import { assetFromString } from '@thorchain/asgardex-util';
+
 export default {
   computed: {
     chartData() {
-      const data = ['BNB', 'ETH', 'USDT', 'AVA', 'BTC'].map(curr => (
-        {
-          name: curr,
-          assetsStored: Math.random() * 3000000,
-          assetsRecorded: Math.random() * 3000000,
-        }
-      ));
-
-      return data;
+      const output = [];
+      this.$store.getters['vaultBalances/topList'].forEach((item) => {
+        output.push({
+          name: assetFromString(item.asset).ticker,
+          assetsStored: item.amount * item.price,
+          assetsRecorded: item.amountRecorded * item.price,
+        });
+      });
+      return output;
     },
     chartOptions() {
       return {
@@ -61,7 +64,7 @@ export default {
                 </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text" style="color: ${this.point.color};">
-                    ${this.point.series.name}: ${Math.round(this.point.y)}
+                    ${this.point.series.name}: ${numeral(Math.round(this.point.y)).format('0,0')}
                   </p>
                 </div>
               </div>

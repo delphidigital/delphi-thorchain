@@ -22,16 +22,15 @@
 export default {
   computed: {
     solvencies() {
-      // TODO(Fede) I don't know what these values mean yet so probably keys need to be
-      // changed to something more significant
       return [
         {
           name: 'RUNE',
-          solvency: 0.98,
+          solvency: Number(this.$store.getters['vaultBalances/solvency'].rune.toFixed(2)),
+
         },
         {
           name: 'Other',
-          solvency: 0.22,
+          solvency: Number(this.$store.getters['vaultBalances/solvency'].other.toFixed(2)),
         },
       ];
     },
