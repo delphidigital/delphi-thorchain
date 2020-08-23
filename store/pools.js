@@ -149,6 +149,7 @@ export const mutations = {
       poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
       poolROI: parseFloat(poolDetail.poolROI),
       poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
+      price: parseFloat(poolDetail.price),
       runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
       runeDepthRaw: poolDetail.runeDepth,
       sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
