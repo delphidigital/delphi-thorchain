@@ -78,8 +78,7 @@ export default {
       if (this.progressToNextChurnPoint.paused) {
         return 0;
       }
-      const diff = Math.floor((this.now - this.progressToNextChurnPoint.updatedAt) / 1000);
-      return this.progressToNextChurnPoint.secondsRemaining - diff;
+      return this.progressToNextChurnPoint.secondsRemaining;
     },
     minRadius() {
       return 105;
@@ -108,8 +107,9 @@ export default {
     },
     currentBreakpoint() {
       return (
-        this.breakPoints - Math.ceil((this.timeRemaining / this.maxTime) * this.breakPoints)
-      ) + 1;
+        // Math.round((this.timeRemaining / this.maxTime) * this.breakPoints)
+        Math.round((1 - this.progressToNextChurnPoint.percentage) * this.breakPoints)
+      );
     },
     progressToNextChurnPoint() {
       return this.$store.getters['nodes/progressToNextChurnPoint'];
@@ -130,9 +130,14 @@ export default {
       return Math.round((seconds * this.rotatePerBlockHeight) / 60);
     },
   },
+  /*
   mounted() {
+    // TODO(Fede): This does not sync well with what we are doing as there's probably a delay
+    // on getting the data, this should be done differently. We need to set the timestamp
+    // reliably for when the churn will happen and calc time remaining against that.
     this.tick();
   },
+  */
   methods: {
     breakPointAngle(bp, max) {
       const angle = (Math.PI * (bp - 1)) / (max - 1);
