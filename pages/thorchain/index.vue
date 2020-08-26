@@ -37,6 +37,7 @@ import Footer from '../../components/Common/Footer.vue';
 import PoolDepthSummary from '../../components/Thorchain/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../../components/Thorchain/PercentageRuneLocked.vue';
 import NodeSummary from '../../components/Thorchain/NodeSummary.vue';
+/* eslint-disable */
 
 export default {
   // load data here
@@ -49,6 +50,11 @@ export default {
   async fetch() {
     await fetchCommon(this);
   },
+  beforeMount() {
+    console.log('mounting...');
+    window.addEventListener('focus', this.pollDataActivate);
+    window.addEventListener('blur', this.pollDataDeactivate);
+  },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
     this.$store.commit('nodeStarred/initializeStore');
@@ -57,11 +63,24 @@ export default {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
+    window.removeEventListener('focus', this.pollDataActivate);
+    window.removeEventListener('blur', this.pollDataDeactivate);
   },
   methods: {
     async pollData() {
       await this.$fetch();
       this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+    },
+    pollDataActivate() {
+      if (!this.timeout) {
+        this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+      }
+    },
+    pollDataDeactivate() {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }
     },
   },
 };
