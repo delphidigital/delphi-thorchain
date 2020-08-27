@@ -36,8 +36,9 @@ async function getRunePrice() {
 }
 
 async function run() {
-  const poolIds = await loadPools({ axios });
-  await set('pools', poolIds);
+  const poolList = await loadPools({ axios });
+  await set('pools', poolList);
+  const poolIds = poolList.filter(i => i.status === 'Enabled').map(i => i.asset);
 
   for (const poolId of poolIds) {
     const poolDetail = await loadPoolDetail({ axios, poolId });
