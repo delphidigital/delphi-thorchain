@@ -8,7 +8,7 @@
     </p>
     <button
       class="toggle__button"
-      @click="$store.commit('thorchain/toggleBlockchain')"
+      @click="toggleBlockchain"
     >
       <div
         class="toggle__inside"
@@ -28,7 +28,14 @@
 export default {
   computed: {
     chaosnet() {
-      return this.$store.state.thorchain.currentBlockchain === 'chaosnet';
+      return this.$route.params.blockchain === 'chaosnet';
+    },
+  },
+  methods: {
+    toggleBlockchain() {
+      const blockchain = this.$route.params.blockchain === 'chaosnet' ? 'testnet' : 'chaosnet';
+      const name = this.$route.name;
+      this.$router.push({ name, params: { blockchain } });
     },
   },
 };

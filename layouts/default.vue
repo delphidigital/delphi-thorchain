@@ -10,15 +10,16 @@
           >
             <nuxt-link
               class="header__link"
-              :class="{'header__link--active': currentPage === '/thorchain'}"
-              to="/thorchain"
+              exact-active-class="header__link--active"
+              :to="{name: 'thorchain-blockchain', params: { blockchain: currentBlockchain }}"
             >
               Pool Overview
             </nuxt-link>
             <nuxt-link
               class="header__link"
-              :class="{'header__link--active': currentPage === '/thorchain/network'}"
-              to="/thorchain/network"
+              exact-active-class="header__link--active"
+              :to="{name: 'thorchain-blockchain-network',
+                    params: { blockchain: currentBlockchain }}"
             >
               Network & Nodes
             </nuxt-link>
@@ -51,8 +52,15 @@ export default {
     };
   },
   computed: {
-    currentPage() {
-      return this.$route.path;
+    currentPageName() {
+      return this.$route.name;
+    },
+    currentBlockchain() {
+      const param = this.$route.params.blockchain;
+      if (param === 'testnet' || param === 'chaosnet') {
+        return this.$route.params.blockchain;
+      }
+      return 'chaosnet';
     },
   },
 };

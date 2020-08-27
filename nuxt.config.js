@@ -110,6 +110,9 @@ export default {
     extend(config, ctx) {
     },
   },
+  router: {
+    linkActiveClass: 'link--active',
+  },
   serverMiddleware: [
     '~/api',
     '~/serverMiddleware/redirects.js',

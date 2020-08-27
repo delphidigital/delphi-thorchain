@@ -23,7 +23,7 @@
         class="slippage-calculator-toggle slippage-calculator-toggle--desktop"
         @click="$store.commit('modals/toggleSlippageCalculator')"
       >
-        <img src="calculator.svg"></img>
+        <img src="/calculator.svg"></img>
         <p>
           Slippage Calculator
         </p>
@@ -86,7 +86,7 @@
           class="slippage-calculator-toggle"
           @click="$store.commit('modals/toggleSlippageCalculator')"
         >
-          <img src="calculator.svg"></img>
+          <img src="/calculator.svg"></img>
           <p>
             Slippage Calculator
           </p>
