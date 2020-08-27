@@ -1,4 +1,3 @@
-
 export default {
   /*
   ** Nuxt rendering mode
@@ -72,9 +71,11 @@ export default {
     }],
   ],
   env: {
-    nodeBaseUrl: process.env.NODE_BASE_URL || 'http://44.231.128.98',
-    midgardBaseUrl: process.env.MIDGARD_BASE_URL || 'http://44.231.128.98',
     pollingFrequency: process.env.POLLING_FREQUENCY || 5000,
+    TESTNET_NODE_IP: process.env.TESTNET_NODE_IP,
+    CHAOSNET_NODE_IP: process.env.CHAOSNET_NODE_IP,
+    DATA_SOURCE: process.env.DATA_SOURCE || 'cache',
+    CACHE_URL: process.env.CACHE_URL || 'http://localhost:3021',
   },
   /*
   ** Nuxt.js modules

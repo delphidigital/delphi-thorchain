@@ -55,7 +55,7 @@ export default {
     ChurnInfo,
   },
   async fetch() {
-    await fetchCommon(this);
+    await fetchCommon(this, 'chaosnet');
   },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);

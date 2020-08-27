@@ -18,57 +18,57 @@ async function loadCached(id) {
 
 
 thorchain.all('/v1/pools', async (req, res) => {
-  const data = await loadCached(`${blockchain}::pools`);
+  const data = await loadCached(`${req.blockchain}::pools`);
   res.json(data);
 });
 
 thorchain.all('/v1/pools/detail', async (req, res) => {
-  const data = await loadCached(`${blockchain}::pools-${req.query.asset}`);
+  const data = await loadCached(`${req.blockchain}::pools-${req.query.asset}`);
   res.json(data);
 });
 
 thorchain.all('/v1/stats', async (req, res) => {
-  const data = await loadCached(`${blockchain}::stats`);
+  const data = await loadCached(`${req.blockchain}::stats`);
   res.json(data);
 });
 
 thorchain.all('/v1/network', async (req, res) => {
-  const data = await loadCached(`${blockchain}::network`);
+  const data = await loadCached(`${req.blockchain}::network`);
   res.json(data);
 });
 
 thorchain.all('/v1/thorchain/constants', async (req, res) => {
-  const data = await loadCached(`${blockchain}::constants`);
+  const data = await loadCached(`${req.blockchain}::constants`);
   res.json(data);
 });
 
 thorchain.all('/thorchain/nodeaccounts', async (req, res) => {
-  const data = await loadCached(`${blockchain}::nodeAccounts`);
+  const data = await loadCached(`${req.blockchain}::nodeAccounts`);
   res.json(data);
 });
 
 thorchain.all('/thorchain/mimir', async (req, res) => {
-  const data = await loadCached(`${blockchain}::mimir`);
+  const data = await loadCached(`${req.blockchain}::mimir`);
   res.json(data);
 });
 
 thorchain.all('/thorchain/pool_addresses', async (req, res) => {
-  const data = await loadCached(`${blockchain}::poolAddresses`);
+  const data = await loadCached(`${req.blockchain}::poolAddresses`);
   res.json(data);
 });
 
 thorchain.all('/thorchain/lastblock', async (req, res) => {
-  const data = await loadCached(`${blockchain}::lastBlock`);
+  const data = await loadCached(`${req.blockchain}::lastBlock`);
   res.json(data);
 });
 
 thorchain.all('/thorchain/vaults/asgard', async (req, res) => {
-  const data = await loadCached(`${blockchain}::asgardVaults`);
+  const data = await loadCached(`${req.blockchain}::asgardVaults`);
   res.json(data);
 });
 
-app.all('/int/marketdata', async (req, res) => {
-  const data = await loadCached('marketData');
+thorchain.all('/int/marketdata', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::marketData`);
   res.json(data);
 });
 
