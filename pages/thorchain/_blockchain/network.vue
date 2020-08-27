@@ -55,7 +55,7 @@ export default {
     ChurnInfo,
   },
   async fetch() {
-    await fetchCommon(this, this.$routes.params.blockchain);
+    await fetchCommon(this, this.$route.params.blockchain);
   },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
