@@ -20,7 +20,7 @@ brew services start redis
 $ yarn fetch
 
 # or do it manually
-$ nodeBaseUrl=DATA_SOURCE=api node scripts/saveApiResponses.mjs
+$ DATA_SOURCE=api node scripts/saveApiResponses.mjs
 ```
 
 ### Run the app
