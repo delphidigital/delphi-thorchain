@@ -15,10 +15,15 @@ export const getters = {
     return rootState.nodes.asgardVaults.slice().filter(vault => vault.status === 'active')[0];
   },
   coins(s, g, rootState) {
-    const priceByRUNE = coin =>
-      (assetFromString(coin.asset).ticker === 'RUNE' ? 1 : rootState.pools.pools[coin.asset].price);
+    const priceByRUNE = (coin) => {
+      if (assetFromString(coin.asset).ticker === 'RUNE') return 1;
+      if (!rootState.pools.pools[coin.asset]) return null;
+      return rootState.pools.pools[coin.asset].price;
+    };
     const output = [];
     g.activeVault.coins.forEach((coin) => {
+      const price = priceByRUNE(coin);
+      if (!price) return;
       output.push({
         asset: coin.asset,
         amount: Number(coin.amount) / formatValue,
