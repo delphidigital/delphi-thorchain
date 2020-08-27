@@ -63,21 +63,24 @@ export const getters = {
     return aggPoolGetter(state, { attr: 'poolVolume', min: true });
   },
   poolList(state) {
-    const pools = state.poolIds.map((poolId) => {
+    const allPools = [];
+    state.poolIds.forEach((poolId) => {
       const pool = state.pools[poolId];
-      return {
-        name: poolId,
-        runeDepth: pool.runeDepth,
-        slippageDepth: pool.runeDepth * 0.00504,
-        meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
-        medianFee: null,
-        volume: pool.poolVolume,
-        apy: pool.poolROI,
-        apyRealRewards: null,
-      };
+      if (pool) {
+        allPools.push({
+          name: poolId,
+          runeDepth: pool.runeDepth,
+          slippageDepth: pool.runeDepth * 0.00504,
+          meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
+          medianFee: null,
+          volume: pool.poolVolume,
+          apy: pool.poolROI,
+          apyRealRewards: null,
+        });
+      }
     });
     const descChar = state.sortDescending ? '-' : '';
-    const sortedPools = pools.sort(sortBy(`${descChar}${state.sortBy}`));
+    const sortedPools = allPools.sort(sortBy(`${descChar}${state.sortBy}`));
     return sortedPools;
   },
   poolVolumeAndDepth(state) {
@@ -90,15 +93,17 @@ export const getters = {
 
     state.poolIds.forEach((poolId) => {
       const pool = state.pools[poolId];
-      const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
-      const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
-      allPools.push({
-        normPoolDepth,
-        normPoolVolume,
-        poolVolume: pool.poolVolume,
-        poolDepth: pool.poolDepth,
-        poolId,
-      });
+      if (pool) {
+        const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
+        const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
+        allPools.push({
+          normPoolDepth,
+          normPoolVolume,
+          poolVolume: pool.poolVolume,
+          poolDepth: pool.poolDepth,
+          poolId,
+        });
+      }
     });
 
 
