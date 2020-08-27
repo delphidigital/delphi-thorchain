@@ -38,7 +38,7 @@ export const getters = {
   },
   solvency(s, g) {
     const rune = g.coins.filter(item => assetFromString(item.asset).ticker === 'RUNE')[0];
-    const other = g.coins.filter(item => !assetFromString(item.asset).ticker === 'RUNE');
+    const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
 
     return {
       rune: (rune.amount / rune.amountRecorded),

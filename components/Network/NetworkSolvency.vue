@@ -8,9 +8,7 @@
     <div class="section__body">
       <div class="solvency-body">
         <div class="overall-container">
-          <!--
           <NetworkSolvencyOverall />
-          -->
         </div>
         <div class="by-pool-container">
           <NetworkSolvencyByPool />
