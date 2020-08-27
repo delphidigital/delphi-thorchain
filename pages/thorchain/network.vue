@@ -43,14 +43,14 @@
 
 <script>
 import fetchCommon from '../../lib/fetchCommon.mjs';
-import NodesByLocation from '../../components/Network/NodesByLocation.vue';
+// import NodesByLocation from '../../components/Network/NodesByLocation.vue';
 import ChurnInfo from '../../components/Network/ChurnInfo.vue';
 import NodeDetailList from '../../components/Network/NodeDetailList.vue';
 
 export default {
   // load data here
   components: {
-    NodesByLocation,
+    // NodesByLocation,
     NodeDetailList,
     ChurnInfo,
   },

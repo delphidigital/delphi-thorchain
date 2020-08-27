@@ -5,11 +5,6 @@ import { assetFromString } from '@thorchain/asgardex-util';
 const nRankedCoins = 5;
 const formatValue = 10 ** 8;
 
-// TODO: When there are more chains than the BNB chain in the future
-// summarize all coins from each chain and filter with `RUNE-67C`
-const runeChainSymbol = 'BNB.RUNE-67C';
-const RUNE = `${assetFromString(runeChainSymbol).chain}.${assetFromString(runeChainSymbol).symbol}`;
-
 export const state = () => ({
   poolAddress: '',
   binanceBalances: [],
@@ -21,7 +16,7 @@ export const getters = {
   },
   coins(s, g, rootState) {
     const priceByRUNE = coin =>
-      (coin.asset === RUNE ? 1 : rootState.pools.pools[coin.asset].price);
+      (assetFromString(coin.asset).ticker === 'RUNE' ? 1 : rootState.pools.pools[coin.asset].price);
     const output = [];
     g.activeVault.coins.forEach((coin) => {
       output.push({
@@ -38,11 +33,12 @@ export const getters = {
     return output.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
   },
   topList(s, g) {
-    return g.coins.filter(item => !item.asset.includes(RUNE)).slice(0, nRankedCoins);
+    const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
+    return other.slice(0, nRankedCoins);
   },
   solvency(s, g) {
-    const rune = g.coins.filter(item => item.asset.includes(RUNE))[0];
-    const other = g.coins.filter(item => !item.asset.includes(RUNE));
+    const rune = g.coins.filter(item => assetFromString(item.asset).ticker === 'RUNE')[0];
+    const other = g.coins.filter(item => !assetFromString(item.asset).ticker === 'RUNE');
 
     return {
       rune: (rune.amount / rune.amountRecorded),

@@ -1,7 +1,7 @@
 <template>
   <div class="bar-chart-container">
     <client-only>
-      <highchart :options="chartOptions" />
+      <highchart v-if="chartData.length > 0" :options="chartOptions" />
       <div slot="placeholder" class="chart-placeholder" />
     </client-only>
   </div>
