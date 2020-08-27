@@ -29,8 +29,9 @@ async function updateBlockchainData(blockchain) {
   const set = (key, data) => redisSet(`thorchain::${blockchain}::${key}`, data);
   const api = ThorchainApi(blockchain);
 
-  const poolIds = await api.loadPools({ axios });
-  await set('pools', poolIds);
+  const poolList = await api.loadPools({ axios });
+  await set('pools', poolList);
+  const poolIds = poolList.filter(i => i.status === 'Enabled').map(i => i.asset);
 
   for (const poolId of poolIds) {
     const poolDetail = await api.loadPoolDetail({ axios, poolId });

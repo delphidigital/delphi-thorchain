@@ -22,11 +22,14 @@ export const getters = {
       output.push({
         asset: coin.asset,
         amount: Number(coin.amount) / formatValue,
+        // TODO(Fede): I hacked the free amount there because there's some weird transition
+        // between blockchains where this value is non existant and the whole thing fails
+        // will check how transitions are debounced so this is smoother
         amountRecorded:
           Number(
-            s.binanceBalances.filter(i =>
+            (s.binanceBalances.filter(i =>
               i.symbol.includes(assetFromString(coin.asset).symbol),
-            )[0].free),
+            )[0] || { free: 100000000 }).free),
         price: Number(priceByRUNE(coin)),
       });
     });

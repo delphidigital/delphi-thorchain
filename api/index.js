@@ -16,8 +16,7 @@ async function loadCached(id) {
   return JSON.parse(rawdata);
 }
 
-
-thorchain.all('/v1/pools', async (req, res) => {
+thorchain.all('/thorchain/pools', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::pools`);
   res.json(data);
 });
