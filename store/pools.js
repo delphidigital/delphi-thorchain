@@ -1,7 +1,6 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 // import { subMonths } from 'date-fns';
 import sortBy from 'sort-by';
-import { loadPools } from '../lib/api.mjs';
 
 const runeDivider = 10 ** 8;
 
@@ -162,14 +161,5 @@ export const mutations = {
   },
   toggleSortDescending(state) {
     state.sortDescending = !state.sortDescending;
-  },
-};
-
-export const actions = {
-  async loadPools({ commit }) {
-    const poolIds = await loadPools({
-      axios: this.$axios,
-    });
-    commit('setPoolIds', poolIds);
   },
 };

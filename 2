@@ -81,7 +81,7 @@ async function updateBlockchainData(blockchain) {
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
 
   const end = new Date()
-  console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`)
+  console.log(`[${blockchain}]: ended data fetch in ${(end - start) * 1000} seconds...`)
 }
 
 async function run() {
@@ -94,6 +94,7 @@ async function run() {
     return;
   }
 
+  console.log('Updating chaosnet data...');
   await Promise.all([
     updateBlockchainData('testnet'),
     updateBlockchainData('chaosnet'),
@@ -101,10 +102,11 @@ async function run() {
 
   const end = new Date();
   console.log(`Finished updating in ${(end - now) / 1000} seconds`);
-
+  /*
   setTimeout(() => {
     run();
   }, 1000);
+  */
 }
 
 run();
