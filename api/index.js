@@ -13,7 +13,7 @@ async function loadCached(id) {
   return JSON.parse(rawdata);
 }
 
-app.all('/v1/pools', async (req, res) => {
+app.all('/thorchain/pools', async (req, res) => {
   const data = await loadCached('pools');
   res.json(data);
 });
