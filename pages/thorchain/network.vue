@@ -4,7 +4,7 @@
       <h1 class="page__title">
         Network
       </h1>
-      <NetworkToggle />
+      <BlockchainToggle />
     </div>
 
     <div class="pure-g">
@@ -55,7 +55,7 @@ export default {
     ChurnInfo,
   },
   async fetch() {
-    await fetchCommon(this, 'chaosnet');
+    await fetchCommon(this, this.$store.state.thorchain.currentBlockchain);
   },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);

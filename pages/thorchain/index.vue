@@ -4,7 +4,7 @@
       <h1 class="page__title">
         Dashboard
       </h1>
-      <NetworkToggle />
+      <BlockchainToggle />
     </div>
 
     <div class="pure-g">
@@ -47,7 +47,7 @@ export default {
     NodeSummary,
   },
   async fetch() {
-    await fetchCommon(this, 'chaosnet');
+    await fetchCommon(this, this.$store.state.thorchain.currentBlockchain);
   },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
