@@ -108,7 +108,7 @@ export const getters = {
     const belowMinBondNodes = [];
     const otherNodes = [];
     const nodes = Object.values(state.nodes).filter(node => (
-      node.status === 'standby' || node.status === 'ready'
+      node.status === 'standby'
     )).sort((a, b) => {
       const aBlock = parseInt(a.bond, 10);
       const bBlock = parseInt(b.bond, 10);
