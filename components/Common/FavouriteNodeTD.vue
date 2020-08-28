@@ -34,6 +34,7 @@ export default {
 <style scoped lang="scss">
   .favourite-node-toggle {
     cursor: pointer;
+    margin-right: 8px;
   }
   .favourite-node {
     border-left: 2px solid transparent;
