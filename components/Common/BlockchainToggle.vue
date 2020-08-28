@@ -2,42 +2,41 @@
   <div class="toggle__container">
     <p
       class="toggle__value"
-      :class="{ 'toggle__value--active': !mainnet }"
+      :class="{ 'toggle__value--active': !chaosnet }"
     >
       Testnet
     </p>
     <button
       class="toggle__button"
-      :class="{ 'toggle__button--disabled' : !mainnetEnabled }"
-      :disabled="!mainnetEnabled"
-      @click="mainnet = mainnetEnabled ? !mainnet : mainnet"
+      @click="toggleBlockchain"
     >
       <div
         class="toggle__inside"
-        :class="{ 'toggle__inside--right': mainnet }"
+        :class="{ 'toggle__inside--right': chaosnet }"
       />
     </button>
     <p
       class="toggle__value"
-      :class="{ 'toggle__value--active': mainnet }"
+      :class="{ 'toggle__value--active': chaosnet }"
     >
-      Mainnet
+      Chaosnet
     </p>
   </div>
 </template>
 
 <script>
 export default {
-  props: {
-    mainnetEnabled: {
-      type: Boolean,
-      default: false,
+  computed: {
+    chaosnet() {
+      return this.$route.params.blockchain === 'chaosnet';
     },
   },
-  data() {
-    return {
-      mainnet: false,
-    };
+  methods: {
+    toggleBlockchain() {
+      const blockchain = this.$route.params.blockchain === 'chaosnet' ? 'testnet' : 'chaosnet';
+      const name = this.$route.name;
+      this.$router.push({ name, params: { blockchain } });
+    },
   },
 };
 </script>
@@ -70,28 +69,6 @@ export default {
     margin: 0 12px;
     padding: 0;
     cursor: pointer;
-  }
-
-  .toggle__button--disabled {
-    cursor: not-allowed;
-
-    &:hover, &:focus {
-      &::before {
-        content: "Mainnet is currently under development";
-        top: 30px;
-        left: -100px;
-        position: absolute;
-        color: rgba(255, 255, 255, 0.6);
-        background-color: $color-bg-popup;
-        font-family: Montserrat, sans-serif;
-        font-weight: 300;
-        font-size: 12px;
-        display: block;
-        width: 200px;
-        padding: 15px;
-        border-radius: 4px;
-      }
-    }
   }
 
   .toggle__inside {
