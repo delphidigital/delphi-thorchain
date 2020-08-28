@@ -7,27 +7,32 @@
       <BlockchainToggle />
     </div>
 
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 section--split-left">
-        <PoolDepthSummary />
+    <div v-if="!this.$store.state.thorchain.loading">
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-md-1-2 section--split-left">
+          <PoolDepthSummary />
+        </div>
+        <div class="pure-u-1 pure-u-md-1-2 section--split-right">
+          <PercentageRuneLocked />
+        </div>
       </div>
-      <div class="pure-u-1 pure-u-md-1-2 section--split-right">
-        <PercentageRuneLocked />
+
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
+          <PoolList />
+        </div>
+        <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right">
+          <StandbyPools />
+        </div>
       </div>
+
+      <NodeSummary />
+
+      <Footer />
     </div>
-
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
-        <PoolList />
-      </div>
-      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right">
-        <StandbyPools />
-      </div>
+    <div v-else>
+      <Loading />
     </div>
-
-    <NodeSummary />
-
-    <Footer />
   </div>
 </template>
 
@@ -48,6 +53,7 @@ export default {
   },
   async fetch() {
     await fetchCommon(this, this.$route.params.blockchain);
+    this.$store.commit('thorchain/loadingOff');
   },
   beforeMount() {
     window.addEventListener('focus', this.pollDataActivate);
