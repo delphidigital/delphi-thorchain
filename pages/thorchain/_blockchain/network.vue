@@ -57,6 +57,10 @@ export default {
   async fetch() {
     await fetchCommon(this, this.$route.params.blockchain);
   },
+  beforeMount() {
+    window.addEventListener('focus', this.pollDataActivate);
+    window.addEventListener('blur', this.pollDataDeactivate);
+  },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
     this.$store.commit('nodeStarred/initializeStore');
@@ -65,11 +69,24 @@ export default {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
+    window.removeEventListener('focus', this.pollDataActivate);
+    window.removeEventListener('blur', this.pollDataDeactivate);
   },
   methods: {
     async pollData() {
       await this.$fetch();
       this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+    },
+    pollDataActivate() {
+      if (!this.timeout) {
+        this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+      }
+    },
+    pollDataDeactivate() {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = null;
+      }
     },
   },
 };
