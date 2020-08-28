@@ -7,66 +7,87 @@ const client = redis.createClient();
 const getAsync = promisify(client.get).bind(client);
 
 const app = express();
+const thorchain = express.Router();
+const chaosnet = express.Router();
+const testnet = express.Router();
 
 async function loadCached(id) {
-  const rawdata = await getAsync(id);
+  const rawdata = await getAsync(`thorchain::${id}`);
   return JSON.parse(rawdata);
 }
 
-app.all('/v1/pools', async (req, res) => {
-  const data = await loadCached('pools');
+thorchain.all('/thorchain/pools', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::pools`);
   res.json(data);
 });
 
-app.all('/v1/pools/detail', async (req, res) => {
-  const data = await loadCached(`pools-${req.query.asset}`);
+thorchain.all('/v1/pools/detail', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::pools-${req.query.asset}`);
   res.json(data);
 });
 
-app.all('/v1/stats', async (req, res) => {
-  const data = await loadCached('stats');
+thorchain.all('/v1/stats', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::stats`);
   res.json(data);
 });
 
-app.all('/v1/network', async (req, res) => {
-  const data = await loadCached('network');
+thorchain.all('/v1/network', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::network`);
   res.json(data);
 });
 
-app.all('/v1/thorchain/constants', async (req, res) => {
-  const data = await loadCached('constants');
+thorchain.all('/v1/thorchain/constants', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::constants`);
   res.json(data);
 });
 
-app.all('/thorchain/nodeaccounts', async (req, res) => {
-  const data = await loadCached('nodeAccounts');
+thorchain.all('/thorchain/nodeaccounts', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::nodeAccounts`);
   res.json(data);
 });
 
-app.all('/thorchain/mimir', async (req, res) => {
-  const data = await loadCached('mimir');
+thorchain.all('/thorchain/mimir', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::mimir`);
   res.json(data);
 });
 
-app.all('/thorchain/pool_addresses', async (req, res) => {
-  const data = await loadCached('poolAddresses');
+thorchain.all('/thorchain/pool_addresses', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::poolAddresses`);
   res.json(data);
 });
 
-app.all('/thorchain/lastblock', async (req, res) => {
-  const data = await loadCached('lastBlock');
+thorchain.all('/thorchain/lastblock', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::lastBlock`);
   res.json(data);
 });
 
-app.all('/thorchain/vaults/asgard', async (req, res) => {
-  const data = await loadCached('asgardVaults');
+thorchain.all('/thorchain/vaults/asgard', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::asgardVaults`);
   res.json(data);
 });
 
-app.all('/int/marketdata', async (req, res) => {
-  const data = await loadCached('marketData');
+thorchain.all('/int/marketdata', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::marketData`);
   res.json(data);
 });
+
+app.use('/chaosnet', chaosnet);
+app.use('/testnet', testnet);
+
+chaosnet.use((req, res, next) => {
+  req.blockchain = 'chaosnet';
+  next();
+});
+chaosnet.use('/', thorchain);
+
+testnet.use((req, res, next) => {
+  req.blockchain = 'testnet';
+  next();
+});
+testnet.use('/', thorchain);
+
+app.use('/chaosnet', chaosnet);
+app.use('/testnet', testnet);
 
 module.exports = {
   handler: app,

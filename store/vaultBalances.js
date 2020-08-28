@@ -5,11 +5,6 @@ import { assetFromString } from '@thorchain/asgardex-util';
 const nRankedCoins = 5;
 const formatValue = 10 ** 8;
 
-// TODO: When there are more chains than the BNB chain in the future
-// summarize all coins from each chain and filter with `RUNE-67C`
-const runeChainSymbol = 'BNB.RUNE-67C';
-const RUNE = `${assetFromString(runeChainSymbol).chain}.${assetFromString(runeChainSymbol).symbol}`;
-
 export const state = () => ({
   poolAddress: '',
   binanceBalances: [],
@@ -20,29 +15,38 @@ export const getters = {
     return rootState.nodes.asgardVaults.slice().filter(vault => vault.status === 'active')[0];
   },
   coins(s, g, rootState) {
-    const priceByRUNE = coin =>
-      (coin.asset === RUNE ? 1 : rootState.pools.pools[coin.asset].price);
+    const priceByRUNE = (coin) => {
+      if (assetFromString(coin.asset).ticker === 'RUNE') return 1;
+      if (!rootState.pools.pools[coin.asset]) return null;
+      return rootState.pools.pools[coin.asset].price;
+    };
     const output = [];
     g.activeVault.coins.forEach((coin) => {
+      const price = priceByRUNE(coin);
+      if (!price) return;
       output.push({
         asset: coin.asset,
         amount: Number(coin.amount) / formatValue,
+        // TODO(Fede): I hacked the free amount there because there's some weird transition
+        // between blockchains where this value is non existant and the whole thing fails
+        // will check how transitions are debounced so this is smoother
         amountRecorded:
           Number(
-            s.binanceBalances.filter(i =>
+            (s.binanceBalances.filter(i =>
               i.symbol.includes(assetFromString(coin.asset).symbol),
-            )[0].free),
+            )[0] || { free: 100000000 }).free),
         price: Number(priceByRUNE(coin)),
       });
     });
     return output.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
   },
   topList(s, g) {
-    return g.coins.filter(item => !item.asset.includes(RUNE)).slice(0, nRankedCoins);
+    const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
+    return other.slice(0, nRankedCoins);
   },
   solvency(s, g) {
-    const rune = g.coins.filter(item => item.asset.includes(RUNE))[0];
-    const other = g.coins.filter(item => !item.asset.includes(RUNE));
+    const rune = g.coins.filter(item => assetFromString(item.asset).ticker === 'RUNE')[0];
+    const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
 
     return {
       rune: (rune.amount / rune.amountRecorded),

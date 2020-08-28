@@ -23,7 +23,10 @@
       </div>
     </div>
     <div class="pure-u-1 node-summary-show-all">
-      <nuxt-link to="/thorchain/network">
+      <nuxt-link
+        :to="{name: 'thorchain-blockchain-network',
+              params: { blockchain: currentBlockchain }}"
+      >
         <span>View All Nodes</span>
         <img src="/external_link.svg"></img>
       </nuxt-link>
@@ -47,6 +50,13 @@ export default {
   computed: {
     activeCount() {
       return this.$store.getters['nodes/totalActiveCount'];
+    },
+    currentBlockchain() {
+      const param = this.$route.params.blockchain;
+      if (param === 'testnet' || param === 'chaosnet') {
+        return this.$route.params.blockchain;
+      }
+      return 'chaosnet';
     },
     standbyCount() {
       return this.$store.getters['nodes/totalStandbyCount'];

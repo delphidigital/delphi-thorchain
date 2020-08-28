@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
-    "fetch": "nodeBaseUrl=http://167.233.5.36:1317 midgardBaseUrl=http://167.233.5.36:8080 node scripts/saveApiResponses.mjs",
-    "develop": "NODE_BASE_URL=http://localhost:3021 MIDGARD_BASE_URL=http://localhost:3021 PORT=3021 yarn dev",
+    "fetch": "DATA_SOURCE=api node scripts/saveApiResponses.mjs",
+    "develop": "DATA_SOURCE=cache PORT=3021 yarn dev",
     "build": "nuxt build",
     "start": "nuxt start",
     "export": "nuxt export",

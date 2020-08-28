@@ -2,56 +2,62 @@
   <div class="page__container">
     <div class="page__header">
       <h1 class="page__title">
-        Dashboard
+        Network
       </h1>
-      <NetworkToggle />
+      <BlockchainToggle />
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-left">
+        <NodeStatus />
+      </div>
+
+      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-right network-top-right">
+        <div class="pure-g">
+          <div class="pure-u-1 pure-u-md-5-8 section--split-left">
+            <NetworkSecurity />
+          </div>
+          <div class="pure-u-1 pure-u-md-3-8 section--split-right">
+            <NetworkLatestBlocks />
+          </div>
+        </div>
+
+        <NetworkSolvency />
+      </div>
     </div>
 
     <div class="pure-g">
       <div class="pure-u-1 pure-u-md-1-2 section--split-left">
-        <PoolDepthSummary />
+        <ChurnInfo />
       </div>
       <div class="pure-u-1 pure-u-md-1-2 section--split-right">
-        <PercentageRuneLocked />
+        <NodesByLocation />
       </div>
     </div>
 
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
-        <PoolList />
-      </div>
-      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right">
-        <StandbyPools />
-      </div>
-    </div>
-
-    <NodeSummary />
+    <NodeDetailList />
 
     <Footer />
   </div>
 </template>
 
 <script>
-import fetchCommon from '../../lib/fetchCommon.mjs';
-import Footer from '../../components/Common/Footer.vue';
-import PoolDepthSummary from '../../components/Thorchain/PoolDepthSummary.vue';
-import PercentageRuneLocked from '../../components/Thorchain/PercentageRuneLocked.vue';
-import NodeSummary from '../../components/Thorchain/NodeSummary.vue';
-/* eslint-disable */
+import fetchCommon from '../../../lib/fetchCommon.mjs';
+import NodesByLocation from '../../../components/Network/NodesByLocation.vue';
+import ChurnInfo from '../../../components/Network/ChurnInfo.vue';
+import NodeDetailList from '../../../components/Network/NodeDetailList.vue';
 
 export default {
   // load data here
   components: {
-    Footer,
-    PercentageRuneLocked,
-    PoolDepthSummary,
-    NodeSummary,
+    NodesByLocation,
+    NodeDetailList,
+    ChurnInfo,
   },
   async fetch() {
-    await fetchCommon(this);
+    await fetchCommon(this, this.$route.params.blockchain);
   },
   beforeMount() {
-    console.log('mounting...');
     window.addEventListener('focus', this.pollDataActivate);
     window.addEventListener('blur', this.pollDataDeactivate);
   },
@@ -86,3 +92,9 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+.network-top-right {
+  display: flex;
+  flex-direction: column;
+}
+</style>

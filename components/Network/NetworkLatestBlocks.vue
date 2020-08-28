@@ -67,7 +67,7 @@ export default {
 }
 
 .latest__value {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 5px;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="bar-chart-container">
     <client-only>
-      <highchart :options="chartOptions" />
+      <highchart v-if="chartData.length > 0" :options="chartOptions" />
       <div slot="placeholder" class="chart-placeholder" />
     </client-only>
   </div>
@@ -18,8 +18,9 @@ export default {
       this.$store.getters['vaultBalances/topList'].forEach((item) => {
         output.push({
           name: assetFromString(item.asset).ticker,
-          assetsStored: item.amount * item.price,
-          assetsRecorded: item.amountRecorded * item.price,
+          assetsStored: item.amount,
+          assetsRecorded: item.amountRecorded,
+          price: item.price,
         });
       });
       return output;
@@ -64,7 +65,7 @@ export default {
                 </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text" style="color: ${this.point.color};">
-                    ${this.point.series.name}: ${numeral(Math.round(this.point.y)).format('0,0')}
+                    ${this.point.series.name}: ${numeral(this.point.raw).format(this.point.raw < 100 ? '0,0.00' : '0,0')}
                   </p>
                 </div>
               </div>
@@ -81,12 +82,18 @@ export default {
         series: [
           {
             name: 'Stored',
-            data: this.chartData.map(e => e.assetsStored),
+            data: this.chartData.map(e => ({
+              y: e.assetsStored * e.price,
+              raw: e.assetsStored,
+            })),
             color: '#16CEB9',
           },
           {
             name: 'Recorded',
-            data: this.chartData.map(e => e.assetsRecorded),
+            data: this.chartData.map(e => ({
+              y: e.assetsRecorded * e.price,
+              raw: e.assetsRecorded,
+            })),
             color: '#F7517F',
           },
         ],
