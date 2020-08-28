@@ -7,37 +7,42 @@
       <BlockchainToggle />
     </div>
 
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-left">
-        <NodeStatus />
-      </div>
-
-      <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-right network-top-right">
-        <div class="pure-g">
-          <div class="pure-u-1 pure-u-md-5-8 section--split-left">
-            <NetworkSecurity />
-          </div>
-          <div class="pure-u-1 pure-u-md-3-8 section--split-right">
-            <NetworkLatestBlocks />
-          </div>
+    <div v-if="!this.$store.state.thorchain.loading">
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-left">
+          <NodeStatus />
         </div>
 
-        <NetworkSolvency />
+        <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-right network-top-right">
+          <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-5-8 section--split-left">
+              <NetworkSecurity />
+            </div>
+            <div class="pure-u-1 pure-u-md-3-8 section--split-right">
+              <NetworkLatestBlocks />
+            </div>
+          </div>
+
+          <NetworkSolvency />
+        </div>
       </div>
+
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-md-1-2 section--split-left">
+          <ChurnInfo />
+        </div>
+        <div class="pure-u-1 pure-u-md-1-2 section--split-right">
+          <NodesByLocation />
+        </div>
+      </div>
+
+      <NodeDetailList />
+
+      <Footer />
     </div>
-
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 section--split-left">
-        <ChurnInfo />
-      </div>
-      <div class="pure-u-1 pure-u-md-1-2 section--split-right">
-        <NodesByLocation />
-      </div>
+    <div v-else>
+      <Loading />
     </div>
-
-    <NodeDetailList />
-
-    <Footer />
   </div>
 </template>
 
@@ -56,6 +61,7 @@ export default {
   },
   async fetch() {
     await fetchCommon(this, this.$route.params.blockchain);
+    this.$store.commit('thorchain/loadingOff');
   },
   mounted() {
     this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);

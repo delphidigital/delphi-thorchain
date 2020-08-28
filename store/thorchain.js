@@ -1,10 +1,14 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
+/* eslint-disable import/prefer-default-export */
 export const state = () => ({
-  currentBlockchain: 'testnet',
+  loading: false,
 });
 
 export const mutations = {
-  toggleBlockchain(state) {
-    state.currentBlockchain = state.currentBlockchain === 'chaosnet' ? 'testnet' : 'chaosnet';
+  loadingOn(state) {
+    state.loading = true;
+  },
+  loadingOff(state) {
+    state.loading = false;
   },
 };
