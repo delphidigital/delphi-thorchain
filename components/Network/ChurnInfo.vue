@@ -69,16 +69,21 @@
 export default {
   data() {
     return {
-      // TODO(Fede): Maybe this belongs to a store so we have global access
       now: new Date(),
+      targetTime: this.$store.getters['nodes/progressToNextChurnPoint'].targetTime,
+      initialPercentage: this.$store.getters['nodes/progressToNextChurnPoint'].percentage,
+      initialSecondsRemaining: this.$store.getters['nodes/progressToNextChurnPoint'].secondsRemaining,
     };
   },
   computed: {
     timeRemaining() {
-      if (this.progressToNextChurnPoint.paused) {
+      if (this.progressToNextChurnPoint.paused || !this.targetTime) {
         return 0;
       }
-      return this.progressToNextChurnPoint.secondsRemaining;
+      return Math.round((this.targetTime - this.now) / 1000);
+    },
+    maxTimeRemaining() {
+      return this.initialSecondsRemaining / (1 - this.initialPercentage);
     },
     minRadius() {
       return 105;
@@ -92,23 +97,16 @@ export default {
     gaugeHeight() {
       return 125;
     },
-    maxTime() {
-      // NOTE(Fede): This would use
-      // (rotatePerBlockHeight || oldValidatorRate) * secondsPerBlock
-      if (this.progressToNextChurnPoint.paused) {
-        // NOTE(Fede): does not really matter for now
-        return 2;
-      }
-      return Math.round(
-        this.progressToNextChurnPoint.secondsRemaining / this.progressToNextChurnPoint.percentage);
-    },
     breakPoints() {
       return 40;
     },
     currentBreakpoint() {
+      if (this.progressToNextChurnPoint.paused) {
+        return 0;
+      }
+
       return (
-        // Math.round((this.timeRemaining / this.maxTime) * this.breakPoints)
-        Math.round((1 - this.progressToNextChurnPoint.percentage) * this.breakPoints)
+        Math.floor(((1 - (this.timeRemaining / this.maxTimeRemaining)) * this.breakPoints))
       );
     },
     progressToNextChurnPoint() {
@@ -130,24 +128,37 @@ export default {
       return Math.round((seconds * this.rotatePerBlockHeight) / 60);
     },
   },
-  /*
+  watch: {
+    progressToNextChurnPoint(newP, oldP) {
+      const paused = newP.paused;
+      if (!paused) {
+        // Only set time if target block changes as targetTime does not have second precision
+        // and always setting it will result in jumps
+        const shouldSetNewTime = !this.targetTime || (newP.targetBlock !== oldP.targetBlock);
+        if (shouldSetNewTime) {
+          console.log(newP);
+          this.targetTime = newP.targetTime;
+          this.initialPercentage = newP.percentage;
+          this.initialSecondsRemaining = newP.secondsRemaining;
+        }
+      }
+    },
+  },
   mounted() {
-    // TODO(Fede): This does not sync well with what we are doing as there's probably a delay
-    // on getting the data, this should be done differently. We need to set the timestamp
-    // reliably for when the churn will happen and calc time remaining against that.
     this.tick();
   },
-  */
   methods: {
     breakPointAngle(bp, max) {
-      const angle = (Math.PI * (bp - 1)) / (max - 1);
+      // 0 is PI
+      // max is 0
+      const angle = Math.PI * (1 - (((bp - 1)) / (max - 1)));
       return angle;
     },
     breakPointMaxRadius(bp) {
       return bp === this.currentBreakpoint ? (this.maxRadius + 3) : this.maxRadius;
     },
     breakPointColor(bp) {
-      return bp < this.currentBreakpoint ? '#fff' : '#16CEB9';
+      return bp > this.currentBreakpoint ? '#fff' : '#16CEB9';
     },
     formatTime(seconds) {
       const minsRemaining = Math.floor(seconds / 60);
