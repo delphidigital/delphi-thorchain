@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="pie-chart__container">
-      <client-only>
-        <highchart :options="chartOptions" />
-        <div slot="placeholder" class="pie-chart__placeholder" />
-      </client-only>
+      <AppHighchart
+        :chart-options="chartOptions"
+        :placeholder-height="220"
+      />
     </div>
     <dl class="legend">
       <dt class="legend__tag">
@@ -27,12 +27,16 @@
 import Highcharts from 'highcharts';
 import variablePie from 'highcharts/modules/variable-pie';
 import numeral from 'numeral';
+import AppHighchart from '../Common/AppHighchart.vue';
 
 if (typeof Highcharts === 'object') {
   variablePie(Highcharts);
 }
 
 export default {
+  components: {
+    AppHighchart,
+  },
   computed: {
     data() {
       const pvds = this.$store.getters['pools/poolVolumeAndDepth'];

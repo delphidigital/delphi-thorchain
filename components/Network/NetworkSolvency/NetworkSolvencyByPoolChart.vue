@@ -1,8 +1,11 @@
 <template>
   <div class="bar-chart-container">
     <client-only>
-      <highchart v-if="chartData.length > 0" :options="chartOptions" />
-      <div slot="placeholder" class="chart-placeholder" />
+      <AppHighchart
+        v-if="chartData.length > 0"
+        :chart-options="chartOptions"
+        :placeholder-height="200"
+      />
     </client-only>
   </div>
 </template>
@@ -10,8 +13,12 @@
 <script>
 import numeral from 'numeral';
 import { assetFromString } from '@thorchain/asgardex-util';
+import AppHighchart from '../../Common/AppHighchart.vue';
 
 export default {
+  components: {
+    AppHighchart,
+  },
   computed: {
     chartData() {
       const output = [];
@@ -109,8 +116,4 @@ export default {
   height: 200px;
 }
 
-.chart-placeholder {
-  height: 200px;
-  width: 100%;
-}
 </style>

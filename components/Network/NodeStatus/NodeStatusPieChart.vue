@@ -1,13 +1,14 @@
 <template>
-  <div>
-    <div ref="chart" class="chart-placeholder" />
-  </div>
+  <AppHighchart :chart-options="chartOptions" :placeholder-height="250" />
 </template>
 
 <script>
-import Highcharts from 'highcharts';
+import AppHighchart from '../../Common/AppHighchart.vue';
 
 export default {
+  components: {
+    AppHighchart,
+  },
   props: {
     chartData: {
       type: Array,
@@ -83,28 +84,6 @@ export default {
         }],
       };
     },
-  },
-  watch: {
-    chartOptions(newData) {
-      // NOTE(Fede): It seems that on some conditions Highcharts fails to init some internal
-      // stuff properly and fails if called at the wrong time. Just retrying the update
-      // seems to work just fine. Not worth it to dig deeper into the issue for now.
-      try {
-        this.chart.update(newData);
-      } catch (e) {
-        this.chart.update(newData);
-      }
-    },
-  },
-  mounted() {
-    if (typeof window === 'object') {
-      this.chart = Highcharts.chart(this.$refs.chart, this.chartOptions);
-    }
-  },
-  beforeDestroy() {
-    if (this.chart) {
-      this.chart.destroy();
-    }
   },
 };
 </script>

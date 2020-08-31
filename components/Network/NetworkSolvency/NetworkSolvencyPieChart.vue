@@ -2,7 +2,6 @@
   <div style="height: 70px;">
     <client-only>
       <highchart :options="chartOptions" />
-      <div slot="placeholder" class="pie-chart__placeholder" />
     </client-only>
   </div>
 </template>

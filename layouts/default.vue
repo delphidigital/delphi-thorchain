@@ -503,16 +503,6 @@ $padding-section-table: 25px;
   padding-top: 30px;
 }
 
-.pie-chart__placeholder {
-  height: 220px;
-  width: 100%;
-}
-
-.area-chart__placeholder {
-  height: 130px;
-  width: 100%;
-}
-
 /*
  * TOOLTIP FOR CHARTS
  */
