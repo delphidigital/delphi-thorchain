@@ -1,4 +1,5 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
+import { addSeconds } from 'date-fns';
 
 const secondsPerBlock = 5;
 const runeDivider = 10 ** 8;
@@ -85,7 +86,11 @@ export const getters = {
       blocksRemaining = state.oldValidatorRate - blocksSince;
       percentage = blocksSince / state.oldValidatorRate;
     }
+
     const time = blocksRemaining * secondsPerBlock;
+    const targetTime = addSeconds(new Date(), time);
+    const targetBlock = rootState.networkHealth.lastThorchainBlock + blocksRemaining;
+
     const retiring = getters.isAsgardVaultRetiring(state);
     const standby = getters.standbyNodesByBond(state);
     const noEligible = standby.toChurnIn.length === 0;
@@ -97,6 +102,8 @@ export const getters = {
       paused: retiring || noEligible,
       retiring,
       noEligible,
+      targetTime,
+      targetBlock,
     };
   },
   locations(state) {

@@ -1,14 +1,19 @@
 <template>
   <div class="pie-chart__container">
-    <client-only>
-      <highchart :options="chartOptions" />
-      <div slot="placeholder" class="pie-chart__placeholder" />
-    </client-only>
+    <AppHighchart
+      :chart-options="chartOptions"
+      :placeholder-height="220"
+    />
   </div>
 </template>
 
 <script>
+import AppHighchart from '../Common/AppHighchart.vue';
+
 export default {
+  components: {
+    AppHighchart,
+  },
   props: {
     chartData: {
       // NOTE(Fede) [{name: string, y: number, color: string}, ...]
