@@ -29,7 +29,7 @@ export default {
 
 <style lang="scss" scoped>
 .table {
-  margin-top: 55px;
+  margin-top: 45px;
   font-weight: 400;
   font-size: 14px;
   width: 100%;
