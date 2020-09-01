@@ -136,7 +136,6 @@ export default {
         // and always setting it will result in jumps
         const shouldSetNewTime = !this.targetTime || (newP.targetBlock !== oldP.targetBlock);
         if (shouldSetNewTime) {
-          console.log(newP);
           this.targetTime = newP.targetTime;
           this.initialPercentage = newP.percentage;
           this.initialSecondsRemaining = newP.secondsRemaining;
@@ -161,10 +160,27 @@ export default {
       return bp > this.currentBreakpoint ? '#fff' : '#16CEB9';
     },
     formatTime(seconds) {
-      const minsRemaining = Math.floor(seconds / 60);
-      const secondsRemaining = seconds % 60;
+      let secondsRemaining = seconds;
 
-      return `${minsRemaining}m : ${secondsRemaining}s`;
+      const secondsPerDay = 60 * 60 * 24;
+      const daysRemaining = Math.floor(secondsRemaining / secondsPerDay);
+      secondsRemaining %= secondsPerDay;
+
+      const hoursRemaining = Math.floor(secondsRemaining / 3600);
+      secondsRemaining %= 3600;
+
+      const minutesRemaining = Math.floor(secondsRemaining / 60);
+      secondsRemaining %= 60;
+
+      if (daysRemaining > 0) {
+        return `${daysRemaining}d : ${hoursRemaining}h : ${minutesRemaining}m : ${secondsRemaining}s`;
+      } else if (hoursRemaining > 0) {
+        return `${hoursRemaining}h : ${minutesRemaining}m : ${secondsRemaining}s`;
+      } else if (minutesRemaining > 0) {
+        return `${minutesRemaining}m : ${secondsRemaining}s`;
+      }
+
+      return `${secondsRemaining}s`;
     },
     tick() {
       setInterval(() => {
@@ -202,7 +218,7 @@ export default {
 }
 
 .countdown__gauge__time {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 600;
 }
 
