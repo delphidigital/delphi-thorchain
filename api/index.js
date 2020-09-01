@@ -71,6 +71,11 @@ thorchain.all('/int/marketdata', async (req, res) => {
   res.json(data);
 });
 
+thorchain.all('/int/runevaultBalance', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::runevaultBalance`);
+  res.json(data);
+});
+
 app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 

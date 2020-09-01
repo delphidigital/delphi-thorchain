@@ -78,11 +78,13 @@ export const getters = {
     let blocksRemaining;
     let percentage;
     if (getters.activeRequestedToLeaveCount(state)) {
-      const blocksSince = rootState.networkHealth.lastThorchainBlock % state.rotatePerBlockHeight;
+      const blocksSince = 10000;
+      // rootState.networkHealth.lastThorchainBlock % state.rotatePerBlockHeight;
       blocksRemaining = state.rotatePerBlockHeight - blocksSince;
       percentage = blocksSince / state.rotatePerBlockHeight;
     } else {
-      const blocksSince = rootState.networkHealth.lastThorchainBlock % state.oldValidatorRate;
+      const blocksSince = 10000;
+      // rootState.networkHealth.lastThorchainBlock % state.oldValidatorRate;
       blocksRemaining = state.oldValidatorRate - blocksSince;
       percentage = blocksSince / state.oldValidatorRate;
     }

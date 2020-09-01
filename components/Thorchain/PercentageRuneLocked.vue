@@ -30,45 +30,32 @@
 <script>
 export default {
   computed: {
-    poolPercentage() {
-      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
-      const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
-      return totalRuneDepth / circulatingSupply;
-    },
-    activeNodePercentage() {
-      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
-      const totalActiveBonded = this.$store.getters['nodes/totalActiveBonded'];
-      return totalActiveBonded / circulatingSupply;
-    },
-    standbyNodePercentage() {
-      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
-      const totalStandbyBonded = this.$store.getters['nodes/totalStandbyBonded'];
-      return totalStandbyBonded / circulatingSupply;
-    },
-    unlockedPercentage() {
-      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
-      const totalStandbyBonded = this.$store.getters['nodes/totalStandbyBonded'];
-      const totalActiveBonded = this.$store.getters['nodes/totalActiveBonded'];
-      const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
-      const totalLocked = totalRuneDepth + totalActiveBonded + totalStandbyBonded;
-      const totalUnlocked = circulatingSupply - totalLocked;
-      return totalUnlocked / circulatingSupply;
-    },
     runeLockedData() {
-      return [
+      const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
+      const totalActiveBonded = this.$store.getters['nodes/totalActiveBonded'];
+      const totalStandbyBonded = this.$store.getters['nodes/totalStandbyBonded'];
+      const totalRunevault = this.$store.state.vaultBalances.runevaultBalance;
+      const totalLocked =
+        totalRuneDepth + totalActiveBonded + totalStandbyBonded + totalRunevault;
+      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
+      const unlocked = circulatingSupply - totalLocked;
+
+      const percentage = value => value / circulatingSupply;
+
+      const result = [
         {
           name: 'Pools',
-          percentage: this.poolPercentage,
+          percentage: percentage(totalRuneDepth),
           color: '#2D99FF',
         },
         {
           name: 'Active nodes',
-          percentage: this.activeNodePercentage,
+          percentage: percentage(totalActiveBonded),
           color: '#16CEB9',
         },
         {
           name: 'Standby nodes',
-          percentage: this.standbyNodePercentage,
+          percentage: percentage(totalStandbyBonded),
           color: '#5E2BBC',
         },
         {
@@ -76,12 +63,24 @@ export default {
           percentage: 0,
           color: '#6648FF',
         },
+      ];
+
+      if (this.$route.params.blockchain === 'chaosnet') {
+        result.push({
+          name: 'RuneVault',
+          percentage: percentage(totalRunevault),
+          color: '#f7516f',
+        });
+      }
+
+      result.push(
         {
           name: 'Unlocked',
-          percentage: this.unlockedPercentage,
+          percentage: percentage(unlocked),
           color: '#3F4357',
         },
-      ];
+      );
+      return result;
     },
     pieChartData() {
       return this.runeLockedData.map(rld => ({
