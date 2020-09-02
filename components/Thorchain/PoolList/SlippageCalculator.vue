@@ -192,6 +192,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-y: scroll;
 }
 
 .slippage-calculator__overlay {
@@ -209,6 +210,7 @@ export default {
   max-width: 555px;
   border-radius: 8px;
   z-index: 60;
+  overflow-y: scroll;
 }
 
 .slippage-calculator__title {
