@@ -140,25 +140,28 @@ export const getters = {
   },
 };
 
+const parsePoolDetail = poolDetail => ({
+  asset: poolDetail.asset,
+  assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
+  assetDepthRaw: poolDetail.assetDepth,
+  poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
+  poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
+  poolROI: parseFloat(poolDetail.poolROI),
+  poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
+  price: parseFloat(poolDetail.price),
+  runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
+  runeDepthRaw: poolDetail.runeDepth,
+  sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
+  sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
+});
+
 export const mutations = {
-  setPoolIds(state, poolIds) {
-    state.poolIds = poolIds;
-  },
-  setPoolDetail(state, { poolId, poolDetail }) {
-    state.pools[poolId] = {
-      asset: poolDetail.asset,
-      assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
-      assetDepthRaw: poolDetail.assetDepth,
-      poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
-      poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
-      poolROI: parseFloat(poolDetail.poolROI),
-      poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
-      price: parseFloat(poolDetail.price),
-      runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
-      runeDepthRaw: poolDetail.runeDepth,
-      sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
-      sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
-    };
+  setPools(state, pools) {
+    state.poolIds = pools.map(p => p.poolId);
+    pools.forEach((p) => {
+      const detail = parsePoolDetail(p.poolDetail);
+      state.pools[p.poolId] = detail;
+    });
   },
   setSortBy(state, fieldName) {
     state.sortBy = fieldName;
