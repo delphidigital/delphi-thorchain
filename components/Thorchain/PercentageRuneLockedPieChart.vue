@@ -23,6 +23,9 @@ export default {
   },
   computed: {
     chartOptions() {
+      const unlocked = this.chartData.find(cd => cd.name === 'Unlocked');
+      const unlockedPercentage = unlocked ? unlocked.y : 0;
+      const lockedPercentage = Math.round(100 - unlockedPercentage);
       return {
         chart: {
           type: 'pie',
@@ -33,7 +36,7 @@ export default {
         title: {
           text: `
             <span style="font-family: Montserrat; font-size: 24px; font-weight: 600; line-height: 32px;">
-              ${this.lockedDisplayPercentage}%
+              ${lockedPercentage}%
             </span>
             `,
           style: { color: '#fff' },
@@ -89,17 +92,6 @@ export default {
           data: this.chartData,
         }],
       };
-    },
-    lockedDisplayPercentage() {
-      const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
-      const totalStandbyBonded = this.$store.getters['nodes/totalStandbyBonded'];
-      const totalActiveBonded = this.$store.getters['nodes/totalActiveBonded'];
-      const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
-      const totalLocked = totalRuneDepth + totalActiveBonded + totalStandbyBonded;
-
-      // NOTE(Fede): using this in the view so rounding for now, also probably better to remove
-      // duplication later.
-      return Math.round((totalLocked / circulatingSupply) * 100);
     },
   },
 };
