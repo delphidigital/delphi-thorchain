@@ -72,6 +72,7 @@ async function updateBlockchainData(blockchain) {
   const constants = await api.loadConstants({ axios });
   await set('constants', constants);
 
+  // Market data
   const totalStaked = parseInt(stats.totalStaked);
   const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
     total + parseInt(node.bond)
@@ -83,6 +84,14 @@ async function updateBlockchainData(blockchain) {
 
   const priceUsd = runeMarketData.current_price.usd;
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
+
+  // Runevault balance
+  let runevaultBalance = 0;
+  if( blockchain === 'chaosnet') {
+    const frozenBalancesReq = await axios.get("http://frozenbalances.herokuapp.com/stats/RUNE-B1A");
+    runevaultBalance = frozenBalancesReq.data.totalFrozen;
+  }
+  await set('runevaultBalance', runevaultBalance);
 
   const end = new Date()
   console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`)

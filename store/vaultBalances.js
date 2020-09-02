@@ -8,6 +8,7 @@ const formatValue = 10 ** 8;
 export const state = () => ({
   poolAddress: '',
   binanceBalances: [],
+  runevaultBalance: 0,
 });
 
 export const getters = {
@@ -71,5 +72,8 @@ export const mutations = {
       state.binanceBalances =
         { balances: [{ name: null, assetsStored: null, assetsRecorded: null }] };
     }
+  },
+  setRunevaultBalance(state, runevaultBalance) {
+    state.runevaultBalance = parseInt(runevaultBalance, 10);
   },
 };
