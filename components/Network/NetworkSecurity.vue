@@ -134,7 +134,7 @@ export default {
       return this.runeBonded + this.runeStaked;
     },
     runeBonded() {
-      return this.$store.state.networkHealth.totalReserve;
+      return this.$store.getters['nodes/totalActiveBonded'];
     },
     runeBondedPercentage() {
       return this.runeBonded / this.totalRune;
