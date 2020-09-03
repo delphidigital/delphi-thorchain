@@ -14,6 +14,7 @@
           <table class="section__table network-nodes-table">
             <thead>
               <tr>
+                <th class="section__table__head section__table__head--star" />
                 <th class="section__table__head section__table__head--address">
                   Address
                 </th>
@@ -26,6 +27,7 @@
                 <th class="section__table__head section__table__head--status">
                   Status
                 </th>
+                <th class="section__table__head section__table__head--status-desc" />
                 <th class="section__table__head section__table__head--bond">
                   Bond
                 </th>
