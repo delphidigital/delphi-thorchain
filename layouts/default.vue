@@ -265,6 +265,17 @@ a {
 }
 
 /*
+* CUSTOM ELEMENTS
+*/
+.app__marker--long {
+  display: inline-block;
+  width: 12px;
+  height: 4px;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
+/*
 * PAGE
 */
 
