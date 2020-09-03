@@ -27,15 +27,14 @@ export const getters = {
       if (!price) return;
       output.push({
         asset: coin.asset,
-        amount: Number(coin.amount) / formatValue,
-        // TODO(Fede): I hacked the free amount there because there's some weird transition
-        // between blockchains where this value is non existant and the whole thing fails
-        // will check how transitions are debounced so this is smoother
-        amountRecorded:
+        // Amount according to Thorchain records
+        amountRecorded: Number(coin.amount) / formatValue,
+        // Amount stored in the vault addresses
+        amountStored:
           Number(
             (s.binanceBalances.filter(i =>
               i.symbol.includes(assetFromString(coin.asset).symbol),
-            )[0] || { free: 100000000 }).free),
+            )[0] || { free: 0 }).free),
         price: Number(priceByRUNE(coin)),
       });
     });
@@ -48,11 +47,15 @@ export const getters = {
   solvency(s, g) {
     const rune = g.coins.filter(item => assetFromString(item.asset).ticker === 'RUNE')[0];
     const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
+    const otherAmountRecorded = other.reduce((total, item) => total + item.amountRecorded, 0);
+    const otherAmountStored = other.reduce((total, item) => total + item.amountStored, 0);
+
+    const runeSolvency = rune.amountRecorded === 0 ? 1 : rune.amountStored / rune.amountRecorded;
+    const otherSolvency = otherAmountRecorded === 0 ? 1 : otherAmountStored / otherAmountRecorded;
 
     return {
-      rune: (rune.amount / rune.amountRecorded),
-      other: other.reduce((total, item) => total + item.amount, 0) /
-        other.reduce((total, item) => total + item.amountRecorded, 0),
+      rune: runeSolvency,
+      other: otherSolvency,
     };
   },
 };
