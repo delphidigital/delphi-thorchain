@@ -25,7 +25,7 @@ export default {
       this.$store.getters['vaultBalances/topList'].forEach((item) => {
         output.push({
           name: assetFromString(item.asset).ticker,
-          assetsStored: item.amount,
+          assetsStored: item.amountStored,
           assetsRecorded: item.amountRecorded,
           price: item.price,
         });
