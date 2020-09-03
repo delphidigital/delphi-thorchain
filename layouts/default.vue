@@ -555,6 +555,7 @@ $padding-section-table: 25px;
   boarder-collapse: collapse;
   td {
     padding-bottom: 6px;
+    border-top: none;
   }
 }
 
