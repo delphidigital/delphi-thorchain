@@ -71,7 +71,6 @@ export default {
     return {
       now: new Date(),
       targetTime: this.$store.getters['nodes/progressToNextChurnPoint'].targetTime,
-      initialPercentage: this.$store.getters['nodes/progressToNextChurnPoint'].percentage,
       initialSecondsRemaining: this.$store.getters['nodes/progressToNextChurnPoint'].secondsRemaining,
     };
   },
@@ -82,8 +81,8 @@ export default {
       }
       return Math.round((this.targetTime - this.now) / 1000);
     },
-    maxTimeRemaining() {
-      return this.initialSecondsRemaining / (1 - this.initialPercentage);
+    maxTime() {
+      return this.progressToNextChurnPoint.maxTime;
     },
     minRadius() {
       return 105;
@@ -106,7 +105,7 @@ export default {
       }
 
       return (
-        Math.floor(((1 - (this.timeRemaining / this.maxTimeRemaining)) * this.breakPoints))
+        Math.floor(((1 - (this.timeRemaining / this.maxTime)) * this.breakPoints))
       );
     },
     progressToNextChurnPoint() {
@@ -118,7 +117,7 @@ export default {
       } else if (this.progressToNextChurnPoint.noEligible) {
         return 'No eligible nodes';
       }
-      return this.$store.state.nodes.nextChurnHeight;
+      return this.progressToNextChurnPoint.targetBlock;
     },
     rotatePerBlockHeight() {
       return this.$store.state.nodes.rotatePerBlockHeight;
@@ -137,7 +136,6 @@ export default {
         const shouldSetNewTime = !this.targetTime || (newP.targetBlock !== oldP.targetBlock);
         if (shouldSetNewTime) {
           this.targetTime = newP.targetTime;
-          this.initialPercentage = newP.percentage;
           this.initialSecondsRemaining = newP.secondsRemaining;
         }
       }
