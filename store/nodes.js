@@ -8,7 +8,6 @@ export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
   nodes: {},
   nodeIds: [],
-  oldValidatorRate: null,
   nextChurnHeight: 0,
   rotatePerBlockHeight: null,
   asgardVaults: [],
@@ -75,17 +74,11 @@ export const getters = {
     return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
   },
   progressToNextChurnPoint(state, g, rootState) {
-    let blocksRemaining;
-    let percentage;
-    if (getters.activeRequestedToLeaveCount(state)) {
-      const blocksSince = rootState.networkHealth.lastThorchainBlock % state.rotatePerBlockHeight;
-      blocksRemaining = state.rotatePerBlockHeight - blocksSince;
-      percentage = blocksSince / state.rotatePerBlockHeight;
-    } else {
-      const blocksSince = rootState.networkHealth.lastThorchainBlock % state.oldValidatorRate;
-      blocksRemaining = state.oldValidatorRate - blocksSince;
-      percentage = blocksSince / state.oldValidatorRate;
-    }
+    // if (getters.activeRequestedToLeaveCount(state)) {
+    // }
+    const blocksSince = rootState.networkHealth.lastThorchainBlock % state.rotatePerBlockHeight;
+    const blocksRemaining = state.rotatePerBlockHeight - blocksSince;
+    const percentage = blocksSince / state.rotatePerBlockHeight;
 
     const time = blocksRemaining * secondsPerBlock;
     const targetTime = addSeconds(new Date(), time);
@@ -180,9 +173,6 @@ export const getters = {
 };
 
 export const mutations = {
-  setOldValidatorRate(state, oldValidatorRate) {
-    state.oldValidatorRate = oldValidatorRate;
-  },
   setMinBond(state, minBond) {
     state.minBond = parseInt(minBond, 10) / runeDivider;
   },
