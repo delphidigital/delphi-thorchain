@@ -2,6 +2,7 @@
   <div>
     <ActiveNodeList />
     <StandbyNodeList />
+    <ReadyNodeList />
     <DisabledNodeList />
   </div>
 </template>
@@ -9,12 +10,14 @@
 <script>
 import ActiveNodeList from './NodeDetailList/ActiveNodeList.vue';
 import StandbyNodeList from './NodeDetailList/StandbyNodeList.vue';
+import ReadyNodeList from './NodeDetailList/ReadyNodeList.vue';
 import DisabledNodeList from './NodeDetailList/DisabledNodeList.vue';
 
 export default {
   components: {
     ActiveNodeList,
     StandbyNodeList,
+    ReadyNodeList,
     DisabledNodeList,
   },
 };
