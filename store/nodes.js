@@ -150,35 +150,6 @@ export const getters = {
       otherValidatorsByBond: otherNodes.slice(toChurnIn),
     };
   },
-  readyNodesByBond(state) {
-    const belowMinBondNodes = [];
-    const otherNodes = [];
-    const nodes = Object.values(state.nodes).filter(node => (
-      node.status === 'ready'
-    )).sort((a, b) => {
-      const aBlock = parseInt(a.bond, 10);
-      const bBlock = parseInt(b.bond, 10);
-      if (aBlock < bBlock) return 1;
-      if (aBlock > bBlock) return -1;
-      return 0;
-    });
-    nodes.forEach((node) => {
-      if (node.bond < state.minBond) {
-        belowMinBondNodes.push(node);
-        return;
-      }
-
-      if (node['requested_to_leave']) {
-        return;
-      }
-
-      otherNodes.push(node);
-    });
-    return {
-      belowMinBond: belowMinBondNodes,
-      otherValidatorsByBond: otherNodes,
-    };
-  },
   expectedNodeCountToChurnOut(state) {
     const {
       forcedToLeave,
