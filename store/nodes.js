@@ -8,7 +8,6 @@ export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
   nodes: {},
   nodeIds: [],
-  nextChurnHeight: 0,
   rotatePerBlockHeight: null,
   asgardVaults: [],
   minBond: null,
@@ -74,29 +73,46 @@ export const getters = {
     return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
   },
   progressToNextChurnPoint(state, g, rootState) {
-    // if (getters.activeRequestedToLeaveCount(state)) {
-    // }
-    const blocksSince = rootState.networkHealth.lastThorchainBlock % state.rotatePerBlockHeight;
-    const blocksRemaining = state.rotatePerBlockHeight - blocksSince;
-    const percentage = blocksSince / state.rotatePerBlockHeight;
+    // lastChurnHeight is max block height from all active vaults
+    const lastChurnHeight =
+      state.asgardVaults.reduce((acc, av) => {
+        if (av.status === 'active') {
+          return Math.max(av.block_height, acc);
+        }
+        return acc;
+      }, 0);
+    const currentHeight = rootState.networkHealth.lastThorchainBlock;
 
-    const time = blocksRemaining * secondsPerBlock;
-    const targetTime = addSeconds(new Date(), time);
-    const targetBlock = rootState.networkHealth.lastThorchainBlock + blocksRemaining;
+    let blocksRemaining;
+    const blocksSinceLastChurn = currentHeight - lastChurnHeight;
+    if (blocksSinceLastChurn > state.rotatePerBlockHeight) {
+      // churn retry logic kicks in
+      const offsetFromTarget = blocksSinceLastChurn - state.rotatePerBlockHeight;
+      blocksRemaining = state.rotateRetryBlocks - (offsetFromTarget % state.rotateRetryBlocks);
+    } else {
+      blocksRemaining =
+        state.rotatePerBlockHeight - (currentHeight % state.rotatePerBlockHeight);
+    }
+
+    const secondsRemaining = blocksRemaining * secondsPerBlock;
+    const targetTime = addSeconds(new Date(), secondsRemaining);
+    const targetBlock = currentHeight + blocksRemaining;
+    const maxTime = (targetBlock - lastChurnHeight) * secondsPerBlock;
 
     const retiring = getters.isAsgardVaultRetiring(state);
     const standby = getters.standbyNodesByBond(state);
     const noEligible = standby.toChurnIn.length === 0;
+
     return {
-      secondsRemaining: time,
       updatedAt: new Date(),
       blocksRemaining,
-      percentage: retiring || noEligible ? 0 : percentage,
-      paused: retiring || noEligible,
+      targetBlock,
+      secondsRemaining,
+      targetTime,
+      maxTime,
       retiring,
       noEligible,
-      targetTime,
-      targetBlock,
+      paused: retiring || noEligible,
     };
   },
   locations(state) {
@@ -208,9 +224,6 @@ export const mutations = {
   setAsgardVaults(state, asgardVaults) {
     state.asgardVaults = asgardVaults;
   },
-  setNextChurnHeight(state, nextChurnHeight) {
-    state.nextChurnHeight = parseInt(nextChurnHeight, 10);
-  },
   setNodeAccounts(state, nodeAccounts) {
     const nodeIds = [];
     const nodeMap = {};
@@ -227,7 +240,8 @@ export const mutations = {
     state.nodes = nodeMap;
     state.nodeIds = nodeIds;
   },
-  setRotatePerBlockHeight(state, rotatePerBlockHeight) {
+  setChurnConstants(state, { rotatePerBlockHeight, rotateRetryBlocks }) {
     state.rotatePerBlockHeight = parseInt(rotatePerBlockHeight, 10);
+    state.rotateRetryBlocks = parseInt(rotateRetryBlocks, 10);
   },
 };

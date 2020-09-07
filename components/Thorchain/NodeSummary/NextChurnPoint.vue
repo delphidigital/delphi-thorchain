@@ -18,7 +18,7 @@
     <div class="nodes-gauge">
       <div
         class="nodes-gauge__primary"
-        :style="{ width: (progressToNextChurnPoint.percentage * 100) + '%' }"
+        :style="{ width: (percentage * 100) + '%' }"
       />
     </div>
   </div>
@@ -36,6 +36,15 @@ export default {
   computed: {
     progressToNextChurnPoint() {
       return this.$store.getters['nodes/progressToNextChurnPoint'];
+    },
+    percentage() {
+      if (this.progressToNextChurnPoint.paused) {
+        return 0;
+      }
+      return 1 - (
+        this.progressToNextChurnPoint.secondsRemaining /
+        this.progressToNextChurnPoint.maxTime
+      );
     },
   },
 };
