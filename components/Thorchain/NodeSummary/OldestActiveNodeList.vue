@@ -47,22 +47,6 @@
           </td>
         </tr>
         <tr
-          v-for="node in activeNodesSegmentedForChurn.scheduledToLeave"
-          :key="node['node_address']"
-          class="section__table__row section__table__row--will-churn"
-        >
-          <FavouriteNodeTD :node-address="node['node_address']" />
-          <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :max-chars="maxChars" />
-          </td>
-          <td class="section__table__data">
-            scheduled to leave at block {{ node['leave_height'] }}
-          </td>
-          <td class="section__table__data">
-            <span class="churn-status churn-status--out">Will churn out</span>
-          </td>
-        </tr>
-        <tr
           v-for="node in activeNodesSegmentedForChurn.oldestValidators"
           :key="node['node_address']"
           class="section__table__row section__table__row--will-churn"
@@ -137,7 +121,6 @@ export default {
       const keys = [
         'forcedToLeave',
         'requestedToLeave',
-        'scheduledToLeave',
         'oldestValidators',
         'otherValidatorsByAge',
       ];

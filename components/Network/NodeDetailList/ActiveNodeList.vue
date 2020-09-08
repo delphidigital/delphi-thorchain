@@ -41,10 +41,6 @@
               type="requestedToLeave"
             />
             <ActiveNodeRows
-              :nodes="activeNodesSegmentedForChurn.scheduledToLeave"
-              type="scheduledToLeave"
-            />
-            <ActiveNodeRows
               :nodes="activeNodesSegmentedForChurn.oldestValidators"
               type="oldestValidators"
             />

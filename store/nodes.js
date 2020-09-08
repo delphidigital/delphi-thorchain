@@ -18,7 +18,6 @@ export const getters = {
   activeNodesSegmentedForChurn(state) {
     const forcedToLeave = [];
     const requestedToLeave = [];
-    const scheduledToLeave = [];
     const otherValidatorsByAge = [];
     Object.values(state.nodes).filter(node => (
       node.status === 'active'
@@ -45,7 +44,6 @@ export const getters = {
     return {
       forcedToLeave,
       requestedToLeave,
-      scheduledToLeave,
       oldestValidators: otherValidatorsByAge.slice(0, 1),
       otherValidatorsByAge: otherValidatorsByAge.slice(1),
     };
@@ -154,11 +152,9 @@ export const getters = {
     const {
       forcedToLeave,
       requestedToLeave,
-      scheduledToLeave,
       oldestValidators,
     } = getters.activeNodesSegmentedForChurn(state);
-    const count = forcedToLeave.length + requestedToLeave.length +
-      scheduledToLeave.length + oldestValidators.length;
+    const count = forcedToLeave.length + requestedToLeave.length + oldestValidators.length;
     return count;
   },
   totalActiveBonded(state) {
@@ -177,8 +173,9 @@ export const getters = {
     ), 0);
   },
   totalStandbyCount(state) {
+    // NOTE(Fede): Including Ready nodes here too, as they are show on the standby list
     return Object.values(state.nodes).reduce((total, node) => (
-      node.status === 'standby' && !node['requested_to_leave'] ? total + 1 : total
+      (node.status === 'standby' || node.status === 'ready') && !node['requested_to_leave'] ? total + 1 : total
     ), 0);
   },
   activeRequestedToLeaveCount(state) {
