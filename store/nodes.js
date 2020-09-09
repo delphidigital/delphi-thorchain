@@ -204,8 +204,8 @@ export const getters = {
     const targetBlock = currentHeight + blocksRemaining;
     const maxTime = (targetBlock - lastChurnHeight) * secondsPerBlock;
 
-    const retiring = getters.isAsgardVaultRetiring(state);
-    const standby = getters.standbyNodesByBond(state);
+    const retiring = g.isAsgardVaultRetiring;
+    const standby = g.standbyNodesByBond;
     const noEligible = standby.toChurnIn.length === 0;
 
     return {
@@ -224,8 +224,8 @@ export const getters = {
     const locs = Object.values(state.nodes).map(n => n.location);
     return locs;
   },
-  standbyNodesByBond(state) {
-    const toChurnIn = getters.expectedNodeCountToChurnOut(state) + 1;
+  standbyNodesByBond(state, g) {
+    const toChurnIn = g.expectedNodeCountToChurnOut + 1;
     const belowMinBondNodes = [];
     const otherNodes = [];
     const nodes = Object.values(state.nodes).filter(node => (
@@ -255,8 +255,27 @@ export const getters = {
       otherValidatorsByBond: otherNodes.slice(toChurnIn),
     };
   },
-  expectedNodeCountToChurnOut() {
-    return 1;
+  expectedNodeCountToChurnOut(state, g) {
+    let count = 0;
+    let hasLowVersion = false;
+
+    g.activeNodesSegmentedForChurn.forEach((n) => {
+      if (n.countsForWillChurn) {
+        count += 1;
+      }
+      if (n.lowVersion) {
+        hasLowVersion = true;
+      }
+    });
+
+    // If there are nodes with low version
+    // one will be picked to be churned out at
+    // next churn point
+    if (hasLowVersion) {
+      count += 1;
+    }
+
+    return count;
   },
   totalActiveBonded(state) {
     return Object.values(state.nodes).reduce((total, node) => (
