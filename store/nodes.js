@@ -97,10 +97,10 @@ export const getters = {
     const sortedActiveNodes =
       activeNodes.sort((a, b) => {
         if (a['forced_to_leave'] !== b['forced_to_leave']) {
-          return a['forced_to_leave'] ? 1 : -1;
+          return a['forced_to_leave'] ? -1 : 1;
         }
         if (a['requested_to_leave'] !== b['requested_to_leave']) {
-          return a['requested_to_leave'] ? 1 : -1;
+          return a['requested_to_leave'] ? -1 : 1;
         }
         if (a['leave_height'] !== b['leave_height']) {
           // lowest non zero leave height goes first
