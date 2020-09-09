@@ -15,66 +15,26 @@
       </thead>
       <tbody>
         <tr
-          v-for="node in activeNodesSegmentedForChurn.forcedToLeave"
-          :key="node['node_address']"
-          class="section__table__row section__table__row--will-churn"
-        >
-          <FavouriteNodeTD :node-address="node['node_address']" />
-          <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :max-chars="maxChars" />
-          </td>
-          <td class="section__table__data">
-            forced to leave
-          </td>
-          <td class="section__table__data">
-            <span class="churn-status churn-status--out">Will churn out</span>
-          </td>
-        </tr>
-        <tr
-          v-for="node in activeNodesSegmentedForChurn.requestedToLeave"
-          :key="node['node_address']"
-          class="section__table__row section__table__row--will-churn"
-        >
-          <FavouriteNodeTD :node-address="node['node_address']" />
-          <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :max-chars="maxChars" />
-          </td>
-          <td class="section__table__data">
-            requested to leave
-          </td>
-          <td class="section__table__data">
-            <span class="churn-status churn-status--out">Will churn out</span>
-          </td>
-        </tr>
-        <tr
-          v-for="node in activeNodesSegmentedForChurn.oldestValidators"
-          :key="node['node_address']"
-          class="section__table__row section__table__row--will-churn"
-        >
-          <FavouriteNodeTD :node-address="node['node_address']" />
-          <td class="section__table__data section__table__data--address">
-            <Address :address="node['node_address']" :max-chars="maxChars" />
-          </td>
-          <td class="section__table__data">
-            will churn due to age
-          </td>
-          <td class="section__table__data">
-            <span class="churn-status churn-status--out">Will churn out</span>
-          </td>
-        </tr>
-        <tr
-          v-for="node in activeNodesSegmentedForChurn.otherValidatorsByAge"
+          v-for="node in activeNodesSegmentedForChurn"
           :key="node['node_address']"
           class="section__table__row"
+          :class="{'section__table__row--will-churn': node.showAsWillChurn}"
         >
           <FavouriteNodeTD :node-address="node['node_address']" />
           <td class="section__table__data section__table__data--address">
             <Address :address="node['node_address']" :max-chars="maxChars" />
           </td>
           <td class="section__table__data">
-            active since {{ node['status_since'] }}
+            {{ displayChurnStatus(node) }}
           </td>
-          <td class="section__table__data" />
+          <td class="section__table__data">
+            <span
+              v-if="node.showAsWillChurn"
+              class="churn-status churn-status--out"
+            >
+              May churn out
+            </span>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -108,38 +68,38 @@ export default {
   },
   computed: {
     activeNodesSegmentedForChurn() {
-      return this.matchNodesToQuota.nodes;
+      const allNodes = this.$store.getters['nodes/activeNodesSegmentedForChurn'];
+      return allNodes.slice(0, this.showMax);
     },
     showAmount() {
-      return this.matchNodesToQuota.count;
+      return Math.min(this.activeNodesSegmentedForChurn.length, this.showMax);
     },
     activeCount() {
       return this.$store.getters['nodes/totalActiveCount'];
     },
-    matchNodesToQuota() {
-      const allNodes = this.$store.getters['nodes/activeNodesSegmentedForChurn'];
-      const keys = [
-        'forcedToLeave',
-        'requestedToLeave',
-        'oldestValidators',
-        'otherValidatorsByAge',
-      ];
-
-      let quota = this.showMax;
-      const result = {};
-      keys.forEach((k) => { result[k] = []; });
-
-      for (let i = 0; i < keys.length && quota > 0; i += 1) {
-        const targetNodes = allNodes[keys[i]] || [];
-        const amountToGet = targetNodes.length > quota ? quota : targetNodes.length;
-
-        result[keys[i]] = targetNodes.slice(0, amountToGet);
-        quota -= amountToGet;
-      }
-      return { nodes: result, count: this.showMax - quota };
-    },
     currentDate() {
       return new Date();
+    },
+  },
+  methods: {
+    displayChurnStatus(node) {
+      console.log(node.churnStatusType);
+      switch (node.churnStatusType) {
+        case 'forcedToLeave':
+          return 'forced to leave';
+        case 'requestedToLeave':
+          return 'requested to leave';
+        case 'markedToLeave':
+          return `marked to leave on block ${node['leave_height']}`;
+        case 'oldest':
+          return 'Oldest Node';
+        case 'badNode':
+          return 'Has bad behavior score';
+        case 'lowVersion':
+          return 'Has outdated software version';
+        default:
+          return `active since ${node['status_since']}`;
+      }
     },
   },
 };

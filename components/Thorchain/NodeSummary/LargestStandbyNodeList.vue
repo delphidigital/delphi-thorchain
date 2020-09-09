@@ -25,7 +25,7 @@
             {{ Math.round(node.bond) }}
           </td>
           <td class="section__table__data">
-            <span class="churn-status churn-status--in">Should churn in</span>
+            <span class="churn-status churn-status--in">may churn in</span>
           </td>
         </tr>
         <tr

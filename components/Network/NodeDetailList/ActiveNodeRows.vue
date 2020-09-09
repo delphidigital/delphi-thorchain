@@ -3,7 +3,8 @@
     <tr
       v-for="node in nodes"
       :key="node['node_address']"
-      :class="`section__table__row ${rowClass()}`"
+      class="section__table__row"
+      :class="{'section__table__row--will-churn': node.showAsWillChurn}"
     >
       <FavouriteNodeTD :node-address="node['node_address']" />
       <td class="section__table__data section__table__data--address">
@@ -29,16 +30,22 @@
           </div>
         </div>
         <div v-if="!isInJail(node)">
-          <div v-if="type === 'forcedToLeave'">
+          <div v-if="node.churnStatusType === 'forcedToLeave'">
             forced to leave
           </div>
-          <div v-if="type === 'requestedToLeave'">
+          <div v-if="node.churnStatusType === 'requestedToLeave'">
             requested to leave
           </div>
-          <div v-if="type === 'oldestValidators'">
-            <span class="churn-status churn-status--out">Will churn due to age</span>
+          <div v-if="node.churnStatusType === 'markedToLeave'">
+            <span class="churn-status churn-status--out">Will churn out</span>
           </div>
-          <div v-if="type === 'otherValidatorsByAge'">
+          <div v-if="node.churnStatusType === 'oldest'">
+            <span class="churn-status churn-status--out">May churn due to age</span>
+          </div>
+          <div v-if="node.churnStatusType === 'badNode'">
+            <span class="churn-status churn-status--out">Has bad behavior score</span>
+          </div>
+          <div v-if="node.churnStatusType === 'active'">
             active
           </div>
         </div>
@@ -69,10 +76,6 @@ export default {
       type: Array,
       default: () => [],
     },
-    type: {
-      type: String,
-      default: '',
-    },
   },
   data() {
     return {
@@ -81,12 +84,6 @@ export default {
         return (node.jail['release_height'] > this.lastBlock);
       },
       numeral,
-      rowClass() {
-        if (['forcedToLeave', 'requestedToLeave', 'oldestValidators'].includes(this.type)) {
-          return 'section__table__row--will-churn';
-        }
-        return '';
-      },
       timeFromBlock(sinceBlock) {
         const secondsPerBlock = this.$store.state.nodes.secondsPerBlock;
         const blocksSince = this.lastBlock - sinceBlock;

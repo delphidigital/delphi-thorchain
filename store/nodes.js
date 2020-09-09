@@ -15,38 +15,129 @@ export const state = () => ({
 });
 
 export const getters = {
-  activeNodesSegmentedForChurn(state) {
-    const forcedToLeave = [];
-    const requestedToLeave = [];
-    const otherValidatorsByAge = [];
-    Object.values(state.nodes).filter(node => (
-      node.status === 'active'
-    )).sort((a, b) => {
-      const aBlock = parseInt(a['status_since'], 10);
-      const bBlock = parseInt(b['status_since'], 10);
-      if (aBlock < bBlock) return -1;
-      if (aBlock > bBlock) return 1;
-      return 0;
-    }).forEach((node) => {
-      if (node['forced_to_leave']) {
-        forcedToLeave.push(node);
-        return;
-      }
+  activeNodesSegmentedForChurn(state, g, rootState) {
+    const currentHeight = rootState.networkHealth.lastThorchainBlock;
+    const activeNodes =
+      Object.values(state.nodes).filter(node => (
+        node.status === 'active'
+      )).map(node => ({ ...node, oldest: false, lowScore: false, lowVersion: false }));
 
-      if (node['requested_to_leave']) {
-        requestedToLeave.push(node);
-        return;
+    // find oldest node
+    let oldestNode = { status_since: currentHeight };
+    activeNodes.forEach((node) => {
+      if (
+        (parseInt(oldestNode['status_since'], 10) > parseInt(node['status_since'], 10))
+      ) {
+        oldestNode = node;
       }
+    });
+    oldestNode.oldest = true;
 
-      otherValidatorsByAge.push(node);
+
+    // find nodes with bad scores
+    const scores = [];
+    let lowestScore = currentHeight * 10;
+    let lowestScoreNode = null;
+    let totalScore = 0;
+
+    activeNodes.forEach((node) => {
+      const age = currentHeight - node['status_since'];
+      const slashPoints = node['slash_points'];
+
+      if (age > 720 && slashPoints > 0) {
+        // NOTE(Fede): Thorchain source code multiplies by 10 ^ 8 to do math using uint64s
+        // but we don't really care.
+        const score = age / slashPoints;
+        totalScore += score;
+        if (score < lowestScore) {
+          lowestScore = score;
+          lowestScoreNode = node;
+        }
+
+        scores.push({ node, score });
+      }
     });
 
-    return {
-      forcedToLeave,
-      requestedToLeave,
-      oldestValidators: otherValidatorsByAge.slice(0, 1),
-      otherValidatorsByAge: otherValidatorsByAge.slice(1),
-    };
+    // No churning if all nodes young or have 0 slashPts
+    if (scores.length > 0) {
+      const badNodes = [];
+      const avgScore = totalScore / scores.length;
+      const threshold = avgScore / 3;
+      scores.forEach((score) => {
+        if (score.score < threshold) {
+          badNodes.push(score.node);
+        }
+      });
+      if (badNodes.length === 0) {
+        badNodes.push(lowestScoreNode);
+      }
+      badNodes.forEach((node) => {
+        // eslint-disable-next-line no-param-reassign
+        node.lowScore = true;
+      });
+    }
+
+    // sort nodes 1) forced to leave, 2) requested to leave 3) by leave height 4) by age
+    const sortedActiveNodes =
+      activeNodes.sort((a, b) => {
+        if (a['forced_to_leave'] !== b['forced_to_leave']) {
+          return a['forced_to_leave'] ? 1 : -1;
+        }
+        if (a['requested_to_leave'] !== b['requested_to_leave']) {
+          return a['requested_to_leave'] ? 1 : -1;
+        }
+        if (a['leave_height'] !== b['leave_height']) {
+          // lowest non zero leave height goes first
+          // means the node was marked to exit at an earlier block
+          const aLh = parseInt(a['status_since'], 10);
+          const bLh = parseInt(b['status_since'], 10);
+          if (aLh === 0) {
+            return 1;
+          }
+          if (bLh === 0) {
+            return -1;
+          }
+          return aLh - bLh;
+        }
+
+        // lowest status since (oldest node) goes first
+        const aBlock = parseInt(a['status_since'], 10);
+        const bBlock = parseInt(b['status_since'], 10);
+        return aBlock - bBlock;
+      }).map((node) => {
+        // Include in amount to churn count (used to see how many to standby nodes will go in)
+        const countsForWillChurn =
+          node['forced_to_leave'] ||
+          node['requested_to_leave'] ||
+          (node['leave_height'] !== '0') ||
+          node.oldest ||
+          node.lowScore;
+
+        // Determine what status to show on the frontend
+        let churnStatusType = 'active';
+        if (node['forced_to_leave']) {
+          churnStatusType = 'forcedToLeave';
+        } else if (node['requested_to_leave']) {
+          churnStatusType = 'requestedToLeave';
+        } else if (node['leave_height'] !== '0') {
+          churnStatusType = 'markedToLeave';
+        } else if (node.oldest) {
+          churnStatusType = 'oldest';
+        } else if (node.lowScore) {
+          churnStatusType = 'badNode';
+        } else if (node.lowVersion) {
+          churnStatusType = 'lowVersion';
+        }
+
+        return {
+          ...node,
+          countsForWillChurn,
+          showAsWillChurn: countsForWillChurn || node.lowVersion,
+          churnStatusType,
+        };
+      });
+
+    return sortedActiveNodes;
   },
   countsByStatus(state) {
     const statusMap = {};
@@ -148,14 +239,8 @@ export const getters = {
       otherValidatorsByBond: otherNodes.slice(toChurnIn),
     };
   },
-  expectedNodeCountToChurnOut(state) {
-    const {
-      forcedToLeave,
-      requestedToLeave,
-      oldestValidators,
-    } = getters.activeNodesSegmentedForChurn(state);
-    const count = forcedToLeave.length + requestedToLeave.length + oldestValidators.length;
-    return count;
+  expectedNodeCountToChurnOut() {
+    return 1;
   },
   totalActiveBonded(state) {
     return Object.values(state.nodes).reduce((total, node) => (
