@@ -83,7 +83,6 @@ export default {
   },
   methods: {
     displayChurnStatus(node) {
-      console.log(node.churnStatusType);
       switch (node.churnStatusType) {
         case 'forcedToLeave':
           return 'forced to leave';
@@ -94,9 +93,9 @@ export default {
         case 'oldest':
           return 'Oldest Node';
         case 'badNode':
-          return 'Has bad behavior score';
+          return 'Risks churning for bad behavior';
         case 'lowVersion':
-          return 'Has outdated software version';
+          return 'Version lower than join version';
         default:
           return `active since ${node['status_since']}`;
       }

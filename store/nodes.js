@@ -57,7 +57,6 @@ export const getters = {
         scores.push({ node, score });
       }
     });
-
     // No churning if all nodes young or have 0 slashPts
     if (scores.length > 0) {
       const badNodes = [];
@@ -76,6 +75,23 @@ export const getters = {
         node.lowScore = true;
       });
     }
+
+    // Find nodes with version lower than join version
+    activeNodes.forEach((node) => {
+      // NOTE(Fede): Asumes no weird version formats and that they all are formatted the
+      // same way (ie: no comparisons like 1.12 and 1.12.0 could ever come up)
+      const versionCompare =
+        node.version.localeCompare(
+          state.minJoinVersion,
+          undefined,
+          { numeric: true, sensitivity: 'base' },
+        );
+
+      if (versionCompare === -1) {
+        // eslint-disable-next-line no-param-reassign
+        node.lowVersion = true;
+      }
+    });
 
     // sort nodes 1) forced to leave, 2) requested to leave 3) by leave height 4) by age
     const sortedActiveNodes =
@@ -271,8 +287,9 @@ export const getters = {
 };
 
 export const mutations = {
-  setMinBond(state, minBond) {
+  setGlobalParams(state, { minBond, minJoinVersion }) {
     state.minBond = parseInt(minBond, 10) / runeDivider;
+    state.minJoinVersion = minJoinVersion;
   },
   setAsgardVaults(state, asgardVaults) {
     state.asgardVaults = asgardVaults;

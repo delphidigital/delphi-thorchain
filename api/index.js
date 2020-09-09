@@ -76,6 +76,13 @@ thorchain.all('/int/runevaultBalance', async (req, res) => {
   res.json(data);
 });
 
+thorchain.all('/int/extra', async (req, res) => {
+  const version = await loadCached(`${req.blockchain}::version`);
+  res.json({
+    version: version,
+  });
+});
+
 app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 
