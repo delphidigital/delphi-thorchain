@@ -33,24 +33,7 @@
               </tr>
             </thead>
             <ActiveNodeRows
-              :nodes="activeNodesSegmentedForChurn.forcedToLeave"
-              type="forcedToLeave"
-            />
-            <ActiveNodeRows
-              :nodes="activeNodesSegmentedForChurn.requestedToLeave"
-              type="requestedToLeave"
-            />
-            <ActiveNodeRows
-              :nodes="activeNodesSegmentedForChurn.scheduledToLeave"
-              type="scheduledToLeave"
-            />
-            <ActiveNodeRows
-              :nodes="activeNodesSegmentedForChurn.oldestValidators"
-              type="oldestValidators"
-            />
-            <ActiveNodeRows
-              :nodes="activeNodesSegmentedForChurn.otherValidatorsByAge"
-              type="otherValidatorsByAge"
+              :nodes="activeNodesSegmentedForChurn"
             />
           </table>
         </div>

@@ -31,8 +31,8 @@
   font-size: 10px;
   border-radius: 5px;
   z-index: 5;
-  top: 32px;
-  right: 15px;
+  top: 35px;
+  right: 25px;
   position: absolute;
 
   p {

@@ -20,7 +20,7 @@
       </td>
       <td class="section__table__data section__table__data--status-desc">
         <span v-if="type === 'toChurnIn'" class="churn-status churn-status--in">
-          Will churn in
+          May churn in
         </span>
         <span v-if="type === 'belowMinBond'" class="churn-status churn-status--out">
           Bond too low

@@ -72,6 +72,10 @@ async function updateBlockchainData(blockchain) {
   const constants = await api.loadConstants({ axios });
   await set('constants', constants);
 
+  // Thornode versions
+  const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
+  await set('version', versionRequest.data);
+
   // Market data
   const totalStaked = parseInt(stats.totalStaked);
   const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
