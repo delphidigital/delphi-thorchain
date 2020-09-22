@@ -1,7 +1,7 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 import { addSeconds } from 'date-fns';
 
-const secondsPerBlock = 5;
+const secondsPerBlock = 5.5;
 const runeDivider = 10 ** 8;
 
 export const state = () => ({
