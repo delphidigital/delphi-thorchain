@@ -58,7 +58,7 @@
       </div>
 
       <p v-if="!progressToNextChurnPoint.paused" class="rotates-legend text__label">
-      *Rotates every {{ rotatePerBlockHeight }} blocks or {{ rotatePerMinutes }} minutes
+      *Rotates every {{ rotatePerBlockHeight }} blocks or {{ rotatePerTimeText }}
       </p>
     </div>
   </div>
@@ -122,9 +122,17 @@ export default {
     rotatePerBlockHeight() {
       return this.$store.state.nodes.rotatePerBlockHeight;
     },
-    rotatePerMinutes() {
-      const seconds = this.$store.state.nodes.secondsPerBlock;
-      return Math.round((seconds * this.rotatePerBlockHeight) / 60);
+    rotatePerTimeText() {
+      const secondsPerBlock = this.$store.state.nodes.secondsPerBlock;
+      const minutes = Math.round((secondsPerBlock * this.rotatePerBlockHeight) / 60);
+      const hours = Math.round(minutes / 60);
+      if (hours === 1) {
+        return '1 hour';
+      }
+      if (hours > 1) {
+        return `${hours} hours`;
+      }
+      return `${minutes} minutes`;
     },
   },
   watch: {
