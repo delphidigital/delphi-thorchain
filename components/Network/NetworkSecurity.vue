@@ -65,7 +65,7 @@
                       RUNE Bonded
                     </td>
                     <td class="align-right">
-                      {{ formatMoneyAmount(runeBonded) }}
+                      {{ formatRuneAmount(runeBonded) }}
                       <span class="text--bold">
                         (<Percentage :value="runeBondedPercentage" />)
                       </span>
@@ -76,7 +76,7 @@
                       RUNE Staked
                     </td>
                     <td class="align-right">
-                      {{ formatMoneyAmount(runeStaked) }}
+                      {{ formatRuneAmount(runeStaked) }}
                       <span class="text--bold">
                         (<Percentage :value="runeStakedPercentage" />)
                       </span>
@@ -92,7 +92,7 @@
   </div>
 </template>
 <script>
-import { formatMoneyAmount } from '../../lib/utils.mjs';
+import numeral from 'numeral';
 import Percentage from '../Common/Percentage.vue';
 
 export default {
@@ -168,8 +168,8 @@ export default {
     },
   },
   methods: {
-    formatMoneyAmount(amount) {
-      return formatMoneyAmount(amount);
+    formatRuneAmount(amount) {
+      return `ᚱ${numeral(amount).format('(0,00.[0]a)')}`;
     },
   },
 };
