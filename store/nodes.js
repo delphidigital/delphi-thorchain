@@ -195,8 +195,9 @@ export const getters = {
       const offsetFromTarget = blocksSinceLastChurn - state.rotatePerBlockHeight;
       blocksRemaining = state.rotateRetryBlocks - (offsetFromTarget % state.rotateRetryBlocks);
     } else {
+      // normally churn is attempted when rotatePerBlockHeight blocks pass since last churn
       blocksRemaining =
-        state.rotatePerBlockHeight - (currentHeight % state.rotatePerBlockHeight);
+        state.rotatePerBlockHeight - blocksSinceLastChurn;
     }
 
     const secondsRemaining = blocksRemaining * secondsPerBlock;
