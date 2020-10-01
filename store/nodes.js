@@ -226,7 +226,16 @@ export const getters = {
     return locs;
   },
   standbyNodesByBond(state, g) {
-    const toChurnIn = g.expectedNodeCountToChurnOut + 1;
+    // Will churn in (churned out + 1) nodes as long as remaing count
+    // is less or equal than desireValidatorSet constant
+    const activeNodes = g.totalActiveCount;
+    const expectedToChurnOut = g.expectedNodeCountToChurnOut;
+    const expectedRemainingActive = activeNodes - expectedToChurnOut;
+    const diffWithDesired = state.desireValidatorSet - expectedRemainingActive;
+    const toChurnIn = Math.min(
+      expectedToChurnOut + 1,
+      diffWithDesired > 0 ? diffWithDesired : 0);
+
     const belowMinBondNodes = [];
     const otherNodes = [];
     const nodes = Object.values(state.nodes).filter(node => (
@@ -294,7 +303,7 @@ export const getters = {
     ), 0);
   },
   totalStandbyCount(state) {
-    // NOTE(Fede): Including Ready nodes here too, as they are show on the standby list
+    // NOTE(Fede): Including Ready nodes here too, as they are shown on the standby list
     return Object.values(state.nodes).reduce((total, node) => (
       (node.status === 'standby' || node.status === 'ready') && !node['requested_to_leave'] ? total + 1 : total
     ), 0);
@@ -330,8 +339,9 @@ export const mutations = {
     state.nodes = nodeMap;
     state.nodeIds = nodeIds;
   },
-  setChurnConstants(state, { rotatePerBlockHeight, rotateRetryBlocks }) {
+  setChurnConstants(state, { rotatePerBlockHeight, rotateRetryBlocks, desireValidatorSet }) {
     state.rotatePerBlockHeight = parseInt(rotatePerBlockHeight, 10);
     state.rotateRetryBlocks = parseInt(rotateRetryBlocks, 10);
+    state.desireValidatorSet = parseInt(desireValidatorSet, 10);
   },
 };
