@@ -108,7 +108,7 @@ import { formatPercentageFloat } from '../../../lib/formatHelpers.mjs';
 export default {
   computed: {
     poolShareFactor() {
-      return this.$store.state.networkHealth.poolShareFactor;
+      return 1 - this.$store.state.networkHealth.poolShareFactor;
     },
     efficient() {
       return 0.66;
