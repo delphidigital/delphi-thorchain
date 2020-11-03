@@ -17,6 +17,10 @@ export default {
   },
   computed: {
     chartOptions() {
+      const nodeCount = this.chartData.reduce((a, c) => (
+        (c.name === 'Disabled') ? a : (c.y + a)
+      ), 0);
+
       return {
         chart: {
           type: 'pie',
@@ -27,7 +31,7 @@ export default {
         title: {
           text: `
             <span style="font-family: Montserrat; font-size: 24px; font-weight: 600; line-height: 32px;">
-              ${this.chartData.reduce((a, c) => c.y + a, 0)}
+              ${nodeCount}
             </span>
             `,
           style: { color: '#fff' },
