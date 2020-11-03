@@ -231,7 +231,9 @@ export const getters = {
     const activeNodes = g.totalActiveCount;
     const expectedToChurnOut = g.expectedNodeCountToChurnOut;
     const expectedRemainingActive = activeNodes - expectedToChurnOut;
-    const diffWithDesired = state.desireValidatorSet - expectedRemainingActive;
+    // NOTE(Fede): Thornode has an off by one error when computing and adds an extra node than the desireValidatorSet.  
+    // Be aware of this in case it gets fixed
+    const diffWithDesired = state.desireValidatorSet + 1 - expectedRemainingActive;
     const toChurnIn = Math.min(
       expectedToChurnOut + 1,
       diffWithDesired > 0 ? diffWithDesired : 0);
