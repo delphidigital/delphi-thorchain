@@ -106,7 +106,7 @@ async function fetchDataJob(blockchain) {
   try {
     await updateBlockchainData(blockchain);
   } catch(e) {
-    console.log(`[${blockchain}]: Data fetch failed with: ${e}`);
+    console.log(`[${blockchain}]: Data fetch failed with: `, e);
     timeout = 5000;
   }
 
