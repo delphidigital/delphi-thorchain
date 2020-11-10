@@ -62,8 +62,13 @@ export const getters = {
       const badNodes = [];
       const avgScore = totalScore / scores.length;
       const threshold = avgScore / 3;
+      console.log('threshold');
+      console.log(threshold);
       scores.forEach((score) => {
+        console.log('score');
+        console.log(score.score);
         if (score.score < threshold) {
+          console.log('node will be pushed');
           badNodes.push(score.node);
         }
       });

@@ -3,7 +3,7 @@
 import { assetFromString } from '@thorchain/asgardex-util';
 
 const nRankedCoins = 5;
-const formatValue = 10 ** 8;
+const e8 = 10 ** 8;
 
 export const state = () => ({
   poolAddress: '',
@@ -12,30 +12,42 @@ export const state = () => ({
 });
 
 export const getters = {
-  activeVault(s, g, rootState) {
-    return rootState.nodes.asgardVaults.slice().filter(vault => vault.status === 'active')[0];
-  },
+  // Counts coins on all vaults (active + retiring)
   coins(s, g, rootState) {
-    const priceByRUNE = (coin) => {
-      if (assetFromString(coin.asset).ticker === 'RUNE') return 1;
-      if (!rootState.pools.pools[coin.asset]) return null;
-      return rootState.pools.pools[coin.asset].price;
+    const runePrice = (asset) => {
+      if (assetFromString(asset).ticker === 'RUNE') return 1;
+      if (!rootState.pools.pools[asset]) return null;
+      return rootState.pools.pools[asset].price;
     };
+
+    const vaults = rootState.nodes.asgardVaults;
+    const amountsRecorded = {};
+
+    // Sum all coin amounts on different vaults
+    vaults.forEach((v) => {
+      v.coins.forEach((coin) => {
+        const currentAmount = amountsRecorded[coin.asset] || 0;
+        amountsRecorded[coin.asset] = currentAmount + Number(coin.amount);
+      });
+    });
+
     const output = [];
-    g.activeVault.coins.forEach((coin) => {
-      const price = priceByRUNE(coin);
+    Object.keys(amountsRecorded).forEach((asset) => {
+      const price = runePrice(asset);
       if (!price) return;
-      output.push({
-        asset: coin.asset,
-        // Amount according to Thorchain records
-        amountRecorded: Number(coin.amount) / formatValue,
-        // Amount stored in the vault addresses
-        amountStored:
+      const amountRecorded = Number(amountsRecorded[asset]);
+      const amountStored =
           Number(
             (s.binanceBalances.filter(i =>
-              i.symbol.includes(assetFromString(coin.asset).symbol),
-            )[0] || { free: 0 }).free),
-        price: Number(priceByRUNE(coin)),
+              i.symbol.includes(assetFromString(asset).symbol),
+            )[0] || { free: 0 }).free);
+      output.push({
+        asset,
+        // Amount according to Thorchain records
+        amountRecorded: amountRecorded / e8,
+        // Amount stored in the vault addresses
+        amountStored,
+        price: Number(price),
       });
     });
     return output.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
