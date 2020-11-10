@@ -29,15 +29,15 @@ async function updateBlockchainData(blockchain) {
   const set = (key, data) => redisSet(`thorchain::${blockchain}::${key}`, data);
   const api = ThorchainApi(blockchain);
 
+  // FETCH DATA
+  // Thorchain
   const poolList = await api.loadPools({ axios });
-  await set('pools', poolList);
   const poolIds = poolList.filter(i => i.status === 'Enabled').map(i => i.asset);
-
+  let poolDetails = {} 
   for (const poolId of poolIds) {
     const poolDetail = await api.loadPoolDetail({ axios, poolId });
-    await set(`pools-${poolId}`, poolDetail);
+    poolDetails[poolId] = poolDetail;
   }
-
   const nodeAccounts = await api.loadNodeAccounts({ axios });
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
@@ -46,82 +46,74 @@ async function updateBlockchainData(blockchain) {
     });
     return { ...nodeAccount, location: lookup };
   }));
-  await set('nodeAccounts', nodeAccountsWithLocation);
-
   const lastBlock = await api.loadLastBlock({ axios });
-  await set('lastBlock', lastBlock);
-
   const mimir = await api.loadMimir({ axios });
-  await set('mimir', mimir);
-
   const asgardVaults = await api.loadAsgardVaults({ axios });
-  await set('asgardVaults', asgardVaults);
-
   const poolAddresses = await api.loadPoolAddresses({ axios });
-  await set('poolAddresses', poolAddresses);
-
-  const binanceChain = await loadBinanceChain({ axios }, blockchain);
-  await set('binanceChain', binanceChain);
-
   const stats = await api.loadStats({ axios });
-  await set('stats', stats);
-
   const network = await api.loadNetwork({ axios });
-  await set('network', network);
-
   const constants = await api.loadConstants({ axios });
-  await set('constants', constants);
-
-  // Thornode versions
   const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
-  await set('version', versionRequest.data);
 
-  // Market data
-  const totalStaked = parseInt(stats.totalStaked);
-  const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
-    total + parseInt(node.bond)
-  ), 0);
-
+  // Other sources
+  const binanceChain = await loadBinanceChain({ axios }, blockchain);
   const runeMarketData = await getRuneMarketData()
-  const circulating = blockchain === 'testnet' ?
-    ((totalBonded + totalStaked) / (10 ** 8)).toFixed(2) : runeMarketData.circulating_supply;
-
-  const priceUsd = runeMarketData.current_price.usd;
-  await set('marketData', { priceUsd: priceUsd.toString(), circulating });
-
-  // Runevault balance
   let runevaultBalance = 0;
   if( blockchain === 'chaosnet') {
     const frozenBalancesReq = await axios.get("http://frozenbalances.herokuapp.com/stats/RUNE-B1A");
     runevaultBalance = frozenBalancesReq.data.totalFrozen;
   }
+
+  // PROCESS RESULTS
+  const totalStaked = parseInt(stats.totalStaked);
+  const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
+    total + parseInt(node.bond)
+  ), 0);
+  const circulating = blockchain === 'testnet' ?
+    ((totalBonded + totalStaked) / (10 ** 8)).toFixed(2) : runeMarketData.circulating_supply;
+  const priceUsd = runeMarketData.current_price.usd;
+
+  // SET DATA
+  await set('pools', poolList);
+  Object.keys(poolDetails).forEach(async (poolId) => {
+    await set(`pools-${poolId}`, poolDetails[poolId]);
+  })
+  await set('nodeAccounts', nodeAccountsWithLocation);
+  await set('lastBlock', lastBlock);
+  await set('mimir', mimir);
+  await set('asgardVaults', asgardVaults);
+  await set('poolAddresses', poolAddresses);
+  await set('binanceChain', binanceChain);
+  await set('stats', stats);
+  await set('network', network);
+  await set('constants', constants);
+  await set('version', versionRequest.data);
+  await set('marketData', { priceUsd: priceUsd.toString(), circulating });
   await set('runevaultBalance', runevaultBalance);
 
   const end = new Date()
   console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`)
 }
 
-async function run() {
-  const now = new Date();
-  console.log('Fetching new thorchain data at: ', now);
-
+async function fetchDataJob(blockchain) {
   const dataSource = process.env.DATA_SOURCE;
   if(dataSource !== "api") {
     console.log('DATA_SOURCE env variable should be set to \"api\" to run this job');
     return;
   }
 
-  await Promise.all([
-    updateBlockchainData('testnet'),
-    updateBlockchainData('chaosnet'),
-  ]);
-
-  const end = new Date();
-  console.log(`Finished updating in ${(end - now) / 1000} seconds`);
+  let timeout = 1000
+  try {
+    await updateBlockchainData(blockchain);
+  } catch(e) {
+    console.log(`[${blockchain}]: Data fetch failed with: ${e}`);
+    timeout = 5000;
+  }
 
   setTimeout(() => {
-    run();
-  }, 1000);
+    fetchDataJob(blockchain);
+  }, timeout);
 }
 
-run();
+fetchDataJob('testnet');
+fetchDataJob('chaosnet');
