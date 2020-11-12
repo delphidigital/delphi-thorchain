@@ -73,7 +73,7 @@ export const mutations = {
     binanceAccounts.forEach((account) => {
       account.balances.forEach((balance) => {
         const current = balances[balance.symbol] || 0;
-        balances[balance.symbol] = current + parseFloat(balance.free, 10);
+        balances[balance.symbol] = current + parseFloat(balance.free);
       });
     });
     state.binanceBalances = balances;
