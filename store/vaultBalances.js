@@ -6,8 +6,7 @@ const nRankedCoins = 5;
 const e8 = 10 ** 8;
 
 export const state = () => ({
-  poolAddress: '',
-  binanceBalances: [],
+  binanceBalances: {},
   runevaultBalance: 0,
 });
 
@@ -36,11 +35,7 @@ export const getters = {
       const price = runePrice(asset);
       if (!price) return;
       const amountRecorded = Number(amountsRecorded[asset]);
-      const amountStored =
-          Number(
-            (s.binanceBalances.filter(i =>
-              i.symbol.includes(assetFromString(asset).symbol),
-            )[0] || { free: 0 }).free);
+      const amountStored = s.binanceBalances[assetFromString(asset).symbol] || 0;
       output.push({
         asset,
         // Amount according to Thorchain records
@@ -73,20 +68,15 @@ export const getters = {
 };
 
 export const mutations = {
-  setPoolAddress(state, poolAddresses) {
-    state.poolAddress = poolAddresses.current[0].address;
-  },
-  setBinanceBalances(state, binanceChain) {
-    // Keep in mind that while churning the vaults you get a 404
-    // This churning process can last a couple of hours
-    if (binanceChain.balances) {
-      const stabilize = binanceChain.balances;
-      stabilize.sort((a, b) => a.symbol.localeCompare(b.symbol));
-      state.binanceBalances = stabilize;
-    } else {
-      state.binanceBalances =
-        { balances: [{ name: null, assetsStored: null, assetsRecorded: null }] };
-    }
+  setBinanceBalances(state, binanceAccounts) {
+    const balances = {};
+    binanceAccounts.forEach((account) => {
+      account.balances.forEach((balance) => {
+        const current = balances[balance.symbol] || 0;
+        balances[balance.symbol] = current + parseFloat(balance.free, 10);
+      });
+    });
+    state.binanceBalances = balances;
   },
   setRunevaultBalance(state, runevaultBalance) {
     state.runevaultBalance = parseInt(runevaultBalance, 10);

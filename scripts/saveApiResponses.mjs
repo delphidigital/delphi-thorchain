@@ -106,7 +106,6 @@ async function updateBlockchainData(blockchain) {
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
-  await set('poolAddresses', poolAddresses);
   // Keep a list of most recent asgard vault addresses
   poolAddresses.current.forEach(async (addressData) => {
     const chain = addressData.chain;

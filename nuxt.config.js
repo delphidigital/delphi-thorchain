@@ -18,7 +18,7 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Dashboard for decentralized finance from Delphi Digital.'}
+      { hid: 'description', name: 'description', content: 'Dashboard for decentralized finance from Delphi Digital.' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
@@ -39,9 +39,9 @@ export default {
     ],
     script: [
       {
-        src: "https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js",
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js',
       },
-    ]
+    ],
   },
   /*
   ** Global CSS
