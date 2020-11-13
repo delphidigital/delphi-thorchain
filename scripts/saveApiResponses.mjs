@@ -1,5 +1,5 @@
 import ThorchainApi from '../lib/api.mjs';
-import { loadBinanceChain } from '../lib/binanceApi.mjs';
+import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 
 import axios from 'axios';
 import fs from 'fs';
@@ -13,6 +13,10 @@ process.on('unhandledRejection', up => { throw up });
 const client = redis.createClient();
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
+const lpushAsync = promisify(client.lpush).bind(client);
+const lindexAsync = promisify(client.lindex).bind(client);
+const lrangeAsync = promisify(client.lrange).bind(client);
+const ltrimAsync = promisify(client.ltrim).bind(client);
 
 async function redisSet(key, data) {
   await setAsync(key, JSON.stringify(data));
@@ -25,8 +29,9 @@ async function getRuneMarketData() {
 
 async function updateBlockchainData(blockchain) {
   const start = new Date();
-  console.log(`[${blockchain}]: starting data fetch...`)
-  const set = (key, data) => redisSet(`thorchain::${blockchain}::${key}`, data);
+  console.log(`[${blockchain}]: starting data fetch...`);
+  const redisKey = (key) => `thorchain::${blockchain}::${key}`;
+  const set = (key, data) => redisSet(redisKey(key), data);
   const api = ThorchainApi(blockchain);
 
   // FETCH DATA
@@ -56,13 +61,32 @@ async function updateBlockchainData(blockchain) {
   const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
 
   // Other sources
-  const binanceChain = await loadBinanceChain({ axios }, blockchain);
   const runeMarketData = await getRuneMarketData()
   let runevaultBalance = 0;
   if( blockchain === 'chaosnet') {
     const frozenBalancesReq = await axios.get("http://frozenbalances.herokuapp.com/stats/RUNE-B1A");
     runevaultBalance = frozenBalancesReq.data.totalFrozen;
   }
+  // Get Binance accounts
+  // only query as many as there are asgard vaults
+  const asgardVaultsCount = asgardVaults.length;
+  const binancePoolAddressData = poolAddresses.current.find(a => a.chain === 'BNB');
+  let binanceCachedAddresses = await lrangeAsync(redisKey(`asgardAddresses::BNB`), 0, 3);
+  if (binancePoolAddressData) {
+    binanceCachedAddresses.unshift(binancePoolAddressData.address)
+  }
+  let binanceAddresses = [];
+  for(
+    let i = 0;
+    (i < binanceCachedAddresses.length) && (binanceAddresses.length < asgardVaultsCount);
+    i++) {
+    
+    let address = binanceCachedAddresses[i];
+    if( !binanceAddresses.includes(address) ) {
+      binanceAddresses.push(address);
+    }
+  }
+  const binanceAccounts = await binanceFetchAccounts({ axios }, blockchain, binanceAddresses);
 
   // PROCESS RESULTS
   const totalStaked = parseInt(stats.totalStaked);
@@ -82,14 +106,29 @@ async function updateBlockchainData(blockchain) {
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
-  await set('poolAddresses', poolAddresses);
-  await set('binanceChain', binanceChain);
+  // Keep a list of most recent asgard vault addresses
+  poolAddresses.current.forEach(async (addressData) => {
+    const chain = addressData.chain;
+    const address = addressData.address;
+    const key = redisKey(`asgardAddresses::${chain}`)
+    // Always keep the address returned at pool_addresses first, does not matter if it
+    // repeats in the list as long as they are not consecutive
+    const currentAddress = await lindexAsync(key, 0)
+    if (address !== currentAddress) {
+      await lpushAsync(key, address);
+      // TODO(elfedy): Keep four addresses just in case. Maybe more in the future when we
+      // have multiple Asgard vaults
+      await ltrimAsync(key, 0, 3);
+    }
+  })
   await set('stats', stats);
   await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest.data);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
   await set('runevaultBalance', runevaultBalance);
+  await set('binanceAccounts', binanceAccounts);
+
 
   const end = new Date()
   console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`)

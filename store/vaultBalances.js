@@ -3,39 +3,46 @@
 import { assetFromString } from '@thorchain/asgardex-util';
 
 const nRankedCoins = 5;
-const formatValue = 10 ** 8;
+const e8 = 10 ** 8;
 
 export const state = () => ({
-  poolAddress: '',
-  binanceBalances: [],
+  binanceBalances: {},
   runevaultBalance: 0,
 });
 
 export const getters = {
-  activeVault(s, g, rootState) {
-    return rootState.nodes.asgardVaults.slice().filter(vault => vault.status === 'active')[0];
-  },
+  // Counts coins on all vaults (active + retiring)
   coins(s, g, rootState) {
-    const priceByRUNE = (coin) => {
-      if (assetFromString(coin.asset).ticker === 'RUNE') return 1;
-      if (!rootState.pools.pools[coin.asset]) return null;
-      return rootState.pools.pools[coin.asset].price;
+    const runePrice = (asset) => {
+      if (assetFromString(asset).ticker === 'RUNE') return 1;
+      if (!rootState.pools.pools[asset]) return null;
+      return rootState.pools.pools[asset].price;
     };
+
+    const vaults = rootState.nodes.asgardVaults;
+    const amountsRecorded = {};
+
+    // Sum all coin amounts on different vaults
+    vaults.forEach((v) => {
+      v.coins.forEach((coin) => {
+        const currentAmount = amountsRecorded[coin.asset] || 0;
+        amountsRecorded[coin.asset] = currentAmount + Number(coin.amount);
+      });
+    });
+
     const output = [];
-    g.activeVault.coins.forEach((coin) => {
-      const price = priceByRUNE(coin);
+    Object.keys(amountsRecorded).forEach((asset) => {
+      const price = runePrice(asset);
       if (!price) return;
+      const amountRecorded = Number(amountsRecorded[asset]);
+      const amountStored = s.binanceBalances[assetFromString(asset).symbol] || 0;
       output.push({
-        asset: coin.asset,
+        asset,
         // Amount according to Thorchain records
-        amountRecorded: Number(coin.amount) / formatValue,
+        amountRecorded: amountRecorded / e8,
         // Amount stored in the vault addresses
-        amountStored:
-          Number(
-            (s.binanceBalances.filter(i =>
-              i.symbol.includes(assetFromString(coin.asset).symbol),
-            )[0] || { free: 0 }).free),
-        price: Number(priceByRUNE(coin)),
+        amountStored,
+        price: Number(price),
       });
     });
     return output.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
@@ -61,20 +68,15 @@ export const getters = {
 };
 
 export const mutations = {
-  setPoolAddress(state, poolAddresses) {
-    state.poolAddress = poolAddresses.current[0].address;
-  },
-  setBinanceBalances(state, binanceChain) {
-    // Keep in mind that while churning the vaults you get a 404
-    // This churning process can last a couple of hours
-    if (binanceChain.balances) {
-      const stabilize = binanceChain.balances;
-      stabilize.sort((a, b) => a.symbol.localeCompare(b.symbol));
-      state.binanceBalances = stabilize;
-    } else {
-      state.binanceBalances =
-        { balances: [{ name: null, assetsStored: null, assetsRecorded: null }] };
-    }
+  setBinanceBalances(state, binanceAccounts) {
+    const balances = {};
+    binanceAccounts.forEach((account) => {
+      account.balances.forEach((balance) => {
+        const current = balances[balance.symbol] || 0;
+        balances[balance.symbol] = current + parseFloat(balance.free);
+      });
+    });
+    state.binanceBalances = balances;
   },
   setRunevaultBalance(state, runevaultBalance) {
     state.runevaultBalance = parseInt(runevaultBalance, 10);

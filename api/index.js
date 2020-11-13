@@ -51,11 +51,6 @@ thorchain.all('/thorchain/mimir', async (req, res) => {
   res.json(data);
 });
 
-thorchain.all('/thorchain/pool_addresses', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::poolAddresses`);
-  res.json(data);
-});
-
 thorchain.all('/thorchain/lastblock', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::lastBlock`);
   res.json(data);
@@ -78,8 +73,11 @@ thorchain.all('/int/runevaultBalance', async (req, res) => {
 
 thorchain.all('/int/extra', async (req, res) => {
   const version = await loadCached(`${req.blockchain}::version`);
+  const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
+
   res.json({
-    version: version,
+    version,
+    binanceAccounts,
   });
 });
 
