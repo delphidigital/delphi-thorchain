@@ -32,7 +32,7 @@
               v-if="node.showAsWillChurn"
               class="churn-status churn-status--out"
             >
-              May churn out
+              {{ displayChurnLegend (node) }}
             </span>
           </td>
         </tr>
@@ -98,6 +98,18 @@ export default {
           return 'Version lower than join version';
         default:
           return `active since ${node['status_since']}`;
+      }
+    },
+    displayChurnLegend(node) {
+      switch (node.churnStatusType) {
+        case 'forcedToLeave':
+          return 'Will churn out';
+        case 'requestedToLeave':
+          return 'Will churn out';
+        case 'markedToLeave':
+          return 'Will churn out';
+        default:
+          return 'May churn out';
       }
     },
   },
