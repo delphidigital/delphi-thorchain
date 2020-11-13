@@ -73,7 +73,7 @@ export const getters = {
           slippageDepth: pool.runeDepth * 0.00504,
           meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
           volume: pool.poolVolume,
-          apy: pool.poolROI,
+          apy: pool.poolAPY,
           apyRealRewards: null,
         });
       }
@@ -145,7 +145,7 @@ const parsePoolDetail = poolDetail => ({
   assetDepthRaw: poolDetail.assetDepth,
   poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
   poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
-  poolROI: parseFloat(poolDetail.poolROI),
+  poolAPY: parseFloat(poolDetail.poolAPY),
   poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
   price: parseFloat(poolDetail.price),
   runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
