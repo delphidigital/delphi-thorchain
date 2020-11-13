@@ -29,6 +29,14 @@
             churning in progress
           </span>
         </p>
+        <p v-else-if="progressToNextChurnPoint.waitingForChurn" class="countdown__gauge__text">
+          <span class="countdown__gauge__time">
+            <img src="/rings.svg"></img>
+          </span>
+          <span class="text__label">
+            waiting for churn
+          </span>
+        </p>
         <p v-else-if="progressToNextChurnPoint.noEligible" class="countdown__gauge__text">
           <span class="countdown__gauge__time">
             <img src="/pause.svg"></img>
@@ -39,7 +47,7 @@
         </p>
         <p v-else class="countdown__gauge__text">
           <time class="countdown__gauge__time">
-            {{ formatTime(timeRemaining) }}
+            {{ displayTimeRemaining }}
           </time>
           <span class="text__label">
             time remaining
@@ -67,19 +75,9 @@
 <script>
 
 export default {
-  data() {
-    return {
-      now: new Date(),
-      targetTime: this.$store.getters['nodes/progressToNextChurnPoint'].targetTime,
-      initialSecondsRemaining: this.$store.getters['nodes/progressToNextChurnPoint'].secondsRemaining,
-    };
-  },
   computed: {
     timeRemaining() {
-      if (this.progressToNextChurnPoint.paused || !this.targetTime) {
-        return 0;
-      }
-      return Math.round((this.targetTime - this.now) / 1000);
+      return this.progressToNextChurnPoint.secondsRemaining;
     },
     maxTime() {
       return this.progressToNextChurnPoint.maxTime;
@@ -134,23 +132,29 @@ export default {
       }
       return `${minutes} minutes`;
     },
-  },
-  watch: {
-    progressToNextChurnPoint(newP, oldP) {
-      const paused = newP.paused;
-      if (!paused) {
-        // Only set time if target block changes as targetTime does not have second precision
-        // and always setting it will result in jumps
-        const shouldSetNewTime = !this.targetTime || (newP.targetBlock !== oldP.targetBlock);
-        if (shouldSetNewTime) {
-          this.targetTime = newP.targetTime;
-          this.initialSecondsRemaining = newP.secondsRemaining;
-        }
+    displayTimeRemaining() {
+      let secondsRemaining = this.timeRemaining;
+
+      const secondsPerDay = 60 * 60 * 24;
+      const daysRemaining = Math.floor(secondsRemaining / secondsPerDay);
+      secondsRemaining %= secondsPerDay;
+
+      const hoursRemaining = Math.floor(secondsRemaining / 3600);
+      secondsRemaining %= 3600;
+
+      const minutesRemaining = Math.ceil(secondsRemaining / 60);
+
+      if (daysRemaining > 0) {
+        return `${daysRemaining}d : ${hoursRemaining}h : ${minutesRemaining}m`;
+      } else if (hoursRemaining > 0) {
+        return `${hoursRemaining}h : ${minutesRemaining}m`;
       }
+
+      if (minutesRemaining === 60) {
+        return '1h : 0m';
+      }
+      return `${minutesRemaining}m`;
     },
-  },
-  mounted() {
-    this.tick();
   },
   methods: {
     breakPointAngle(bp, max) {
@@ -164,34 +168,6 @@ export default {
     },
     breakPointColor(bp) {
       return bp > this.currentBreakpoint ? '#fff' : '#16CEB9';
-    },
-    formatTime(seconds) {
-      let secondsRemaining = seconds;
-
-      const secondsPerDay = 60 * 60 * 24;
-      const daysRemaining = Math.floor(secondsRemaining / secondsPerDay);
-      secondsRemaining %= secondsPerDay;
-
-      const hoursRemaining = Math.floor(secondsRemaining / 3600);
-      secondsRemaining %= 3600;
-
-      const minutesRemaining = Math.floor(secondsRemaining / 60);
-      secondsRemaining %= 60;
-
-      if (daysRemaining > 0) {
-        return `${daysRemaining}d : ${hoursRemaining}h : ${minutesRemaining}m : ${secondsRemaining}s`;
-      } else if (hoursRemaining > 0) {
-        return `${hoursRemaining}h : ${minutesRemaining}m : ${secondsRemaining}s`;
-      } else if (minutesRemaining > 0) {
-        return `${minutesRemaining}m : ${secondsRemaining}s`;
-      }
-
-      return `${secondsRemaining}s`;
-    },
-    tick() {
-      setInterval(() => {
-        this.now = new Date();
-      }, 1000);
     },
   },
 };

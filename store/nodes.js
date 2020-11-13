@@ -1,6 +1,4 @@
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
-import { addSeconds } from 'date-fns';
-
 const secondsPerBlock = 5.5;
 const runeDivider = 10 ** 8;
 
@@ -189,36 +187,46 @@ export const getters = {
     const currentHeight = rootState.networkHealth.lastThorchainBlock;
 
     let blocksRemaining;
+    let waitingForChurn = false;
     const blocksSinceLastChurn = currentHeight - lastChurnHeight;
     if (blocksSinceLastChurn > state.rotatePerBlockHeight) {
       // churn retry logic kicks in
       const offsetFromTarget = blocksSinceLastChurn - state.rotatePerBlockHeight;
-      blocksRemaining = state.rotateRetryBlocks - (offsetFromTarget % state.rotateRetryBlocks);
+
+      // Keep the previous target for the first 10 blocks as vault takes a couple of
+      // blocks to enter retired state
+      if (offsetFromTarget > 10) {
+        blocksRemaining = state.rotateRetryBlocks - (offsetFromTarget % state.rotateRetryBlocks);
+      } else {
+        waitingForChurn = true;
+        blocksRemaining = -offsetFromTarget;
+      }
     } else {
       // normally churn is attempted when rotatePerBlockHeight blocks pass since last churn
       blocksRemaining =
         state.rotatePerBlockHeight - blocksSinceLastChurn;
     }
 
-    const secondsRemaining = blocksRemaining * secondsPerBlock;
-    const targetTime = addSeconds(new Date(), secondsRemaining);
-    const targetBlock = currentHeight + blocksRemaining;
-    const maxTime = (targetBlock - lastChurnHeight) * secondsPerBlock;
-
     const retiring = g.isAsgardVaultRetiring;
     const standby = g.standbyNodesByBond;
     const noEligible = standby.toChurnIn.length === 0;
+    const paused = retiring || noEligible;
 
+    const secondsRemaining = paused ? 0 : Math.max(blocksRemaining * secondsPerBlock, 0);
+    const targetBlock = currentHeight + blocksRemaining;
+    const maxTime = (targetBlock - lastChurnHeight) * secondsPerBlock;
+
+    // TODO: Handle churn attempt on the front end
     return {
       updatedAt: new Date(),
       blocksRemaining,
       targetBlock,
       secondsRemaining,
-      targetTime,
+      noEligible,
       maxTime,
       retiring,
-      noEligible,
-      paused: retiring || noEligible,
+      paused,
+      waitingForChurn,
     };
   },
   locations(state) {
