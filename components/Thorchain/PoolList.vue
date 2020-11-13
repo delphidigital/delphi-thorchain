@@ -59,9 +59,6 @@
               <Percentage :value="pool.meanFeeAsPercentage" />
             </td>
             <td class="section__table__data">
-              n/a
-            </td>
-            <td class="section__table__data">
               <div v-if="pool.volume >= 1">
                 <RuneUSD :rune="pool.volume" />
               </div>
@@ -122,10 +119,6 @@ export default {
         {
           name: 'meanFeeAsPercentage',
           label: 'Mean Fee',
-        },
-        {
-          name: 'medianFee',
-          label: 'Median Fee',
         },
         {
           name: 'volume',

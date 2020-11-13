@@ -72,7 +72,6 @@ export const getters = {
           runeDepth: pool.runeDepth,
           slippageDepth: pool.runeDepth * 0.00504,
           meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
-          medianFee: null,
           volume: pool.poolVolume,
           apy: pool.poolROI,
           apyRealRewards: null,
