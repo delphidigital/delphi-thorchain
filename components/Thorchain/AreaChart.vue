@@ -1,13 +1,8 @@
 <template>
-  <div class="coming-soon__parent">
-    <ComingSoon />
-    <div class="coming-soon__target">
-      <AppHighchart
-        :chart-options="chartOptions"
-        :placeholder-height="130"
-      />
-    </div>
-  </div>
+  <AppHighchart
+    :chart-options="chartOptions"
+    :placeholder-height="130"
+  />
 </template>
 
 <script>

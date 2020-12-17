@@ -9,3 +9,12 @@ export const state = () => ({
   liquidityDepthOverTime: dummyTimeSeriesProgressive(someTimeAgo, today, 10),
   percentageRuneLockedOverTime: dummyTimeSeriesIntervals(someTimeAgo, today, 20, 100),
 });
+
+export const mutations = {
+  setStatsHistory(state, statsHistory) {
+    state.liquidityDepthOverTime = statsHistory.map(e => ({
+      date: e.time * 1000,
+      value: parseInt(e.totalRuneDepth, 10),
+    }));
+  },
+};

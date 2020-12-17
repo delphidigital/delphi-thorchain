@@ -57,6 +57,7 @@ async function updateBlockchainData(blockchain) {
   const poolAddresses = await api.loadPoolAddresses({ axios });
   const stats = await api.loadStats({ axios });
   const network = await api.loadNetwork({ axios });
+  const statsHistory = await api.loadStatsHistory({ axios });
   const constants = await api.loadConstants({ axios });
   const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
 
@@ -123,6 +124,7 @@ async function updateBlockchainData(blockchain) {
   })
   await set('stats', stats);
   await set('network', network);
+  await set('statsHistory', statsHistory);
   await set('constants', constants);
   await set('version', versionRequest.data);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
