@@ -6,7 +6,6 @@ import fs from 'fs';
 import redis from 'redis';
 import { promisify } from 'util';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
-import { withCache } from '../lib/cacheUtils.mjs';
 
 process.on('unhandledRejection', up => { throw up });
 
@@ -46,9 +45,11 @@ async function updateBlockchainData(blockchain) {
   const nodeAccounts = await api.loadNodeAccounts({ axios });
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
-    const lookup = await withCache(cacheKey, async () => {
-      return await lookupGeoIP(nodeAccount['ip_address']);
-    });
+    let lookup = await getAsync(cacheKey);
+    if (!lookup) {
+      lookup = await lookupGeoIP(nodeAccount['ip_address']);
+      setAsync(cacheKey, JSON.stringify(lookup))
+    }
     return { ...nodeAccount, location: lookup };
   }));
   const lastBlock = await api.loadLastBlock({ axios });
