@@ -4,6 +4,7 @@ import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
 import { withCache } from '../lib/cacheUtils.mjs';
 import redisClient from '../lib/redisClient.mjs';
+import sendgrid from '../lib/sendgrid.mjs';
 
 
 process.on('unhandledRejection', (up) => { throw up; });
@@ -130,6 +131,7 @@ async function fetchDataJob(blockchain) {
     await updateBlockchainData(blockchain);
   } catch (e) {
     console.log(`[${blockchain}]: Data fetch failed with: `, e);
+    await sendgrid.sendErrorEmail(e, blockchain);
     timeout = 5000;
   }
   setTimeout(() => {
