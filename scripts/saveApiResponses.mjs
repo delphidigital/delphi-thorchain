@@ -1,27 +1,15 @@
+import axios from 'axios';
 import ThorchainApi from '../lib/api.mjs';
 import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
-
-import axios from 'axios';
-import fs from 'fs';
-import redis from 'redis';
-import { promisify } from 'util';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
 import { withCache } from '../lib/cacheUtils.mjs';
+import redisClient from '../lib/redisClient.mjs';
 
-process.on('unhandledRejection', up => { throw up });
 
-const client = redis.createClient();
-const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
-const lpushAsync = promisify(client.lpush).bind(client);
-const lindexAsync = promisify(client.lindex).bind(client);
-const lrangeAsync = promisify(client.lrange).bind(client);
-const ltrimAsync = promisify(client.ltrim).bind(client);
-
+process.on('unhandledRejection', (up) => { throw up; });
 async function redisSet(key, data) {
-  await setAsync(key, JSON.stringify(data));
+  await redisClient.setAsync(key, JSON.stringify(data));
 }
-
 async function getRuneMarketData() {
   const response = await axios.get('https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
   return response.data.market_data;
@@ -30,7 +18,7 @@ async function getRuneMarketData() {
 async function updateBlockchainData(blockchain) {
   const start = new Date();
   console.log(`[${blockchain}]: starting data fetch...`);
-  const redisKey = (key) => `thorchain::${blockchain}::${key}`;
+  const redisKey = key => `thorchain::${blockchain}::${key}`;
   const set = (key, data) => redisSet(redisKey(key), data);
   const api = ThorchainApi(blockchain);
 
@@ -38,7 +26,7 @@ async function updateBlockchainData(blockchain) {
   // Thorchain
   const poolList = await api.loadPools({ axios });
   const poolIds = poolList.filter(i => i.status === 'Enabled').map(i => i.asset);
-  let poolDetails = {} 
+  const poolDetails = {};
   for (const poolId of poolIds) {
     const poolDetail = await api.loadPoolDetail({ axios, poolId });
     poolDetails[poolId] = poolDetail;
@@ -46,9 +34,7 @@ async function updateBlockchainData(blockchain) {
   const nodeAccounts = await api.loadNodeAccounts({ axios });
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
-    const lookup = await withCache(cacheKey, async () => {
-      return await lookupGeoIP(nodeAccount['ip_address']);
-    });
+    const lookup = await withCache(cacheKey, async () => lookupGeoIP(nodeAccount['ip_address']));
     return { ...nodeAccount, location: lookup };
   }));
   const lastBlock = await api.loadLastBlock({ axios });
@@ -61,28 +47,27 @@ async function updateBlockchainData(blockchain) {
   const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
 
   // Other sources
-  const runeMarketData = await getRuneMarketData()
+  const runeMarketData = await getRuneMarketData();
   let runevaultBalance = 0;
-  if( blockchain === 'chaosnet') {
-    const frozenBalancesReq = await axios.get("http://frozenbalances.herokuapp.com/stats/RUNE-B1A");
+  if (blockchain === 'chaosnet') {
+    const frozenBalancesReq = await axios.get('http://frozenbalances.herokuapp.com/stats/RUNE-B1A');
     runevaultBalance = frozenBalancesReq.data.totalFrozen;
   }
   // Get Binance accounts
   // only query as many as there are asgard vaults
   const asgardVaultsCount = asgardVaults.length;
   const binancePoolAddressData = poolAddresses.current.find(a => a.chain === 'BNB');
-  let binanceCachedAddresses = await lrangeAsync(redisKey(`asgardAddresses::BNB`), 0, 3);
+  const binanceCachedAddresses = await redisClient.lrangeAsync(redisKey('asgardAddresses::BNB'), 0, 3);
   if (binancePoolAddressData) {
-    binanceCachedAddresses.unshift(binancePoolAddressData.address)
+    binanceCachedAddresses.unshift(binancePoolAddressData.address);
   }
-  let binanceAddresses = [];
-  for(
+  const binanceAddresses = [];
+  for (
     let i = 0;
     (i < binanceCachedAddresses.length) && (binanceAddresses.length < asgardVaultsCount);
     i++) {
-    
-    let address = binanceCachedAddresses[i];
-    if( !binanceAddresses.includes(address) ) {
+    const address = binanceCachedAddresses[i];
+    if (!binanceAddresses.includes(address)) {
       binanceAddresses.push(address);
     }
   }
@@ -101,7 +86,7 @@ async function updateBlockchainData(blockchain) {
   await set('pools', poolList);
   Object.keys(poolDetails).forEach(async (poolId) => {
     await set(`pools-${poolId}`, poolDetails[poolId]);
-  })
+  });
   await set('nodeAccounts', nodeAccountsWithLocation);
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
@@ -110,17 +95,18 @@ async function updateBlockchainData(blockchain) {
   poolAddresses.current.forEach(async (addressData) => {
     const chain = addressData.chain;
     const address = addressData.address;
-    const key = redisKey(`asgardAddresses::${chain}`)
+    const key = redisKey(`asgardAddresses::${chain}`);
     // Always keep the address returned at pool_addresses first, does not matter if it
     // repeats in the list as long as they are not consecutive
-    const currentAddress = await lindexAsync(key, 0)
+    const currentAddress = await redisClient.lindexAsync(key, 0);
     if (address !== currentAddress) {
-      await lpushAsync(key, address);
+      await redisClient.lpushAsync(key, address);
       // TODO(elfedy): Keep four addresses just in case. Maybe more in the future when we
       // have multiple Asgard vaults
-      await ltrimAsync(key, 0, 3);
+      await redisClient.ltrimAsync(key, 0, 3);
     }
-  })
+  });
+
   await set('stats', stats);
   await set('network', network);
   await set('constants', constants);
@@ -129,26 +115,23 @@ async function updateBlockchainData(blockchain) {
   await set('runevaultBalance', runevaultBalance);
   await set('binanceAccounts', binanceAccounts);
 
-
-  const end = new Date()
-  console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`)
+  const end = new Date();
+  console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`);
 }
 
 async function fetchDataJob(blockchain) {
   const dataSource = process.env.DATA_SOURCE;
-  if(dataSource !== "api") {
-    console.log('DATA_SOURCE env variable should be set to \"api\" to run this job');
+  if (dataSource !== 'api') {
+    console.log('DATA_SOURCE env variable should be set to "api" to run this job');
     return;
   }
-
-  let timeout = 1000
+  let timeout = 1000;
   try {
     await updateBlockchainData(blockchain);
-  } catch(e) {
+  } catch (e) {
     console.log(`[${blockchain}]: Data fetch failed with: `, e);
     timeout = 5000;
   }
-
   setTimeout(() => {
     fetchDataJob(blockchain);
   }, timeout);
