@@ -4,7 +4,7 @@ import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
 import { withCache } from '../lib/cacheUtils.mjs';
 import redisClient from '../lib/redisClient.mjs';
-import sendgrid from '../lib/sendgrid.mjs';
+import EmailProvider from '../lib/emailProvider.mjs';
 
 
 process.on('unhandledRejection', (up) => { throw up; });
@@ -120,6 +120,9 @@ async function updateBlockchainData(blockchain) {
   console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`);
 }
 
+let consecutiveErrorAttempts = 0;
+let notificationSent = false;
+const NOTIFICATION_MINUTE_TIME_INTERVAL = process.env.NOTIFICATION_MINUTE_TIME_INTERVAL || 30;
 async function fetchDataJob(blockchain) {
   const dataSource = process.env.DATA_SOURCE;
   if (dataSource !== 'api') {
@@ -129,9 +132,18 @@ async function fetchDataJob(blockchain) {
   let timeout = 1000;
   try {
     await updateBlockchainData(blockchain);
+    if (consecutiveErrorAttempts > 0) consecutiveErrorAttempts = 0;
   } catch (e) {
+    const errorIntervalInSeconds = 5;
+    consecutiveErrorAttempts += 1;
+    const consecutiveErrorMinutes = Math
+      .floor(((consecutiveErrorAttempts * errorIntervalInSeconds) / 60));
+    if (consecutiveErrorMinutes > NOTIFICATION_MINUTE_TIME_INTERVAL || !notificationSent) {
+      const sendgrid = EmailProvider();
+      await sendgrid.sendErrorMail(e, blockchain);
+      notificationSent = true;
+    }
     console.log(`[${blockchain}]: Data fetch failed with: `, e);
-    await sendgrid.sendErrorEmail(e, blockchain);
     timeout = 5000;
   }
   setTimeout(() => {
