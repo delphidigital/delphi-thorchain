@@ -39,5 +39,7 @@ $ DATA_SOURCE=cache PORT=3021 yarn dev
 - CACHE_URL: url to query cached data from, defaults to 'http://localhost:3021'.
 - TESTNET_NODE_IP: node ip to be used for testnet api queries, defaults to '168.119.21.60'.
 - CHAOSNET_NODE_IP: node ip to be used for chaosnet api queries, defaults to ' '18.159.173.48'.
+- SENDGRID_API_KEY: Sendgrid's API key used to send error notification emails.
+- NOTIFICATION_MINUTE_TIME_INTERVAL: interval in minutes between notification emails (30 minutes by default). 
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
