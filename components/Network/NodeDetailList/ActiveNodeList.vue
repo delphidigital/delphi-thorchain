@@ -5,6 +5,9 @@
         <h2 class="section__title">
           Active Nodes
         </h2>
+        <span class="section__title__note">
+          Bad behaviour threshold: {{ badBehaviourThreshold }}
+        </span>
       </div>
       <div class="section__body">
         <div class="active-nodes-container">
@@ -17,6 +20,9 @@
                 </th>
                 <th class="section__table__head section__table__head--location">
                   Location
+                </th>
+                <th class="section__table__head section__table__head--location">
+                  Score
                 </th>
                 <th class="section__table__head section__table__head--version">
                   Version
@@ -34,6 +40,7 @@
             </thead>
             <ActiveNodeRows
               :nodes="activeNodesSegmentedForChurn"
+              :scores="activeNodesScoresMap"
             />
           </table>
         </div>
@@ -51,7 +58,13 @@ export default {
   },
   computed: {
     activeNodesSegmentedForChurn() {
-      return this.$store.getters['nodes/activeNodesSegmentedForChurn'];
+      return this.$store.getters['nodes/activeNodesSegmentedForChurnAndThreshold'].activeNodes;
+    },
+    badBehaviourThreshold() {
+      return this.$store.getters['nodes/activeNodesSegmentedForChurnAndThreshold'].threshold.toFixed(2);
+    },
+    activeNodesScoresMap() {
+      return this.$store.getters['nodes/activeNodesSegmentedForChurnAndThreshold'].scoresMap;
     },
   },
 };

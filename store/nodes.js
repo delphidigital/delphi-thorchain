@@ -13,7 +13,7 @@ export const state = () => ({
 });
 
 export const getters = {
-  activeNodesSegmentedForChurn(state, g, rootState) {
+  activeNodesSegmentedForChurnAndThreshold(state, g, rootState) {
     const currentHeight = rootState.networkHealth.lastThorchainBlock;
     const activeNodes =
       Object.values(state.nodes).filter(node => (
@@ -30,10 +30,12 @@ export const getters = {
       }
     });
     oldestNode.oldest = true;
+    let threshold = 0.0;
 
 
     // find nodes with bad scores
     const scores = [];
+    const scoresMap = {};
     let lowestScore = currentHeight * 10;
     let lowestScoreNode = null;
     let totalScore = 0;
@@ -51,15 +53,20 @@ export const getters = {
           lowestScore = score;
           lowestScoreNode = node;
         }
-
         scores.push({ node, score });
+        const nodeId = node['node_address'];
+        if (nodeId) {
+          scoresMap[nodeId] = score;
+        }
       }
     });
+    /* eslint-disable no-debugger */
+    debugger;
     // No churning if all nodes young or have 0 slashPts
     if (scores.length > 0) {
       const badNodes = [];
       const avgScore = totalScore / scores.length;
-      const threshold = avgScore / 3;
+      threshold = avgScore / 3;
       scores.forEach((score) => {
         if (score.score < threshold) {
           badNodes.push(score.node);
@@ -151,7 +158,11 @@ export const getters = {
         };
       });
 
-    return sortedActiveNodes;
+    return {
+      activeNodes: sortedActiveNodes,
+      threshold,
+      scoresMap,
+    };
   },
   countsByStatus(state) {
     const statusMap = {};
@@ -282,7 +293,7 @@ export const getters = {
     let count = 0;
     let hasLowVersion = false;
 
-    g.activeNodesSegmentedForChurn.forEach((n) => {
+    g.activeNodesSegmentedForChurnAndThreshold.activeNodes.forEach((n) => {
       if (n.countsForWillChurn) {
         count += 1;
       }

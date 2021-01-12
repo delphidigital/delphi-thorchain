@@ -11,7 +11,10 @@
         <Address :address="node['node_address']" :max-chars="20" />
       </td>
       <td class="section__table__data section__table__data--location">
-        {{ formatLocation(node.location) }}
+        <span class="section__table__data--longvalue">{{ formatLocation(node.location) }}</span>
+      </td>
+      <td class="section__table__data section__table__data--score">
+        {{ scores[node.node_address] ? scores[node.node_address].toFixed(2) : '' }}
       </td>
       <td class="section__table__data section__table__data--version">
         {{ node.version }}
@@ -78,6 +81,10 @@ export default {
     nodes: {
       type: Array,
       default: () => [],
+    },
+    scores: {
+      type: Object,
+      default: () => {},
     },
   },
   data() {

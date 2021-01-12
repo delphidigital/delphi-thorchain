@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     activeNodesSegmentedForChurn() {
-      const allNodes = this.$store.getters['nodes/activeNodesSegmentedForChurn'];
+      const allNodes = this.$store.getters['nodes/activeNodesSegmentedForChurnAndThreshold'].activeNodes;
       return allNodes.slice(0, this.showMax);
     },
     showAmount() {

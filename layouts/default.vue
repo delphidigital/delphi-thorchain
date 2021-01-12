@@ -372,6 +372,12 @@ a {
 .section__title {
   font-size: 17px;
   font-weight: 600;
+  flex: 1;
+}
+
+.section__title__note {
+    font-size: 12px;
+    opacity: .8;
 }
 
 
@@ -489,7 +495,13 @@ $padding-section-table: 25px;
     text-transform: uppercase;
   }
 }
-
+.section__table__data--longvalue {
+    display: inline-block;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
 .section__table__data:first-child {
   padding-left: $padding-section-table;
 }
