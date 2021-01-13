@@ -376,8 +376,8 @@ a {
 }
 
 .section__title__note {
-    font-size: 12px;
-    opacity: .8;
+  font-size: 12px;
+  color: #A6B0C3;
 }
 
 
