@@ -464,6 +464,26 @@ a {
     background-color: $color-red-overlay;
   }
 }
+.section__table__score--will-churn-score {
+  color: $color-red;
+}
+.bad-behavior-tooltip {
+    display: none;
+    position: absolute;
+    top: -200px;
+    right: calc(50% - 125px);
+    background-color: $color-bg-popup;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.section__title__node--behavior {
+  position: relative;
+  &:hover {
+    .bad-behavior-tooltip {
+      display: block;
+    }
+  }
+}
 
 
 $padding-section-table: 25px;

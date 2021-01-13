@@ -15,74 +15,51 @@ export const state = () => ({
 export const getters = {
   activeNodesSegmentedForChurnAndThreshold(state, g, rootState) {
     const currentHeight = rootState.networkHealth.lastThorchainBlock;
-    const activeNodes =
-      Object.values(state.nodes).filter(node => (
-        node.status === 'active'
-      )).map(node => ({ ...node, oldest: false, lowScore: false, lowVersion: false }));
+    const activeNodePropertiesMap = {}; // will store properties by node address
+    const activeNodes = Object.values(state.nodes).filter(node => (node.status === 'active'));
 
-    // find oldest node
-    let oldestNode = { status_since: currentHeight };
-    activeNodes.forEach((node) => {
-      if (
-        (parseInt(oldestNode['status_since'], 10) > parseInt(node['status_since'], 10))
-      ) {
-        oldestNode = node;
-      }
-    });
-    oldestNode.oldest = true;
+    let oldestNodeStatusSince = currentHeight;
+    let oldestNodeAddress = null;
+
     let threshold = 0.0;
-
-
-    // find nodes with bad scores
-    const scores = [];
-    const scoresMap = {};
     let lowestScore = currentHeight * 10;
-    let lowestScoreNode = null;
+    let lowestScoreNodeAddress = null;
     let totalScore = 0;
 
     activeNodes.forEach((node) => {
-      const age = currentHeight - node['status_since'];
-      const slashPoints = node['slash_points'];
-
+      // activeNodePropertiesMap[node.node_address]
+      // setup map of extra properties for each node by address
+      const nodeProperties = {
+        oldest: false,
+        lowScore: false,
+        lowVersion: false,
+        score: null,
+        countsForWillChurn: null,
+        showAsWillChurn: null,
+        churnStatusType: null,
+      };
+      // find oldest node
+      if ((parseInt(oldestNodeStatusSince, 10) > parseInt(node.status_since, 10))) {
+        oldestNodeStatusSince = node.status_since;
+        oldestNodeAddress = node.node_address;
+      }
+      // calculate scores for each active node
+      const age = currentHeight - node.status_since;
+      const slashPoints = node.slash_points;
+      let score = null;
       if (age > 720 && slashPoints > 0) {
         // NOTE(Fede): Thorchain source code multiplies by 10 ^ 8 to do math using uint64s
         // but we don't really care.
-        const score = age / slashPoints;
+        score = age / slashPoints;
         totalScore += score;
         if (score < lowestScore) {
           lowestScore = score;
-          lowestScoreNode = node;
+          // NOTE: use node_address only, not node object
+          lowestScoreNodeAddress = node.node_address;
         }
-        scores.push({ node, score });
-        const nodeId = node['node_address'];
-        if (nodeId) {
-          scoresMap[nodeId] = score;
-        }
+        nodeProperties.score = score;
       }
-    });
-    /* eslint-disable no-debugger */
-    debugger;
-    // No churning if all nodes young or have 0 slashPts
-    if (scores.length > 0) {
-      const badNodes = [];
-      const avgScore = totalScore / scores.length;
-      threshold = avgScore / 3;
-      scores.forEach((score) => {
-        if (score.score < threshold) {
-          badNodes.push(score.node);
-        }
-      });
-      if (badNodes.length === 0) {
-        badNodes.push(lowestScoreNode);
-      }
-      badNodes.forEach((node) => {
-        // eslint-disable-next-line no-param-reassign
-        node.lowScore = true;
-      });
-    }
-
-    // Find nodes with version lower than join version
-    activeNodes.forEach((node) => {
+      // Find nodes with version lower than join version
       // NOTE(Fede): Asumes no weird version formats and that they all are formatted the
       // same way (ie: no comparisons like 1.12 and 1.12.0 could ever come up)
       const versionCompare =
@@ -93,9 +70,66 @@ export const getters = {
         );
 
       if (versionCompare === -1) {
-        // eslint-disable-next-line no-param-reassign
-        node.lowVersion = true;
+        nodeProperties.lowVersion = true;
       }
+      activeNodePropertiesMap[node.node_address] = nodeProperties;
+    });
+
+    const scoredNodes = Object.keys(activeNodePropertiesMap)
+      .filter(addr => activeNodePropertiesMap[addr].score !== null);
+    if (oldestNodeAddress) {
+      activeNodePropertiesMap[oldestNodeAddress].oldest = true;
+    }
+    // oldestNode.oldest = true
+    // No churning if all nodes young or have 0 slashPts
+    if (scoredNodes.length) {
+      // const badNodes = [];
+      const avgScore = totalScore / scoredNodes.length;
+      threshold = avgScore / 3;
+      let underscoredNodesCount = 0;
+      scoredNodes.forEach((scoredNodeAddr) => {
+        const nodeProps = activeNodePropertiesMap[scoredNodeAddr];
+        if (nodeProps.score < threshold) {
+          nodeProps.lowScore = true;
+          underscoredNodesCount += 1;
+        }
+      });
+      if (!underscoredNodesCount) { // if no underscored node, bring attention to the lowest one
+        activeNodePropertiesMap[lowestScoreNodeAddress].lowScore = true;
+      }
+    }
+
+    // calculate churn properties
+    Object.values(activeNodes).forEach((node) => {
+      const nodeProps = activeNodePropertiesMap[node.node_address];
+      // Include in amount to churn count (used to see how many to standby nodes will go in)
+      const countsForWillChurn =
+        node['forced_to_leave'] ||
+        node['requested_to_leave'] ||
+        (node['leave_height'] !== '0') ||
+        nodeProps.oldest ||
+        nodeProps.lowScore;
+
+      // Determine what status to show on the frontend
+      let churnStatusType = 'active';
+      if (node['forced_to_leave']) {
+        churnStatusType = 'forcedToLeave';
+      } else if (node['requested_to_leave']) {
+        churnStatusType = 'requestedToLeave';
+      } else if (node['leave_height'] !== '0') {
+        churnStatusType = 'markedToLeave';
+      } else if (nodeProps.oldest) {
+        churnStatusType = 'oldest';
+      } else if (nodeProps.lowScore) {
+        churnStatusType = 'badNode';
+      } else if (nodeProps.lowVersion) {
+        churnStatusType = 'lowVersion';
+      }
+      activeNodePropertiesMap[node.node_address].countsForWillChurn = countsForWillChurn;
+      activeNodePropertiesMap[node.node_address].showAsWillChurn = (
+        countsForWillChurn || node.lowVersion
+      );
+      activeNodePropertiesMap[node.node_address].churnStatusType = churnStatusType;
     });
 
     // sort nodes 1) forced to leave, 2) requested to leave 3) by leave height 4) by age
@@ -125,43 +159,13 @@ export const getters = {
         const aBlock = parseInt(a['status_since'], 10);
         const bBlock = parseInt(b['status_since'], 10);
         return aBlock - bBlock;
-      }).map((node) => {
-        // Include in amount to churn count (used to see how many to standby nodes will go in)
-        const countsForWillChurn =
-          node['forced_to_leave'] ||
-          node['requested_to_leave'] ||
-          (node['leave_height'] !== '0') ||
-          node.oldest ||
-          node.lowScore;
-
-        // Determine what status to show on the frontend
-        let churnStatusType = 'active';
-        if (node['forced_to_leave']) {
-          churnStatusType = 'forcedToLeave';
-        } else if (node['requested_to_leave']) {
-          churnStatusType = 'requestedToLeave';
-        } else if (node['leave_height'] !== '0') {
-          churnStatusType = 'markedToLeave';
-        } else if (node.oldest) {
-          churnStatusType = 'oldest';
-        } else if (node.lowScore) {
-          churnStatusType = 'badNode';
-        } else if (node.lowVersion) {
-          churnStatusType = 'lowVersion';
-        }
-
-        return {
-          ...node,
-          countsForWillChurn,
-          showAsWillChurn: countsForWillChurn || node.lowVersion,
-          churnStatusType,
-        };
-      });
-
+      }).map(activeNode => ({
+        ...activeNode,
+        ...(activeNodePropertiesMap[activeNode.node_address] || {}),
+      }));
     return {
       activeNodes: sortedActiveNodes,
       threshold,
-      scoresMap,
     };
   },
   countsByStatus(state) {

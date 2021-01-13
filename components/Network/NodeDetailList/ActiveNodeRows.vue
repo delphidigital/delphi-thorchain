@@ -13,11 +13,14 @@
       <td class="section__table__data section__table__data--location">
         <span class="section__table__data--longvalue">{{ formatLocation(node.location) }}</span>
       </td>
-      <td class="section__table__data section__table__data--score">
-        {{ scores[node.node_address] ? scores[node.node_address].toFixed(2) : '' }}
-      </td>
       <td class="section__table__data section__table__data--version">
         {{ node.version }}
+      </td>
+      <td
+        class="section__table__data section__table__data--score"
+        :class="{'section__table__score--will-churn-score': node.lowScore}"
+      >
+        {{ (node.score) ? Math.floor(node.score) : '' }}
       </td>
       <td class="section__table__data section__table__data--status">
         <div v-if="isInJail(node)">
@@ -46,7 +49,7 @@
             <span class="churn-status churn-status--out">May churn due to age</span>
           </div>
           <div v-if="node.churnStatusType === 'badNode'">
-            <span class="churn-status churn-status--out">May churn for bad behavior</span>
+            <span class="churn-status churn-status--out">Behaviour score</span>
           </div>
           <div v-if="node.churnStatusType === 'lowVersion'">
             <span class="churn-status churn-status--out">Version is low</span>
@@ -81,10 +84,6 @@ export default {
     nodes: {
       type: Array,
       default: () => [],
-    },
-    scores: {
-      type: Object,
-      default: () => {},
     },
   },
   data() {
