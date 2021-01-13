@@ -471,7 +471,7 @@ a {
     display: none;
     position: absolute;
     top: -200px;
-    right: calc(50% - 125px);
+    right: 0;
     background-color: $color-bg-popup;
     font-size: 12px;
     border-radius: 4px;
