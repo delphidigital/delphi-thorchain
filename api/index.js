@@ -1,9 +1,8 @@
 import express from 'express';
-import fs from 'fs';
-import redis from 'redis';
 import { promisify } from 'util';
+import redisClient from '../lib/redisClient.mjs';
 
-const client = redis.createClient();
+const client = redisClient;
 const getAsync = promisify(client.get).bind(client);
 
 const app = express();
