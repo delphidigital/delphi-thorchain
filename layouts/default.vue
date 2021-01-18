@@ -372,6 +372,12 @@ a {
 .section__title {
   font-size: 17px;
   font-weight: 600;
+  flex: 1;
+}
+
+.section__title__note {
+  font-size: 12px;
+  color: #A6B0C3;
 }
 
 
@@ -458,6 +464,26 @@ a {
     background-color: $color-red-overlay;
   }
 }
+.section__table__score--will-churn-score {
+  color: $color-red;
+}
+.bad-behavior-tooltip {
+    display: none;
+    position: absolute;
+    top: -200px;
+    right: 0;
+    background-color: $color-bg-popup;
+    font-size: 12px;
+    border-radius: 4px;
+}
+.section__title__node--behavior {
+  position: relative;
+  &:hover {
+    .bad-behavior-tooltip {
+      display: block;
+    }
+  }
+}
 
 
 $padding-section-table: 25px;
@@ -489,7 +515,13 @@ $padding-section-table: 25px;
     text-transform: uppercase;
   }
 }
-
+.section__table__data--longvalue {
+    display: inline-block;
+    max-width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
 .section__table__data:first-child {
   padding-left: $padding-section-table;
 }
