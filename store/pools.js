@@ -71,7 +71,8 @@ export const getters = {
           name: poolId,
           runeDepth: pool.runeDepth,
           slippageDepth: pool.runeDepth * 0.00504,
-          meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
+          meanFeeAsPercentage:
+             pool.sellTxAverage ? (pool.poolFeeAverage / pool.sellTxAverage) : 0,
           volume: pool.poolVolume,
           apy: pool.poolAPY,
           apyRealRewards: null,
@@ -143,14 +144,20 @@ const parsePoolDetail = poolDetail => ({
   asset: poolDetail.asset,
   assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
   assetDepthRaw: poolDetail.assetDepth,
+  // NEW v2: only available in pool-legacy v2 endpoint
   poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
-  poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
+  // v2: property renamed from poolVolume24hr to volume24h
+  poolVolume24hr: parseInt(poolDetail.volume24h, 10) / runeDivider,
   poolAPY: parseFloat(poolDetail.poolAPY),
   poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
-  price: parseFloat(poolDetail.price),
+  // v2 renamed price to assetPrice
+  price: parseFloat(poolDetail.assetPrice),
   runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
   runeDepthRaw: poolDetail.runeDepth,
-  sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
+  // v2: sellFeeAverage not available, using poolFeeAverage instead
+  // sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
+  poolFeeAverage: parseInt(poolDetail.poolFeeAverage, 10) / runeDivider,
+  // v2 not available, available at pool-legacy
   sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
 });
 

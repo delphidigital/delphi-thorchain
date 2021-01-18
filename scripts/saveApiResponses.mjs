@@ -25,27 +25,28 @@ async function updateBlockchainData(blockchain) {
 
   // FETCH DATA
   // Thorchain
-  const poolList = await api.loadPools({ axios });
-  const poolIds = poolList.filter(i => i.status === 'Enabled').map(i => i.asset);
-  const poolDetails = {};
+  const poolList = await api.loadPools({ axios }); // same
+  const okStatus = 'Available' // NOTE: v1 returned status: 'Enabled', but v2 is returning status: Available
+  const poolIds = poolList.filter(i => i.status === okStatus).map(i => i.asset);
+  let poolDetails = {} 
   for (const poolId of poolIds) {
     const poolDetail = await api.loadPoolDetail({ axios, poolId });
     poolDetails[poolId] = poolDetail;
   }
-  const nodeAccounts = await api.loadNodeAccounts({ axios });
+  const nodeAccounts = await api.loadNodeAccounts({ axios }); // same
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
     const lookup = await withCache(cacheKey, async () => lookupGeoIP(nodeAccount['ip_address']));
     return { ...nodeAccount, location: lookup };
   }));
-  const lastBlock = await api.loadLastBlock({ axios });
-  const mimir = await api.loadMimir({ axios });
-  const asgardVaults = await api.loadAsgardVaults({ axios });
-  const poolAddresses = await api.loadPoolAddresses({ axios });
-  const stats = await api.loadStats({ axios });
-  const network = await api.loadNetwork({ axios });
-  const constants = await api.loadConstants({ axios });
-  const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
+  const lastBlock = await api.loadLastBlock({ axios }); // NOTE! not same
+  const mimir = await api.loadMimir({ axios }); // same? not 100% sure type since current payload returns {}
+  const asgardVaults = await api.loadAsgardVaults({ axios }); // same
+  const inboundAddresses = await api.loadInboundAddresses({ axios });
+  const stats = await api.loadStats({ axios }); // same as v1 without : [poolCount, totalEarned, totalVolume24hr]
+  const network = await api.loadNetwork({ axios }); // same props changed standbyNodeCount is str, totalPooledRune, totalStaked
+  const constants = await api.loadConstants({ axios }); // same, some props updated?
+  const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`); // good
 
   // Other sources
   const runeMarketData = await getRuneMarketData();
@@ -56,9 +57,10 @@ async function updateBlockchainData(blockchain) {
   }
   // Get Binance accounts
   // only query as many as there are asgard vaults
+
   const asgardVaultsCount = asgardVaults.length;
-  const binancePoolAddressData = poolAddresses.current.find(a => a.chain === 'BNB');
-  const binanceCachedAddresses = await redisClient.lrangeAsync(redisKey('asgardAddresses::BNB'), 0, 3);
+  const binancePoolAddressData = inboundAddresses.current.find(a => a.chain === 'BNB');
+  let binanceCachedAddresses = await redisClient.lrangeAsync(redisKey(`asgardAddresses::BNB`), 0, 3);
   if (binancePoolAddressData) {
     binanceCachedAddresses.unshift(binancePoolAddressData.address);
   }
@@ -72,7 +74,7 @@ async function updateBlockchainData(blockchain) {
       binanceAddresses.push(address);
     }
   }
-  const binanceAccounts = await binanceFetchAccounts({ axios }, blockchain, binanceAddresses);
+ const binanceAccounts = await binanceFetchAccounts({ axios }, blockchain, binanceAddresses);
 
   // PROCESS RESULTS
   const totalStaked = parseInt(stats.totalStaked);
@@ -92,8 +94,9 @@ async function updateBlockchainData(blockchain) {
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
+  
   // Keep a list of most recent asgard vault addresses
-  poolAddresses.current.forEach(async (addressData) => {
+  inboundAddresses.current.forEach(async (addressData) => {
     const chain = addressData.chain;
     const address = addressData.address;
     const key = redisKey(`asgardAddresses::${chain}`);
@@ -152,4 +155,5 @@ async function fetchDataJob(blockchain) {
 }
 
 fetchDataJob('testnet');
-fetchDataJob('chaosnet');
+// no chaosnet on v2 testnet
+// fetchDataJob('chaosnet');

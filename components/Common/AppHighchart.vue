@@ -30,15 +30,17 @@ export default {
         // stuff properly and fails if called at the wrong time. Just retrying the update
         // seems to work just fine. Not worth it to dig deeper into the issue for now.
         try {
-          this.chart.update(newData);
+          if (this.chart) {
+            this.chart.update(newData);
+          }
         } catch (e) {
-          this.chart.update(newData);
+          console.error(e);
         }
       }
     },
   },
   mounted() {
-    if (typeof window === 'object') {
+    if (typeof Highcharts === 'object' && typeof window === 'object') {
       this.chart = Highcharts.chart(this.$refs.chart, this.chartOptions);
       this.updatedAt = new Date();
     }

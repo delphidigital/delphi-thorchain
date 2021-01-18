@@ -140,7 +140,7 @@ export default {
       return this.runeBonded / this.totalRune;
     },
     runeStaked() {
-      return this.$store.state.networkHealth.totalStaked;
+      return this.$store.state.networkHealth.totalPooledRune;
     },
     runeStakedPercentage() {
       return this.runeStaked / this.totalRune;

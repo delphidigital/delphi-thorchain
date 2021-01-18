@@ -7,7 +7,7 @@ const getAsync = promisify(client.get).bind(client);
 
 const app = express();
 const thorchain = express.Router();
-const chaosnet = express.Router();
+// const chaosnet = express.Router();
 const testnet = express.Router();
 
 async function loadCached(id) {
@@ -20,27 +20,30 @@ thorchain.all('/thorchain/pools', async (req, res) => {
   res.json(data);
 });
 
-thorchain.all('/v1/pools/detail', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::pools-${req.query.asset}`);
+// NOTE: 
+// url changed for `${midgardBase}/v2/pool-legacy/${asset}`;
+thorchain.all('/v2/pool-legacy/:asset', async (req, res) => {
+  const assetSymbol = req.params.asset;
+  const data = await loadCached(`${req.blockchain}::pools-${assetSymbol}`);
   res.json(data);
 });
 
-thorchain.all('/v1/stats', async (req, res) => {
+thorchain.all('/v2/stats', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::stats`);
   res.json(data);
 });
 
-thorchain.all('/v1/network', async (req, res) => {
+thorchain.all('/v2/network', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::network`);
   res.json(data);
 });
 
-thorchain.all('/v1/thorchain/constants', async (req, res) => {
+thorchain.all('/v2/thorchain/constants', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::constants`);
   res.json(data);
 });
 
-thorchain.all('/thorchain/nodeaccounts', async (req, res) => {
+thorchain.all('/thorchain/nodes', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::nodeAccounts`);
   res.json(data);
 });
@@ -80,14 +83,16 @@ thorchain.all('/int/extra', async (req, res) => {
   });
 });
 
-app.use('/chaosnet', chaosnet);
+// NOTE: no chaosnet on testnet v2
+// app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 
-chaosnet.use((req, res, next) => {
-  req.blockchain = 'chaosnet';
-  next();
-});
-chaosnet.use('/', thorchain);
+// NOTE: no chaosnet on testnet v2
+// chaosnet.use((req, res, next) => {
+//   req.blockchain = 'chaosnet';
+//   next();
+// });
+// chaosnet.use('/', thorchain);
 
 testnet.use((req, res, next) => {
   req.blockchain = 'testnet';
@@ -95,7 +100,8 @@ testnet.use((req, res, next) => {
 });
 testnet.use('/', thorchain);
 
-app.use('/chaosnet', chaosnet);
+// NOTE: no chaosnet on testnet v2
+// app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 
 module.exports = {
