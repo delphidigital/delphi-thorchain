@@ -30,7 +30,7 @@ async function updateBlockchainData(blockchain) {
   const poolIds = poolList.filter(i => i.status === okStatus).map(i => i.asset);
   let poolDetails = {} 
   for (const poolId of poolIds) {
-    const poolDetail = await api.loadPoolDetail({ axios, poolId });
+    const poolDetail = await api.loadPoolStats({ axios, poolId });
     poolDetails[poolId] = poolDetail;
   }
   const nodeAccounts = await api.loadNodeAccounts({ axios }); // same
@@ -127,12 +127,7 @@ let consecutiveErrorAttempts = 0;
 let notificationSent = false;
 const NOTIFICATION_MINUTE_TIME_INTERVAL = process.env.NOTIFICATION_MINUTE_TIME_INTERVAL || 30;
 async function fetchDataJob(blockchain) {
-  const dataSource = process.env.DATA_SOURCE;
-  if (dataSource !== 'api') {
-    console.log('DATA_SOURCE env variable should be set to "api" to run this job');
-    return;
-  }
-  let timeout = 1000;
+  let timeout = 1000
   try {
     await updateBlockchainData(blockchain);
     if (consecutiveErrorAttempts > 0) consecutiveErrorAttempts = 0;
@@ -155,5 +150,6 @@ async function fetchDataJob(blockchain) {
 }
 
 fetchDataJob('testnet');
-// no chaosnet on v2 testnet
+
+// NOTE: no chaosnet on v2 testnet, so no fetch data for it for now
 // fetchDataJob('chaosnet');

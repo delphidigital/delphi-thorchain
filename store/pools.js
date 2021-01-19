@@ -71,8 +71,7 @@ export const getters = {
           name: poolId,
           runeDepth: pool.runeDepth,
           slippageDepth: pool.runeDepth * 0.00504,
-          meanFeeAsPercentage:
-             pool.sellTxAverage ? (pool.poolFeeAverage / pool.sellTxAverage) : 0,
+          meanFeeAsPercentage: pool.meanFeeAsPercentage,
           volume: pool.poolVolume,
           apy: pool.poolAPY,
           apyRealRewards: null,
@@ -140,26 +139,47 @@ export const getters = {
   },
 };
 
-const parsePoolDetail = poolDetail => ({
-  asset: poolDetail.asset,
-  assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
-  assetDepthRaw: poolDetail.assetDepth,
-  // NEW v2: only available in pool-legacy v2 endpoint
-  poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
-  // v2: property renamed from poolVolume24hr to volume24h
-  poolVolume24hr: parseInt(poolDetail.volume24h, 10) / runeDivider,
-  poolAPY: parseFloat(poolDetail.poolAPY),
-  poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
-  // v2 renamed price to assetPrice
-  price: parseFloat(poolDetail.assetPrice),
-  runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
-  runeDepthRaw: poolDetail.runeDepth,
-  // v2: sellFeeAverage not available, using poolFeeAverage instead
-  // sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
-  poolFeeAverage: parseInt(poolDetail.poolFeeAverage, 10) / runeDivider,
-  // v2 not available, available at pool-legacy
-  sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
-});
+const parsePoolDetail = (poolDetail) => {
+  // NOTE: v2 api for pool details is not providing poolFeeAverage value, need to calculate it
+  // previous code: ellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
+  const poolFeeAverage = poolDetail.swapCount
+    ? (parseInt(poolDetail.totalFees / poolDetail.swapCount, 10) / runeDivider)
+    : 0;
+  // NOTE: v2 api for pool details is not providing sellTxAverage value, it it was a wrong name,
+  //       it should be poolTxAverage
+  // NOTE: sellTxAverage should be called poolTxAverage, now we calculate it:
+  const poolTxAverage = parseInt(
+    (
+      (
+        (poolDetail.toRuneCount ? (poolDetail.toRuneVolume / poolDetail.toRuneCount) : 0) +
+        (poolDetail.toAssetCount ? (poolDetail.toAssetVolume / poolDetail.toAssetCount) : 0)
+      ) / runeDivider
+    ), 10,
+  );
+
+  return {
+    asset: poolDetail.asset,
+    assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
+    assetDepthRaw: poolDetail.assetDepth,
+    // NOTE: v2 api for pool stats renamed poolVolume to swapVolume now
+    poolVolume: parseInt(poolDetail.swapVolume, 10) / runeDivider,
+    // NOTE: v2 property renamed from poolVolume24hr to volume24h
+    poolVolume24hr: parseInt(poolDetail.volume24h, 10) / runeDivider,
+    poolAPY: parseFloat(poolDetail.poolAPY),
+
+    // NOTE: v2 api for pool details is not providing poolDepth value,
+    //       poolDepth can be calculated as poolDetail.runeDepth * 2
+    poolDepth: parseInt(poolDetail.runeDepth * 2, 10) / runeDivider,
+
+    // NOTE: v2 renamed price to assetPrice
+    price: parseFloat(poolDetail.assetPrice),
+    runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
+    runeDepthRaw: poolDetail.runeDepth,
+
+    // NOTE: v2 now calculates meanFeeAsPercentage at state
+    meanFeeAsPercentage: poolTxAverage ? (poolFeeAverage / poolTxAverage) : 0,
+  };
+};
 
 export const mutations = {
   setPools(state, pools) {

@@ -74,7 +74,6 @@ export default {
     pollingFrequency: process.env.POLLING_FREQUENCY || 5000,
     TESTNET_NODE_IP: process.env.TESTNET_NODE_IP,
     CHAOSNET_NODE_IP: process.env.CHAOSNET_NODE_IP,
-    DATA_SOURCE: process.env.DATA_SOURCE || 'cache',
     CACHE_URL: process.env.CACHE_URL || 'http://localhost:3021',
   },
   /*

@@ -7,7 +7,7 @@ const getAsync = promisify(client.get).bind(client);
 
 const app = express();
 const thorchain = express.Router();
-// const chaosnet = express.Router();
+const chaosnet = express.Router();
 const testnet = express.Router();
 
 async function loadCached(id) {
@@ -15,84 +15,52 @@ async function loadCached(id) {
   return JSON.parse(rawdata);
 }
 
-thorchain.all('/thorchain/pools', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::pools`);
-  res.json(data);
+thorchain.all('/overview', async (req, res) => {
+  const pools = await loadCached(`${req.blockchain}::pools`); 
+  const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
+  const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
+  const mimir = await loadCached(`${req.blockchain}::mimir`);
+  const asgardVaults = await loadCached(`${req.blockchain}::asgardVaults`);
+  const network = await loadCached(`${req.blockchain}::network`);
+  const market = await loadCached(`${req.blockchain}::marketData`);
+  const constants = await loadCached(`${req.blockchain}::constants`);
+  const runevaultBalance = await loadCached(`${req.blockchain}::runevaultBalance`);
+
+  const version = await loadCached(`${req.blockchain}::version`);
+  const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
+  // NOTE: why this endpoint is not comsumed by frontend?
+  const stats = await loadCached(`${req.blockchain}::stats`);
+
+  res.json({
+    pools,
+    nodes,
+    lastBlock,
+    mimir,
+    asgardVaults,
+    network,
+    market,
+    constants,
+    runevaultBalance,
+    version,
+    binanceAccounts,
+    stats,
+  });
 });
 
-// NOTE: 
-// url changed for `${midgardBase}/v2/pool-legacy/${asset}`;
-thorchain.all('/v2/pool-legacy/:asset', async (req, res) => {
+thorchain.all('/pool/:asset', async (req, res) => {
   const assetSymbol = req.params.asset;
   const data = await loadCached(`${req.blockchain}::pools-${assetSymbol}`);
   res.json(data);
 });
 
-thorchain.all('/v2/stats', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::stats`);
-  res.json(data);
-});
-
-thorchain.all('/v2/network', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::network`);
-  res.json(data);
-});
-
-thorchain.all('/v2/thorchain/constants', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::constants`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/nodes', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::nodeAccounts`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/mimir', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::mimir`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/lastblock', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::lastBlock`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/vaults/asgard', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::asgardVaults`);
-  res.json(data);
-});
-
-thorchain.all('/int/marketdata', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::marketData`);
-  res.json(data);
-});
-
-thorchain.all('/int/runevaultBalance', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::runevaultBalance`);
-  res.json(data);
-});
-
-thorchain.all('/int/extra', async (req, res) => {
-  const version = await loadCached(`${req.blockchain}::version`);
-  const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
-
-  res.json({
-    version,
-    binanceAccounts,
-  });
-});
-
-// NOTE: no chaosnet on testnet v2
-// app.use('/chaosnet', chaosnet);
+app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 
-// NOTE: no chaosnet on testnet v2
-// chaosnet.use((req, res, next) => {
-//   req.blockchain = 'chaosnet';
-//   next();
-// });
-// chaosnet.use('/', thorchain);
+chaosnet.use((req, res, next) => {
+  req.blockchain = 'chaosnet';
+  next();
+});
+chaosnet.use('/', thorchain);
 
 testnet.use((req, res, next) => {
   req.blockchain = 'testnet';
@@ -100,8 +68,7 @@ testnet.use((req, res, next) => {
 });
 testnet.use('/', thorchain);
 
-// NOTE: no chaosnet on testnet v2
-// app.use('/chaosnet', chaosnet);
+app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 
 module.exports = {
