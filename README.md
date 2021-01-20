@@ -32,7 +32,7 @@ $ yarn develop
 
 ### Environment variables
 - PORT: port to run the app on.
-- CACHE_URL: url to query cached data from, defaults to 'http://localhost:3021'.
+- APP_URL: url to query cached data from, defaults to 'http://localhost:3021'.
 - TESTNET_NODE_IP: node ip to be used for testnet api queries, defaults to '18.198.92.45'.
 - CHAOSNET_NODE_IP: node ip to be used for chaosnet api queries, defaults to ' '18.159.173.48'.
 - SENDGRID_API_KEY: Sendgrid's API key used to send error notification emails.

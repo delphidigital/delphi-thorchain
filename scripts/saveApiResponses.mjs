@@ -1,5 +1,5 @@
 import axios from 'axios';
-import ThorchainApi from '../lib/api.mjs';
+import { blockchainDataFetcher } from '../lib/thorchainUrls.mjs';
 import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
 import { withCache } from '../lib/cacheUtils.mjs';
@@ -21,32 +21,32 @@ async function updateBlockchainData(blockchain) {
   console.log(`[${blockchain}]: starting data fetch...`);
   const redisKey = key => `thorchain::${blockchain}::${key}`;
   const set = (key, data) => redisSet(redisKey(key), data);
-  const api = ThorchainApi(blockchain);
+  const api = blockchainDataFetcher(blockchain);
 
   // FETCH DATA
   // Thorchain
-  const poolList = await api.loadPools({ axios }); // same
-  const okStatus = 'Available' // NOTE: v1 returned status: 'Enabled', but v2 is returning status: Available
+  const poolList = await api.loadPools();
+  const okStatus = 'Available'; // NOTE: v1 returned status: 'Enabled', but v2 is returning status: Available
   const poolIds = poolList.filter(i => i.status === okStatus).map(i => i.asset);
-  let poolDetails = {} 
+  let poolStats = {} 
   for (const poolId of poolIds) {
-    const poolDetail = await api.loadPoolStats({ axios, poolId });
-    poolDetails[poolId] = poolDetail;
+    const poolDetail = await api.loadPoolStats(poolId);
+    poolStats[poolId] = poolDetail;
   }
-  const nodeAccounts = await api.loadNodeAccounts({ axios }); // same
+  const nodeAccounts = await api.loadNodeAccounts();
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
     const lookup = await withCache(cacheKey, async () => lookupGeoIP(nodeAccount['ip_address']));
     return { ...nodeAccount, location: lookup };
   }));
-  const lastBlock = await api.loadLastBlock({ axios }); // NOTE! not same
-  const mimir = await api.loadMimir({ axios }); // same? not 100% sure type since current payload returns {}
-  const asgardVaults = await api.loadAsgardVaults({ axios }); // same
-  const inboundAddresses = await api.loadInboundAddresses({ axios });
-  const stats = await api.loadStats({ axios }); // same as v1 without : [poolCount, totalEarned, totalVolume24hr]
-  const network = await api.loadNetwork({ axios }); // same props changed standbyNodeCount is str, totalPooledRune, totalStaked
-  const constants = await api.loadConstants({ axios }); // same, some props updated?
-  const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`); // good
+  const lastBlock = await api.loadLastBlock();
+  const mimir = await api.loadMimir();
+  const asgardVaults = await api.loadAsgardVaults();
+  const inboundAddresses = await api.loadInboundAddresses();
+  const stats = await api.loadStats(); // NOTE: same as v1 without : [poolCount, totalEarned, totalVolume24hr]
+  const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
+  const constants = await api.loadConstants(); // same, some props updated?
+  const versionRequest = await api.loadNodeVersion();
 
   // Other sources
   const runeMarketData = await getRuneMarketData();
@@ -87,8 +87,8 @@ async function updateBlockchainData(blockchain) {
 
   // SET DATA
   await set('pools', poolList);
-  Object.keys(poolDetails).forEach(async (poolId) => {
-    await set(`pools-${poolId}`, poolDetails[poolId]);
+  Object.keys(poolStats).forEach(async (poolId) => {
+    await set(`pools-${poolId}`, poolStats[poolId]);
   });
   await set('nodeAccounts', nodeAccountsWithLocation);
   await set('lastBlock', lastBlock);
@@ -114,7 +114,7 @@ async function updateBlockchainData(blockchain) {
   await set('stats', stats);
   await set('network', network);
   await set('constants', constants);
-  await set('version', versionRequest.data);
+  await set('version', versionRequest);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
   await set('runevaultBalance', runevaultBalance);
   await set('binanceAccounts', binanceAccounts);

@@ -28,8 +28,14 @@ thorchain.all('/overview', async (req, res) => {
 
   const version = await loadCached(`${req.blockchain}::version`);
   const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
-  // NOTE: why this endpoint is not comsumed by frontend?
-  const stats = await loadCached(`${req.blockchain}::stats`);
+  // const stats = await loadCached(`${req.blockchain}::stats`); // NOTE: stats payload not used by frontend
+
+  // NOTE: provide by default all available pools info in advance
+  const poolIds = pools.filter(i => i.status === 'Available').map(i => i.asset);
+  const availablePoolStats = await Promise.all(poolIds.map(async (poolId) => {
+    const poolStats = await loadCached(`${req.blockchain}::pools-${poolId}`);
+    return { poolId, poolStats };
+  }));
 
   res.json({
     pools,
@@ -43,15 +49,15 @@ thorchain.all('/overview', async (req, res) => {
     runevaultBalance,
     version,
     binanceAccounts,
-    stats,
+    availablePoolStats,
   });
 });
 
-thorchain.all('/pool/:asset', async (req, res) => {
-  const assetSymbol = req.params.asset;
-  const data = await loadCached(`${req.blockchain}::pools-${assetSymbol}`);
-  res.json(data);
-});
+// thorchain.all('/pool/:asset', async (req, res) => {
+//   const assetSymbol = req.params.asset;
+//   const data = await loadCached(`${req.blockchain}::pools-${assetSymbol}`);
+//   res.json(data);
+// });
 
 app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);

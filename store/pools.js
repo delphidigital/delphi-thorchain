@@ -139,53 +139,56 @@ export const getters = {
   },
 };
 
-const parsePoolDetail = (poolDetail) => {
+const parsePoolStats = poolStats => ({
   // NOTE: v2 api for pool details is not providing poolFeeAverage value, need to calculate it
-  // previous code: ellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
-  const poolFeeAverage = poolDetail.swapCount
-    ? (parseInt(poolDetail.totalFees / poolDetail.swapCount, 10) / runeDivider)
-    : 0;
-  // NOTE: v2 api for pool details is not providing sellTxAverage value, it it was a wrong name,
-  //       it should be poolTxAverage
-  // NOTE: sellTxAverage should be called poolTxAverage, now we calculate it:
-  const poolTxAverage = parseInt(
-    (
-      (
-        (poolDetail.toRuneCount ? (poolDetail.toRuneVolume / poolDetail.toRuneCount) : 0) +
-        (poolDetail.toAssetCount ? (poolDetail.toAssetVolume / poolDetail.toAssetCount) : 0)
-      ) / runeDivider
-    ), 10,
-  );
+  // previous code: ellFeeAverage: parseInt(poolStats.sellFeeAverage, 10) / runeDivider,
+  // const poolFeeAverage = poolStats.swapCount
+  //   ? (parseInt(poolStats.totalFees / poolStats.swapCount, 10) / runeDivider)
+  //   : 0;
 
-  return {
-    asset: poolDetail.asset,
-    assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
-    assetDepthRaw: poolDetail.assetDepth,
-    // NOTE: v2 api for pool stats renamed poolVolume to swapVolume now
-    poolVolume: parseInt(poolDetail.swapVolume, 10) / runeDivider,
-    // NOTE: v2 property renamed from poolVolume24hr to volume24h
-    poolVolume24hr: parseInt(poolDetail.volume24h, 10) / runeDivider,
-    poolAPY: parseFloat(poolDetail.poolAPY),
+  // NOTE: v2 api for pool details is not providing sellTxAverage value, in fact v1 was using it
+  //       wrongly because it does not account for all transactions. (only sell/toRune ones)
+  //       v2 fix is to use the next swapVolumeAverage formula:
+  // const swapVolumeAverage = parseInt(
+  //   (
+  //     (
+  //       (poolStats.toRuneCount ? (poolStats.toRuneVolume / poolStats.toRuneCount) : 0) +
+  //       (poolStats.toAssetCount ? (poolStats.toAssetVolume / poolStats.toAssetCount) : 0)
+  //     ) / runeDivider
+  //   ), 10,
+  // );
+  // NOTE: v2 now calculates meanFeeAsPercentage at state, this is an alternative formula
+  // const meanFeeAsPercentage = swapVolumeAverage ? (poolFeeAverage / swapVolumeAverage) : 0;
+  asset: poolStats.asset,
+  assetDepth: parseInt(poolStats.assetDepth, 10) / runeDivider,
+  assetDepthRaw: poolStats.assetDepth,
 
-    // NOTE: v2 api for pool details is not providing poolDepth value,
-    //       poolDepth can be calculated as poolDetail.runeDepth * 2
-    poolDepth: parseInt(poolDetail.runeDepth * 2, 10) / runeDivider,
+  // NOTE: v2 api for pool stats renamed poolVolume to swapVolume now
+  poolVolume: parseInt(poolStats.swapVolume, 10) / runeDivider,
 
-    // NOTE: v2 renamed price to assetPrice
-    price: parseFloat(poolDetail.assetPrice),
-    runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
-    runeDepthRaw: poolDetail.runeDepth,
+  // NOTE: v2 property renamed from poolVolume24hr to volume24h
+  poolVolume24hr: parseInt(poolStats.volume24h, 10) / runeDivider,
+  poolAPY: parseFloat(poolStats.poolAPY),
 
-    // NOTE: v2 now calculates meanFeeAsPercentage at state
-    meanFeeAsPercentage: poolTxAverage ? (poolFeeAverage / poolTxAverage) : 0,
-  };
-};
+  // NOTE: v2 api for pool details is not providing poolDepth value,
+  //       poolDepth can be calculated as poolStats.runeDepth * 2
+  poolDepth: parseInt(poolStats.runeDepth * 2, 10) / runeDivider,
+
+  // NOTE: v2 renamed price to assetPrice
+  price: parseFloat(poolStats.assetPrice),
+  runeDepth: parseInt(poolStats.runeDepth, 10) / runeDivider,
+  runeDepthRaw: poolStats.runeDepth,
+
+  // NOTE: Alternative formula to calculate meanFeeAsPercentage
+  meanFeeAsPercentage: poolStats.swapVolume ? (poolStats.totalFees / poolStats.swapVolume) : 0,
+  // meanFeeAsPercentage: swapVolumeAverage ? (poolFeeAverage / swapVolumeAverage) : 0,
+});
 
 export const mutations = {
   setPools(state, pools) {
     state.poolIds = pools.map(p => p.poolId);
     pools.forEach((p) => {
-      const detail = parsePoolDetail(p.poolDetail);
+      const detail = parsePoolStats(p.poolStats);
       state.pools[p.poolId] = detail;
     });
   },

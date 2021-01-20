@@ -6,7 +6,7 @@
     "dev": "nuxt",
     "dev:kill": "lsof -n -iTCP:3021 | sed '1 d' | awk '{print $2}' | xargs kill -9",
     "dev:debug": "PORT=3021 node --inspect-brk node_modules/.bin/nuxt",
-    "fetch": "node scripts/saveApiResponses.mjs",
+    "fetch": "node --experimental-modules scripts/saveApiResponses.mjs",
     "fetch:debug": "node --inspect-brk --experimental-modules scripts/saveApiResponses.mjs",
     "develop": "PORT=3021 yarn dev",
     "build": "nuxt build",
