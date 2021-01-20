@@ -105,8 +105,8 @@ export default {
   data() {
     return {
       dummyRealRewards: Math.random(),
-      timeOptions: ['24h', '7d', '30d'],
-      currentTimeOption: '24h',
+      timeOptions: ['all', '24h', '7d', '30d'],
+      currentTimeOption: 'all',
       fields: [
         {
           name: 'name',
@@ -145,6 +145,7 @@ export default {
   methods: {
     togglePeriod(period) {
       const periodOptionsMap = {
+        all: 'periodAll',
         '24h': 'period24h',
         '7d': 'period7d',
         '30d': 'period30d',
@@ -176,10 +177,9 @@ export default {
 
 .pool-list-time-selector {
   display: flex;
-  width: 120px;
   height: 30px;
   margin-left: 20px;
-  opacity: 0.35;
+  opacity: 0.6;
   justify-content: space-between;
   background-color: $color-bg-tint;
   border-radius: 15px;
@@ -196,6 +196,11 @@ export default {
   border: none;
   margin: 0;
   padding: 0;
+  padding-right: 8px;
+
+  &:last-child {
+    padding-right: 0;
+  }
 
   &:hover, &:focus {
     border: none;
