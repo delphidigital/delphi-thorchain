@@ -10,13 +10,19 @@ export const state = () => ({
   poolIds: [],
   sortBy: 'name',
   sortDescending: false,
+  // NOTE valid values for period:
+  // period1h, period24h, period7d, period30d, period90d, period365d, periodAll
+  period: 'periodAll',
 });
 
 function aggPoolGetter(state, { attr, min, max }) {
   let ret = 0;
-  Object.values(state.pools).forEach((item) => {
-    if (max && item[attr] > ret) ret = item[attr];
-    if (min && item[attr] < ret) ret = item[attr];
+  Object.values(state.pools).forEach((poolStats) => {
+    const item = poolStats[state.period];
+    if (item) {
+      if (max && item[attr] > ret) ret = item[attr];
+      if (min && item[attr] < ret) ret = item[attr];
+    }
   });
   return ret;
 }
@@ -65,7 +71,8 @@ export const getters = {
   poolList(state) {
     const allPools = [];
     state.poolIds.forEach((poolId) => {
-      const pool = state.pools[poolId];
+      const poolStats = state.pools[poolId];
+      const pool = poolStats[state.period];
       if (pool) {
         allPools.push({
           name: poolId,
@@ -91,7 +98,8 @@ export const getters = {
     const minPoolDepth = getters.minPoolDepth(state);
 
     state.poolIds.forEach((poolId) => {
-      const pool = state.pools[poolId];
+      const poolStats = state.pools[poolId];
+      const pool = poolStats[state.period];
       if (pool) {
         const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
         const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
@@ -129,12 +137,12 @@ export const getters = {
   },
   totalPoolDepth(state) {
     return Object.values(state.pools).reduce((result, item) => (
-      (result + item.poolDepth)
+      (result + (item.periodAll?.poolDepth || 0))
     ), 0);
   },
   totalRuneDepth(state) {
     return Object.values(state.pools).reduce((result, item) => (
-      (result + item.runeDepth)
+      (result + (item.periodAll?.runeDepth || 0))
     ), 0);
   },
 };
@@ -188,8 +196,15 @@ export const mutations = {
   setPools(state, pools) {
     state.poolIds = pools.map(p => p.poolId);
     pools.forEach((p) => {
-      const detail = parsePoolStats(p.poolStats);
-      state.pools[p.poolId] = detail;
+      if (!state.pools[p.poolId]) {
+        state.pools[p.poolId] = {};
+      }
+      // NOTE: poolPeriodStats has this shape:
+      // { period1h, period24h, period7d, period30d, period90d, period365d, periodAll }
+      Object.entries(p.poolStats).forEach(([periodKey, periodData]) => {
+        const detail = parsePoolStats(periodData);
+        state.pools[p.poolId][periodKey] = detail;
+      });
     });
   },
   setSortBy(state, fieldName) {
@@ -198,5 +213,8 @@ export const mutations = {
   },
   toggleSortDescending(state) {
     state.sortDescending = !state.sortDescending;
+  },
+  togglePeriod(state, period) {
+    state.period = period;
   },
 };

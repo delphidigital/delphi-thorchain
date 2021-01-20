@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { blockchainDataFetcher } from '../lib/thorchainUrls.mjs';
+import { thorchainDataFetcher } from '../lib/thorchainUrls.mjs';
 import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
 import { withCache } from '../lib/cacheUtils.mjs';
@@ -21,7 +21,7 @@ async function updateBlockchainData(blockchain) {
   console.log(`[${blockchain}]: starting data fetch...`);
   const redisKey = key => `thorchain::${blockchain}::${key}`;
   const set = (key, data) => redisSet(redisKey(key), data);
-  const api = blockchainDataFetcher(blockchain);
+  const api = thorchainDataFetcher(blockchain);
 
   // FETCH DATA
   // Thorchain
@@ -31,6 +31,8 @@ async function updateBlockchainData(blockchain) {
   let poolStats = {} 
   for (const poolId of poolIds) {
     const poolDetail = await api.loadPoolStats(poolId);
+    // NOTE: in v2  poolDetail is an object with this shape of string values:
+    //       { period1h, period24h, period7d, period30d, period90d, period365d, periodAll }
     poolStats[poolId] = poolDetail;
   }
   const nodeAccounts = await api.loadNodeAccounts();

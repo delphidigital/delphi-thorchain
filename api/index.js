@@ -53,12 +53,6 @@ thorchain.all('/overview', async (req, res) => {
   });
 });
 
-// thorchain.all('/pool/:asset', async (req, res) => {
-//   const assetSymbol = req.params.asset;
-//   const data = await loadCached(`${req.blockchain}::pools-${assetSymbol}`);
-//   res.json(data);
-// });
-
 app.use('/chaosnet', chaosnet);
 app.use('/testnet', testnet);
 
