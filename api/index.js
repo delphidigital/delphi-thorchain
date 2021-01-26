@@ -16,7 +16,7 @@ async function loadCached(id) {
 }
 
 thorchain.all('/overview', async (req, res) => {
-  const pools = await loadCached(`${req.blockchain}::pools`); 
+  const pools = await loadCached(`${req.blockchain}::pools`) || [];
   const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
   const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
   const mimir = await loadCached(`${req.blockchain}::mimir`);
@@ -28,7 +28,8 @@ thorchain.all('/overview', async (req, res) => {
 
   const version = await loadCached(`${req.blockchain}::version`);
   const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
-  // const stats = await loadCached(`${req.blockchain}::stats`); // NOTE: stats payload not used by frontend
+  // NOTE: stats payload not used by frontend
+  // const stats = await loadCached(`${req.blockchain}::stats`);
 
   // NOTE: provide by default all available pools info in advance
   const poolIds = pools.filter(i => i.status === 'Available').map(i => i.asset);

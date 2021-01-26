@@ -8,9 +8,11 @@ export const state = () => ({
 
 export const mutations = {
   setData(state, marketData) {
-    const circulatingSupply = parseFloat(marketData.circulating);
-    const priceUSD = parseFloat(marketData.priceUsd);
-    state.circulatingSupply = circulatingSupply;
-    state.priceUSD = priceUSD;
+    if (marketData) {
+      const circulatingSupply = parseFloat(marketData.circulating);
+      const priceUSD = parseFloat(marketData.priceUsd);
+      state.circulatingSupply = circulatingSupply;
+      state.priceUSD = priceUSD;
+    }
   },
 };

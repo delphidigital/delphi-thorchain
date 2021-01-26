@@ -62,12 +62,11 @@ export const getters = {
       // Find nodes with version lower than join version
       // NOTE(Fede): Asumes no weird version formats and that they all are formatted the
       // same way (ie: no comparisons like 1.12 and 1.12.0 could ever come up)
-      const versionCompare =
-        node.version.localeCompare(
-          state.minJoinVersion,
-          undefined,
-          { numeric: true, sensitivity: 'base' },
-        );
+      const versionCompare = node.version.localeCompare(
+        state.minJoinVersion,
+        undefined,
+        { numeric: true, sensitivity: 'base' },
+      );
 
       if (versionCompare === -1) {
         nodeProperties.lowVersion = true;
@@ -103,12 +102,11 @@ export const getters = {
     Object.values(activeNodes).forEach((node) => {
       const nodeProps = activeNodePropertiesMap[node.node_address];
       // Include in amount to churn count (used to see how many to standby nodes will go in)
-      const countsForWillChurn =
-        node['forced_to_leave'] ||
-        node['requested_to_leave'] ||
-        (node['leave_height'] !== '0') ||
-        nodeProps.oldest ||
-        nodeProps.lowScore;
+      const countsForWillChurn = node['forced_to_leave']
+        || node['requested_to_leave']
+        || (node['leave_height'] !== '0')
+        || nodeProps.oldest
+        || nodeProps.lowScore;
 
       // Determine what status to show on the frontend
       let churnStatusType = 'active';
@@ -133,36 +131,35 @@ export const getters = {
     });
 
     // sort nodes 1) forced to leave, 2) requested to leave 3) by leave height 4) by age
-    const sortedActiveNodes =
-      activeNodes.sort((a, b) => {
-        if (a['forced_to_leave'] !== b['forced_to_leave']) {
-          return a['forced_to_leave'] ? -1 : 1;
+    const sortedActiveNodes = activeNodes.sort((a, b) => {
+      if (a['forced_to_leave'] !== b['forced_to_leave']) {
+        return a['forced_to_leave'] ? -1 : 1;
+      }
+      if (a['requested_to_leave'] !== b['requested_to_leave']) {
+        return a['requested_to_leave'] ? -1 : 1;
+      }
+      if (a['leave_height'] !== b['leave_height']) {
+        // lowest non zero leave height goes first
+        // means the node was marked to exit at an earlier block
+        const aLh = parseInt(a['status_since'], 10);
+        const bLh = parseInt(b['status_since'], 10);
+        if (aLh === 0) {
+          return 1;
         }
-        if (a['requested_to_leave'] !== b['requested_to_leave']) {
-          return a['requested_to_leave'] ? -1 : 1;
+        if (bLh === 0) {
+          return -1;
         }
-        if (a['leave_height'] !== b['leave_height']) {
-          // lowest non zero leave height goes first
-          // means the node was marked to exit at an earlier block
-          const aLh = parseInt(a['status_since'], 10);
-          const bLh = parseInt(b['status_since'], 10);
-          if (aLh === 0) {
-            return 1;
-          }
-          if (bLh === 0) {
-            return -1;
-          }
-          return aLh - bLh;
-        }
+        return aLh - bLh;
+      }
 
-        // lowest status since (oldest node) goes first
-        const aBlock = parseInt(a['status_since'], 10);
-        const bBlock = parseInt(b['status_since'], 10);
-        return aBlock - bBlock;
-      }).map(activeNode => ({
-        ...activeNode,
-        ...(activeNodePropertiesMap[activeNode.node_address] || {}),
-      }));
+      // lowest status since (oldest node) goes first
+      const aBlock = parseInt(a['status_since'], 10);
+      const bBlock = parseInt(b['status_since'], 10);
+      return aBlock - bBlock;
+    }).map(activeNode => ({
+      ...activeNode,
+      ...(activeNodePropertiesMap[activeNode.node_address] || {}),
+    }));
     return {
       activeNodes: sortedActiveNodes,
       threshold,
@@ -188,17 +185,13 @@ export const getters = {
     });
   },
   isAsgardVaultRetiring(state) {
-    return !!state.asgardVaults.filter(vault => vault.status === 'retiring').length;
+    return !!(state.asgardVaults || []).filter(vault => vault.status === 'retiring').length;
   },
   progressToNextChurnPoint(state, g, rootState) {
     // lastChurnHeight is max block height from all active vaults
-    const lastChurnHeight =
-      state.asgardVaults.reduce((acc, av) => {
-        if (av.status === 'active') {
-          return Math.max(av.block_height, acc);
-        }
-        return acc;
-      }, 0);
+    const lastChurnHeight = (state.asgardVaults || []).reduce((acc, av) => (
+      (av.status === 'active') ? Math.max(av.block_height, acc) : acc
+    ), 0);
     const currentHeight = rootState.networkHealth.lastThorchainBlock;
 
     let blocksRemaining;
@@ -218,8 +211,7 @@ export const getters = {
       }
     } else {
       // normally churn is attempted when rotatePerBlockHeight blocks pass since last churn
-      blocksRemaining =
-        state.rotatePerBlockHeight - blocksSinceLastChurn;
+      blocksRemaining = state.rotatePerBlockHeight - blocksSinceLastChurn;
     }
 
     const retiring = g.isAsgardVaultRetiring;
@@ -258,11 +250,11 @@ export const getters = {
     // computing and adds an extra node than the
     // desireValidatorSet.
     // Be aware of this in case it gets fixed
-    const diffWithDesired =
-      (state.desireValidatorSet + 1) - expectedRemainingActive;
+    const diffWithDesired = (state.desireValidatorSet + 1) - expectedRemainingActive;
     const toChurnIn = Math.min(
       expectedToChurnOut + 1,
-      diffWithDesired > 0 ? diffWithDesired : 0);
+      diffWithDesired > 0 ? diffWithDesired : 0,
+    );
 
     const belowMinBondNodes = [];
     const otherNodes = [];
@@ -355,7 +347,7 @@ export const mutations = {
     const nodeIds = [];
     const nodeMap = {};
 
-    nodeAccounts.forEach((node) => {
+    (nodeAccounts || []).forEach((node) => {
       const nodeId = node['node_address'];
       nodeIds.push(nodeId);
       nodeMap[nodeId] = {
