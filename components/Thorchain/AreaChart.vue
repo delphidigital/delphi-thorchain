@@ -1,12 +1,9 @@
 <template>
-  <div class="coming-soon__parent">
-    <ComingSoon />
-    <div class="coming-soon__target">
-      <AppHighchart
-        :chart-options="chartOptions"
-        :placeholder-height="130"
-      />
-    </div>
+  <div>
+    <AppHighchart
+      :chart-options="chartOptions"
+      :placeholder-height="130"
+    />
   </div>
 </template>
 
@@ -28,11 +25,19 @@ export default {
       type: Function,
       default: v => v,
     },
+    yAxisLabelOptions: {
+      type: Object,
+      default: {
+        title: false,
+        type: 'linear',
+      },
+    },
   },
   computed: {
     chartOptions() {
       const formatLabel = this.formatLabel;
       const areaColor = '#323f64';
+      const yAxisLabelOptions = this.yAxisLabelOptions;
       return {
         chart: {
           type: 'areaspline',
@@ -119,7 +124,8 @@ export default {
           maxPadding: 0,
         },
         yAxis: {
-          title: false,
+          ...yAxisLabelOptions,
+          className: 'highcharts-yaxis--title',
           max: this.max,
           tickAmount: 5,
           labels: {
@@ -150,3 +156,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.highcharts-yaxis--title > span.highcharts-axis-title {
+  font-size: 11px !important;
+  left: -10px !important;
+}
+</style>

@@ -34,6 +34,8 @@
     "nuxt-highcharts": "1.0.5",
     "redis": "3.0.2",
     "sort-by": "1.2.0",
+    "vue": "2.6.12",
+    "vue-awesome": "4.1.0",
     "webpack": "4.46.0"
   },
   "browser": {

@@ -103,6 +103,7 @@ export default {
     /*
     ** You can extend webpack config here
     */
+    vendor: ['vue-awesome'],
     watch: ['api'],
     extend() {},
     plugins: [
@@ -112,6 +113,7 @@ export default {
       }),
     ],
   },
+  plugins: [{ src: '~plugins/vueAwesome', ssr: false }],
   router: {
     linkActiveClass: 'link--active',
   },
