@@ -1,9 +1,7 @@
+import webpack from 'webpack';
+import ESLintPlugin from 'eslint-webpack-plugin';
+
 export default {
-  /*
-  ** Nuxt rendering mode
-  ** See https://nuxtjs.org/api/configuration-mode
-  */
-  mode: 'universal',
   /*
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
@@ -65,7 +63,7 @@ export default {
   */
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
-    '@nuxtjs/eslint-module',
+    // '@nuxtjs/eslint-module',
     ['@nuxtjs/google-analytics', {
       id: 'UA-174637134-1',
     }],
@@ -74,8 +72,7 @@ export default {
     pollingFrequency: process.env.POLLING_FREQUENCY || 5000,
     TESTNET_NODE_IP: process.env.TESTNET_NODE_IP,
     CHAOSNET_NODE_IP: process.env.CHAOSNET_NODE_IP,
-    DATA_SOURCE: process.env.DATA_SOURCE || 'cache',
-    CACHE_URL: process.env.CACHE_URL || 'http://localhost:3021',
+    APP_URL: process.env.APP_URL || 'http://localhost:3021',
   },
   /*
   ** Nuxt.js modules
@@ -107,8 +104,13 @@ export default {
     ** You can extend webpack config here
     */
     watch: ['api'],
-    extend(config, ctx) {
-    },
+    extend() {},
+    plugins: [
+      new ESLintPlugin(),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /@highcharts\/map-collection/,
+      }),
+    ],
   },
   router: {
     linkActiveClass: 'link--active',

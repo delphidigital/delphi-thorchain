@@ -13,7 +13,7 @@
           :key="option"
           class="pool-list-time-option"
           :class="{ 'pool-list-time-option--active': option === currentTimeOption }"
-          @click="currentTimeOption = option"
+          @click="togglePeriod(option)"
         >
           {{ option }}
         </button>
@@ -94,8 +94,8 @@
 </template>
 
 <script>
-import Percentage from './../Common/Percentage.vue';
-import RuneUSD from './../Common/RuneUSD.vue';
+import Percentage from '../Common/Percentage.vue';
+import RuneUSD from '../Common/RuneUSD.vue';
 
 export default {
   components: {
@@ -105,8 +105,8 @@ export default {
   data() {
     return {
       dummyRealRewards: Math.random(),
-      timeOptions: ['24h', '7d', '30d'],
-      currentTimeOption: '24h',
+      timeOptions: ['all', '24h', '7d', '30d'],
+      currentTimeOption: 'all',
       fields: [
         {
           name: 'name',
@@ -143,6 +143,18 @@ export default {
     },
   },
   methods: {
+    togglePeriod(period) {
+      const periodOptionsMap = {
+        all: 'periodAll',
+        '24h': 'period24h',
+        '7d': 'period7d',
+        '30d': 'period30d',
+      };
+      if (this.$store.period !== periodOptionsMap[period] && periodOptionsMap[period]) {
+        this.currentTimeOption = period;
+        this.$store.commit('pools/togglePeriod', periodOptionsMap[period]);
+      }
+    },
     toggleSort(fieldName) {
       if (fieldName === this.sortBy) {
         this.$store.commit('pools/toggleSortDescending');
@@ -165,27 +177,30 @@ export default {
 
 .pool-list-time-selector {
   display: flex;
-  width: 120px;
   height: 30px;
   margin-left: 20px;
-  opacity: 0.2;
-  cursor: not-allowed;
+  opacity: 0.6;
   justify-content: space-between;
   background-color: $color-bg-tint;
   border-radius: 15px;
   padding: 0 16px;
+    margin-right: 16px;
 }
 
 .pool-list-time-option {
   font-size: 13px;
   font-weight: 500;
-  cursor: not-allowed;
-  // cursor: pointer;
+  cursor: pointer;
   color: rgba(255, 255, 255, 0.5);
   background-color: transparent;
   border: none;
   margin: 0;
   padding: 0;
+  padding-right: 8px;
+
+  &:last-child {
+    padding-right: 0;
+  }
 
   &:hover, &:focus {
     border: none;

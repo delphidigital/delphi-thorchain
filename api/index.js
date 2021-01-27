@@ -15,68 +15,42 @@ async function loadCached(id) {
   return JSON.parse(rawdata);
 }
 
-thorchain.all('/thorchain/pools', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::pools`);
-  res.json(data);
-});
+thorchain.all('/overview', async (req, res) => {
+  const pools = await loadCached(`${req.blockchain}::pools`) || [];
+  const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
+  const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
+  const mimir = await loadCached(`${req.blockchain}::mimir`);
+  const asgardVaults = await loadCached(`${req.blockchain}::asgardVaults`);
+  const network = await loadCached(`${req.blockchain}::network`);
+  const market = await loadCached(`${req.blockchain}::marketData`);
+  const constants = await loadCached(`${req.blockchain}::constants`);
+  const runevaultBalance = await loadCached(`${req.blockchain}::runevaultBalance`);
 
-thorchain.all('/v1/pools/detail', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::pools-${req.query.asset}`);
-  res.json(data);
-});
-
-thorchain.all('/v1/stats', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::stats`);
-  res.json(data);
-});
-
-thorchain.all('/v1/network', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::network`);
-  res.json(data);
-});
-
-thorchain.all('/v1/thorchain/constants', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::constants`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/nodeaccounts', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::nodeAccounts`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/mimir', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::mimir`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/lastblock', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::lastBlock`);
-  res.json(data);
-});
-
-thorchain.all('/thorchain/vaults/asgard', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::asgardVaults`);
-  res.json(data);
-});
-
-thorchain.all('/int/marketdata', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::marketData`);
-  res.json(data);
-});
-
-thorchain.all('/int/runevaultBalance', async (req, res) => {
-  const data = await loadCached(`${req.blockchain}::runevaultBalance`);
-  res.json(data);
-});
-
-thorchain.all('/int/extra', async (req, res) => {
   const version = await loadCached(`${req.blockchain}::version`);
   const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
+  // NOTE: stats payload not used by frontend
+  // const stats = await loadCached(`${req.blockchain}::stats`);
+
+  // NOTE: provide by default all available pools info in advance
+  const poolIds = pools.filter(i => i.status === 'Available').map(i => i.asset);
+  const availablePoolStats = await Promise.all(poolIds.map(async (poolId) => {
+    const poolStats = await loadCached(`${req.blockchain}::pools-${poolId}`);
+    return { poolId, poolStats };
+  }));
 
   res.json({
+    pools,
+    nodes,
+    lastBlock,
+    mimir,
+    asgardVaults,
+    network,
+    market,
+    constants,
+    runevaultBalance,
     version,
     binanceAccounts,
+    availablePoolStats,
   });
 });
 

@@ -10,13 +10,19 @@ export const state = () => ({
   poolIds: [],
   sortBy: 'name',
   sortDescending: false,
+  // NOTE valid values for period:
+  // period1h, period24h, period7d, period30d, period90d, period365d, periodAll
+  period: 'periodAll',
 });
 
 function aggPoolGetter(state, { attr, min, max }) {
   let ret = 0;
-  Object.values(state.pools).forEach((item) => {
-    if (max && item[attr] > ret) ret = item[attr];
-    if (min && item[attr] < ret) ret = item[attr];
+  Object.values(state.pools || []).forEach((poolStats) => {
+    const item = poolStats[state.period];
+    if (item) {
+      if (max && item[attr] > ret) ret = item[attr];
+      if (min && item[attr] < ret) ret = item[attr];
+    }
   });
   return ret;
 }
@@ -65,13 +71,14 @@ export const getters = {
   poolList(state) {
     const allPools = [];
     state.poolIds.forEach((poolId) => {
-      const pool = state.pools[poolId];
+      const poolStats = state.pools[poolId];
+      const pool = poolStats[state.period];
       if (pool) {
         allPools.push({
           name: poolId,
           runeDepth: pool.runeDepth,
           slippageDepth: pool.runeDepth * 0.00504,
-          meanFeeAsPercentage: pool.sellTxAverage ? (pool.sellFeeAverage / pool.sellTxAverage) : 0,
+          meanFeeAsPercentage: pool.meanFeeAsPercentage,
           volume: pool.poolVolume,
           apy: pool.poolAPY,
           apyRealRewards: null,
@@ -91,7 +98,8 @@ export const getters = {
     const minPoolDepth = getters.minPoolDepth(state);
 
     state.poolIds.forEach((poolId) => {
-      const pool = state.pools[poolId];
+      const poolStats = state.pools[poolId];
+      const pool = poolStats[state.period];
       if (pool) {
         const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
         const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
@@ -104,7 +112,6 @@ export const getters = {
         });
       }
     });
-
 
     const ret = aggPoolsByDepth(allPools, 5);
 
@@ -129,37 +136,74 @@ export const getters = {
   },
   totalPoolDepth(state) {
     return Object.values(state.pools).reduce((result, item) => (
-      (result + item.poolDepth)
+      (result + (item.periodAll?.poolDepth || 0))
     ), 0);
   },
   totalRuneDepth(state) {
     return Object.values(state.pools).reduce((result, item) => (
-      (result + item.runeDepth)
+      (result + (item.periodAll?.runeDepth || 0))
     ), 0);
   },
 };
 
-const parsePoolDetail = poolDetail => ({
-  asset: poolDetail.asset,
-  assetDepth: parseInt(poolDetail.assetDepth, 10) / runeDivider,
-  assetDepthRaw: poolDetail.assetDepth,
-  poolVolume: parseInt(poolDetail.poolVolume, 10) / runeDivider,
-  poolVolume24hr: parseInt(poolDetail.poolVolume24hr, 10) / runeDivider,
-  poolAPY: parseFloat(poolDetail.poolAPY),
-  poolDepth: parseInt(poolDetail.poolDepth, 10) / runeDivider,
-  price: parseFloat(poolDetail.price),
-  runeDepth: parseInt(poolDetail.runeDepth, 10) / runeDivider,
-  runeDepthRaw: poolDetail.runeDepth,
-  sellFeeAverage: parseInt(poolDetail.sellFeeAverage, 10) / runeDivider,
-  sellTxAverage: parseInt(poolDetail.sellTxAverage, 10) / runeDivider,
+const parsePoolStats = poolStats => ({
+  // NOTE: v2 api for pool details is not providing poolFeeAverage value, need to calculate it
+  // previous code: ellFeeAverage: parseInt(poolStats.sellFeeAverage, 10) / runeDivider,
+  // const poolFeeAverage = poolStats.swapCount
+  //   ? (parseInt(poolStats.totalFees / poolStats.swapCount, 10) / runeDivider)
+  //   : 0;
+
+  // NOTE: v2 api for pool details is not providing sellTxAverage value, in fact v1 was using it
+  //       wrongly because it does not account for all transactions. (only sell/toRune ones)
+  //       v2 fix is to use the next swapVolumeAverage formula:
+  // const swapVolumeAverage = parseInt(
+  //   (
+  //     (
+  //       (poolStats.toRuneCount ? (poolStats.toRuneVolume / poolStats.toRuneCount) : 0) +
+  //       (poolStats.toAssetCount ? (poolStats.toAssetVolume / poolStats.toAssetCount) : 0)
+  //     ) / runeDivider
+  //   ), 10,
+  // );
+  // NOTE: v2 now calculates meanFeeAsPercentage at state, this is an alternative formula
+  // const meanFeeAsPercentage = swapVolumeAverage ? (poolFeeAverage / swapVolumeAverage) : 0;
+  asset: poolStats.asset,
+  assetDepth: parseInt(poolStats.assetDepth, 10) / runeDivider,
+  assetDepthRaw: poolStats.assetDepth,
+
+  // NOTE: v2 api for pool stats renamed poolVolume to swapVolume now
+  poolVolume: parseInt(poolStats.swapVolume, 10) / runeDivider,
+
+  // NOTE: v2 property renamed from poolVolume24hr to volume24h
+  poolVolume24hr: parseInt(poolStats.volume24h, 10) / runeDivider,
+  poolAPY: parseFloat(poolStats.poolAPY),
+
+  // NOTE: v2 api for pool details is not providing poolDepth value,
+  //       poolDepth can be calculated as poolStats.runeDepth * 2
+  poolDepth: parseInt(poolStats.runeDepth * 2, 10) / runeDivider,
+
+  // NOTE: v2 renamed price to assetPrice
+  price: parseFloat(poolStats.assetPrice),
+  runeDepth: parseInt(poolStats.runeDepth, 10) / runeDivider,
+  runeDepthRaw: poolStats.runeDepth,
+
+  // NOTE: Alternative formula to calculate meanFeeAsPercentage
+  meanFeeAsPercentage: poolStats.swapVolume ? (poolStats.totalFees / poolStats.swapVolume) : 0,
+  // meanFeeAsPercentage: swapVolumeAverage ? (poolFeeAverage / swapVolumeAverage) : 0,
 });
 
 export const mutations = {
   setPools(state, pools) {
     state.poolIds = pools.map(p => p.poolId);
     pools.forEach((p) => {
-      const detail = parsePoolDetail(p.poolDetail);
-      state.pools[p.poolId] = detail;
+      if (!state.pools[p.poolId]) {
+        state.pools[p.poolId] = {};
+      }
+      // NOTE: poolPeriodStats has this shape:
+      // { period1h, period24h, period7d, period30d, period90d, period365d, periodAll }
+      Object.entries(p.poolStats).forEach(([periodKey, periodData]) => {
+        const detail = parsePoolStats(periodData);
+        state.pools[p.poolId][periodKey] = detail;
+      });
     });
   },
   setSortBy(state, fieldName) {
@@ -168,5 +212,8 @@ export const mutations = {
   },
   toggleSortDescending(state) {
     state.sortDescending = !state.sortDescending;
+  },
+  togglePeriod(state, period) {
+    state.period = period;
   },
 };

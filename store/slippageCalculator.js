@@ -38,8 +38,7 @@ export const mutations = {
 export const actions = {
   async calculate({ state, rootState, commit }) {
     // inputs
-    const amount = state.amount;
-    const side = state.side;
+    const { amount, side } = state;
     const pool = state.pool || rootState.pools.poolIds[0];
     const poolObj = rootState.pools.pools[pool];
 

@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import RuneUSD from './../Common/RuneUSD.vue';
+import RuneUSD from '../Common/RuneUSD.vue';
 
 export default {
   components: {

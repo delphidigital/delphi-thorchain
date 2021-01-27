@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import fetchCommon from '../../../lib/fetchCommon.mjs';
+import frontendFetcher from '../../../lib/frontendFetcher.mjs';
 import Footer from '../../../components/Common/Footer.vue';
 import PoolDepthSummary from '../../../components/Thorchain/PoolDepthSummary.vue';
 import PercentageRuneLocked from '../../../components/Thorchain/PercentageRuneLocked.vue';
@@ -52,7 +52,7 @@ export default {
     NodeSummary,
   },
   async fetch() {
-    await fetchCommon(this, this.$route.params.blockchain);
+    await frontendFetcher(this, this.$route.params.blockchain);
     this.$store.commit('thorchain/loadingOff');
   },
   beforeMount() {

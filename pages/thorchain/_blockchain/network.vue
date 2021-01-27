@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import fetchCommon from '../../../lib/fetchCommon.mjs';
+import frontendFetcher from '../../../lib/frontendFetcher.mjs';
 import NodesByLocation from '../../../components/Network/NodesByLocation.vue';
 import ChurnInfo from '../../../components/Network/ChurnInfo.vue';
 import NodeDetailList from '../../../components/Network/NodeDetailList.vue';
@@ -60,7 +60,7 @@ export default {
     ChurnInfo,
   },
   async fetch() {
-    await fetchCommon(this, this.$route.params.blockchain);
+    await frontendFetcher(this, this.$route.params.blockchain);
     this.$store.commit('thorchain/loadingOff');
   },
   beforeMount() {

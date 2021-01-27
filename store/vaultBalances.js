@@ -56,7 +56,6 @@ export const getters = {
     const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
     const otherAmountRecorded = other.reduce((total, item) => total + item.amountRecorded, 0);
     const otherAmountStored = other.reduce((total, item) => total + item.amountStored, 0);
-
     const runeSolvency = rune.amountRecorded === 0 ? 1 : rune.amountStored / rune.amountRecorded;
     const otherSolvency = otherAmountRecorded === 0 ? 1 : otherAmountStored / otherAmountRecorded;
 
@@ -70,7 +69,7 @@ export const getters = {
 export const mutations = {
   setBinanceBalances(state, binanceAccounts) {
     const balances = {};
-    binanceAccounts.forEach((account) => {
+    (binanceAccounts || []).forEach((account) => {
       account.balances.forEach((balance) => {
         const current = balances[balance.symbol] || 0;
         balances[balance.symbol] = current + parseFloat(balance.free);
