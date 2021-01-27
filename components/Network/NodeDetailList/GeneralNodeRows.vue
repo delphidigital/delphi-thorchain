@@ -40,8 +40,8 @@
 <script>
 import { formatDistance } from 'date-fns';
 import numeral from 'numeral';
-import FavouriteNodeTD from './../../Common/FavouriteNodeTD.vue';
-import { formatLocation } from './../../../lib/formatHelpers.mjs';
+import FavouriteNodeTD from '../../Common/FavouriteNodeTD.vue';
+import { formatLocation } from '../../../lib/formatHelpers.mjs';
 
 export default {
   components: {

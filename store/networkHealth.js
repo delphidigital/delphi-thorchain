@@ -16,9 +16,13 @@ export const mutations = {
     state.poolShareFactor = parseFloat(networkInfo.poolShareFactor);
   },
   setLastThorchainBlock(state, lastBlock) {
-    state.lastThorchainBlock = parseInt(lastBlock, 10);
+    if (lastBlock) {
+      state.lastThorchainBlock = parseInt(lastBlock, 10);
+    }
   },
   setLastBinanceBlock(state, lastBlock) {
-    state.lastBinanceBlock = parseInt(lastBlock, 10);
+    if (lastBlock) {
+      state.lastBinanceBlock = parseInt(lastBlock, 10);
+    }
   },
 };

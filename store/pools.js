@@ -17,7 +17,7 @@ export const state = () => ({
 
 function aggPoolGetter(state, { attr, min, max }) {
   let ret = 0;
-  Object.values(state.pools).forEach((poolStats) => {
+  Object.values(state.pools || []).forEach((poolStats) => {
     const item = poolStats[state.period];
     if (item) {
       if (max && item[attr] > ret) ret = item[attr];
@@ -112,7 +112,6 @@ export const getters = {
         });
       }
     });
-
 
     const ret = aggPoolsByDepth(allPools, 5);
 

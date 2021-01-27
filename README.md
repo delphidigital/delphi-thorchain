@@ -1,5 +1,11 @@
 # delphi-thorchain
 
+## Install node version manager
+Install instructions at https://github.com/nvm-sh/nvm, then:
+```bash
+$ nvm install && nvm use
+```
+
 ## Build Setup
 
 ```bash
