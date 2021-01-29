@@ -37,7 +37,7 @@
                   Version
                 </th>
                 <th class="section__table__head section__table__head--location">
-                  Score
+                  Behavior Score
                 </th>
                 <th class="section__table__head section__table__head--status">
                   Status

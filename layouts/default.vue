@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <header class="header">
@@ -517,7 +518,7 @@ $padding-section-table: 25px;
 }
 .section__table__data--longvalue {
     display: inline-block;
-    max-width: 300px;
+    max-width: 280px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
