@@ -13,10 +13,10 @@
           <span class="marker" :style="{backgroundColor: item.color}" />{{ item.poolId }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="item.poolVolume" />
+          <RuneUSD :rune="item.totalVolume" />
         </td>
         <td class="table__data">
-          <RuneUSD :rune="item.poolDepth" />
+          <RuneUSD :rune="item.depthAverage" />
         </td>
       </tr>
       <tr class="table__row">
@@ -24,10 +24,10 @@
           <span class="marker" :style="{backgroundColor: aggregate.color}" />{{ aggregate.poolId }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="aggregate.poolVolume" />
+          <RuneUSD :rune="aggregate.totalVolume" />
         </td>
         <td class="table__data">
-          <RuneUSD :rune="aggregate.poolDepth" />
+          <RuneUSD :rune="aggregate.depthAverage" />
         </td>
       </tr>
       <tr class="table__footer">
@@ -35,7 +35,7 @@
           Total value locked in pools:
         </td>
         <td class="table__highlight">
-          <RuneUSD :rune="totalPoolDepth" />
+          <RuneUSD :rune="totalPoolsDepth" />
         </td>
       </tr>
     </tbody>
@@ -50,17 +50,17 @@ export default {
     RuneUSD,
   },
   computed: {
-    poolVolumeAndDepth() {
-      return this.$store.getters['pools/poolVolumeAndDepth'];
+    poolDepthAndVolume() {
+      return this.$store.getters['pools/poolDepthAndVolume'];
     },
     data() {
-      return this.poolVolumeAndDepth.filter(d => d.poolId !== 'Other');
+      return this.poolDepthAndVolume.filter(d => d.poolId !== 'Other');
     },
     aggregate() {
-      return this.poolVolumeAndDepth.find(d => d.poolId === 'Other');
+      return this.poolDepthAndVolume.find(d => d.poolId === 'Other');
     },
-    totalPoolDepth() {
-      return this.$store.getters['pools/totalPoolDepth'];
+    totalPoolsDepth() {
+      return this.$store.getters['pools/totalPoolsDepth'];
     },
   },
 };

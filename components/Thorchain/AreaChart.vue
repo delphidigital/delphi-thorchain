@@ -135,7 +135,7 @@ export default {
               }
               return null;
             },
-            style: { color: '#fff', fontSize: 10 },
+            style: { color: '#fff', fontSize: 7 },
             x: -5,
           },
           gridLineColor: areaColor,

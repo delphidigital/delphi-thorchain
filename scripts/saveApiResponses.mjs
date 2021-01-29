@@ -26,14 +26,24 @@ async function updateBlockchainData(blockchain) {
   // FETCH DATA
   // Thorchain
   const poolList = await api.loadPools();
-  const okStatus = 'Available'; // NOTE: v1 returned status: 'Enabled', but v2 is returning status: Available
-  const poolIds = poolList.filter(i => i.status === okStatus).map(i => i.asset);
-  let poolStats = {} 
+  // NOTE: v1 returned status: 'Enabled'
+  //       v2 thorchain is returning status: Available
+  //       v2 midgard is returning status available
+  const okStatus = 'available';
+  const poolIds = poolList.filter(i => (i.status || '').toLowerCase() === okStatus).map(i => i.asset);
+  const poolStats = {};
+  const poolHistoryDepths = {};
+  const poolHistorySwaps = {};
   for (const poolId of poolIds) {
-    const poolDetail = await api.loadPoolStats(poolId);
     // NOTE: in v2  poolDetail is an object with this shape of string values:
     //       { period1h, period24h, period7d, period30d, period90d, period365d, periodAll }
+    const poolDetail = await api.loadPoolStats(poolId);
     poolStats[poolId] = poolDetail;
+    const poolHD = await api.loadHistoryDepths(poolId);
+    poolHistoryDepths[poolId] = poolHD;
+    const poolHS = await api.loadHistorySwaps(poolId);
+    poolHistorySwaps[poolId] = poolHS;
+    
   }
   const nodeAccounts = await api.loadNodeAccounts();
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
@@ -46,7 +56,8 @@ async function updateBlockchainData(blockchain) {
   const asgardVaults = await api.loadAsgardVaults();
   const inboundAddresses = await api.loadInboundAddresses();
   const stats = await api.loadStats(); // NOTE: same as v1 without : [poolCount, totalEarned, totalVolume24hr]
-  const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
+  // IMPORTANT NOTE: disabling network since its failing
+  // const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
   const constants = await api.loadConstants(); // same, some props updated?
   const versionRequest = await api.loadNodeVersion();
 
@@ -92,6 +103,8 @@ async function updateBlockchainData(blockchain) {
   Object.keys(poolStats).forEach(async (poolId) => {
     await set(`pools-${poolId}`, poolStats[poolId]);
   });
+  await set('poolHistoryDepths', poolHistoryDepths);
+  await set('poolHistorySwaps', poolHistorySwaps);
   await set('nodeAccounts', nodeAccountsWithLocation);
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
@@ -114,7 +127,7 @@ async function updateBlockchainData(blockchain) {
   });
 
   await set('stats', stats);
-  await set('network', network);
+  // await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });

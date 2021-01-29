@@ -30,10 +30,13 @@
         <h3 class="section__subtitle">
           Liquidity depth over time
         </h3>
+        <!-- <pre>
+          {{currentTimeOption}}
+        </pre> -->
         <div>
           <span>
             <Icon
-              class="liquidity-areachart"
+              class="liquidity-areachart-switch"
               name="chart-area"
               v-on:click="yAxisLabelOptions.type = 'linear'"
               v-bind:class="[yAxisLabelOptions.type === 'linear' ? 'active' : '']"
@@ -42,7 +45,7 @@
           </span>
           <span>
             <Icon
-              class="liquidity-areachart"
+              class="liquidity-areachart-switch"
               name="chart-line"
               v-on:click="yAxisLabelOptions.type = 'logarithmic'"
               v-bind:class="[yAxisLabelOptions.type === 'logarithmic' ? 'active' : '']"
@@ -61,6 +64,7 @@
 </template>
 
 <script>
+import numeral from 'numeral';
 import PoolDepthVolumePieChart from './PoolDepthVolumePieChart.vue';
 import PoolDepthVolumeTable from './PoolDepthVolumeTable.vue';
 import AreaChart from './AreaChart.vue';
@@ -71,29 +75,50 @@ export default {
     PoolDepthVolumeTable,
     AreaChart,
   },
-  data: () => ({
-    timeOptions: ['1M', '3M', '1Y'],
-    currentTimeOption: '1M',
-    yAxisLabelOptions: {
-      type: 'linear', // 'logarithmic',
-      title: {
-        text: 'Liquidity',
-        useHTML: true,
-        style: {
-          color: 'rgba(255,255,255,0.7)',
-        }
-      },
+  data() {
+    return {
+      timeOptions: ['1M', '3M', '1Y'],
+      yAxisLabelOptions: {
+        type: 'linear', // 'logarithmic',
+        title: {
+          text: 'Liquidity',
+          useHTML: true,
+          style: {
+            color: 'rgba(255,255,255,0.7)',
+          }
+        },
+      }
     }
-  }),
+  },
   computed: {
+    currentTimeOption() {
+      const periodsMap = { period30d: '1M', period90d: '3M', period365d: '1Y' };
+      const period = this.$store.state.pools.periodDepthAndVolume || 'period30d';
+      return periodsMap[period];
+    },
     liquidityDepthOverTime() {
-      return this.$store.state.timeSeries.liquidityDepthOverTime;
+      const dataPoints = this.$store.getters['pools/liquidityDepthOverTime'];
+      const priceUSD = this.$store.state.runeMarketData.priceUSD;
+      return dataPoints.map(dp => ({
+        value: dp.value * priceUSD,
+        date: dp.date,
+      }));
+    },
+    poolsHistoryDepth() {
+      return JSON.stringify(
+        this.$store.getters['pools/poolHistoryDepths'],
+        null,
+        2
+      );
     },
   },
-    methods: {
+  methods: {
     togglePeriod(period) {
-      // TODO: maybe each component should use a different period toggle?
-      this.currentTimeOption = period;
+      const optionsMap = { '1M': 'period30d', '3M': 'period90d', '1Y': 'period365d' };
+      const currentPeriod = this.$store.state.pools.periodDepthAndVolume
+      if (currentPeriod !== optionsMap[period] && optionsMap[period]) {
+        this.$store.commit('pools/togglePeriodDepthAndVolume', optionsMap[period]);
+      }
     },
   },
 };
@@ -138,15 +163,17 @@ export default {
   .section__subtitle { flex: 1; }
 }
 
-.liquidity-areachart {
+.liquidity-areachart-switch {
   border: 2px solid rgba(51, 63, 101, .7);
   width: 24px;
   height: 24px;
   border-radius: 4px;
   padding: 4px;
+  cursor: pointer;
 }
-.liquidity-areachart.active {
+.liquidity-areachart-switch.active {
   background-color: transparent;
   background-color:rgba(51, 63, 101, .7);
+  cursor: auto;
 }
 </style>

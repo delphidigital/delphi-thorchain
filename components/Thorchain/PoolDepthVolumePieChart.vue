@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     data() {
-      const pvds = this.$store.getters['pools/poolVolumeAndDepth'];
+      const pvds = this.$store.getters['pools/poolDepthAndVolume'];
       const priceUSD = this.$store.state.runeMarketData.priceUSD;
 
       // TODO(Fede): This is in rune for now, but maybe it should be in another unit?
@@ -47,8 +47,8 @@ export default {
       // when it becomes clear what to do where.
       return pvds.map(pvd => ({
         name: pvd.poolId,
-        y: pvd.poolDepth * priceUSD,
-        z: pvd.poolVolume * priceUSD,
+        y: pvd.depthAverage * priceUSD,
+        z: pvd.totalVolume * priceUSD,
         color: pvd.color,
       }));
     },

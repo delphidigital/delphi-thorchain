@@ -3,22 +3,53 @@
 import sortBy from 'sort-by';
 
 const runeDivider = 10 ** 8;
+const periodsMap = { period30d: 'periodM', period90d: 'period3M', period365d: 'period1Y' };
+const runeE8toValue = runeString => (
+  runeString
+    ? (parseFloat(runeString) / runeDivider)
+    : 0
+);
+
+// givem two array with runeDepth property values
+// [{runeDepth: 1, startTime: '111'}, {runeDepth: 2, startTime: '222'}] and
+// [{runeDepth: 3, startTime: '111'}, {runeDepth: 4, startTime: '222'}]
+// combine them to their respective accumulation list:
+// [{runeDepth: 4, startTime: '111'}, {runeDepth: 6, startTime: '222'}]
+const combineIntervalDepthValues = (intervals1, intervals2) => {
+  let firstIntervals = intervals1;
+  let secondIntervals = intervals2;
+  if (intervals1.length < intervals2.length) {
+    firstIntervals = intervals2;
+    secondIntervals = intervals1;
+  }
+  return firstIntervals.map((item, idx) => {
+    const runeDepth = (
+      (parseFloat(item.runeDepth) || 0)
+      + (secondIntervals[idx] ? (parseFloat(secondIntervals[idx].runeDepth) || 0) : 0)
+    );
+    return { runeDepth, startTime: item.startTime };
+  });
+};
 
 export const state = () => ({
   // https://forum.vuejs.org/t/vuex-best-practices-for-complex-objects/10143
   pools: {},
+  poolHistoryDepths: {},
+  poolHistorySwaps: {},
   poolIds: [],
   sortBy: 'name',
   sortDescending: false,
   // NOTE valid values for period:
   // period1h, period24h, period7d, period30d, period90d, period365d, periodAll
   period: 'periodAll',
+  // NOTE: valid values -> 'period30d' 'period90d, period365d'
+  periodDepthAndVolume: 'period30d',
 });
 
 function aggPoolGetter(state, { attr, min, max }) {
   let ret = 0;
   Object.values(state.pools || []).forEach((poolStats) => {
-    const item = poolStats[state.period];
+    const item = poolStats[state.periodDepthAndVolume];
     if (item) {
       if (max && item[attr] > ret) ret = item[attr];
       if (min && item[attr] < ret) ret = item[attr];
@@ -26,7 +57,7 @@ function aggPoolGetter(state, { attr, min, max }) {
   });
   return ret;
 }
-
+/*
 // Show first X pools and then aggregate the rest into "Other"
 function aggPoolsByDepth(pools, numberBeforeAgg) {
   const shallowCopy = [...pools];
@@ -46,6 +77,7 @@ function aggPoolsByDepth(pools, numberBeforeAgg) {
 
   return first.concat(aggregate);
 }
+*/
 
 const colors = [
   '#4346D3',
@@ -89,9 +121,62 @@ export const getters = {
     const sortedPools = allPools.sort(sortBy(`${descChar}${state.sortBy}`));
     return sortedPools;
   },
+  poolHistoryDepths(state) {
+    return state.poolHistoryDepths;
+  },
+  poolDepthAndVolume(state) {
+    const period = periodsMap[state.periodDepthAndVolume];
+    const allPoolsSortedByVolume = state.poolIds.map((poolId, index) => {
+      // from pool history depths, calculate depth average
+      const poolHistoryDepths = state.poolHistoryDepths[poolId];
+      const poolPeriodHD = poolHistoryDepths ? poolHistoryDepths[period] : undefined;
+      // from pool history swaps, calculate total volume
+      const poolHistorySwaps = state.poolHistorySwaps[poolId];
+      const poolPeriodHS = poolHistorySwaps ? poolHistorySwaps[period] : undefined;
+      // Depth = average depth of the pool over the selected time period (depth = runeDepth * 2)
+      const depthIntervals = poolPeriodHD?.intervals || [];
+      const totalDepth = depthIntervals.reduce((result, item) => (
+        result + (runeE8toValue(item.runeDepth) * 2)
+      ), 0);
+      const depthAverage = totalDepth ? (totalDepth / depthIntervals.length) : 0;
+      // Volume = total volume of pool over selected timeframe
+      const swapIntervals = poolPeriodHS?.intervals || [];
+      const totalVolume = swapIntervals.reduce((result, item) => (
+        result + runeE8toValue(item.totalVolume)
+      ), 0);
+      return {
+        poolId,
+        depthIntervals,
+        swapIntervals,
+        depthAverage,
+        totalDepth,
+        totalVolume,
+        color: colors[index % (colors.length)],
+      };
+    }).sort((a, b) => b.totalVolume - a.totalVolume);
+    const top5PoolsSortedByVolume = allPoolsSortedByVolume.slice(0, 5);
+    const otherPoolsSortedByVolume = allPoolsSortedByVolume.slice(5, allPoolsSortedByVolume.length);
+    const other = otherPoolsSortedByVolume.reduce((result, item) => ({
+      poolId: 'Other',
+      depthAverage: runeE8toValue(item.depthAverage) + result.depthAverage,
+      totalDepth: runeE8toValue(item.totalDepth) + result.totalDepth,
+      totalVolume: runeE8toValue(item.totalVolume) + result.totalVolume,
+      color: '#3F4357',
+    }), {
+      poolId: 'Other',
+      depthAverage: 0,
+      totalDepth: 0,
+      totalVolume: 0,
+      color: '#3F4357',
+    });
+    other.depthAverage = other.depthAverage
+      ? other.depthAverage / otherPoolsSortedByVolume.length
+      : 0;
+    return [...top5PoolsSortedByVolume, other];
+  },
+  /*
   poolVolumeAndDepth(state) {
     const allPools = [];
-
     const maxPoolVolume = getters.maxPoolVolume(state);
     const minPoolVolume = getters.minPoolVolume(state);
     const maxPoolDepth = getters.maxPoolDepth(state);
@@ -99,7 +184,7 @@ export const getters = {
 
     state.poolIds.forEach((poolId) => {
       const poolStats = state.pools[poolId];
-      const pool = poolStats[state.period];
+      const pool = poolStats[state.periodDepthAndVolume];
       if (pool) {
         const normPoolVolume = (pool.poolVolume - minPoolVolume) / (maxPoolVolume - minPoolVolume);
         const normPoolDepth = (pool.poolDepth - minPoolDepth) / (maxPoolDepth - minPoolDepth);
@@ -134,14 +219,36 @@ export const getters = {
 
     return ret;
   },
-  totalPoolDepth(state) {
-    return Object.values(state.pools).reduce((result, item) => (
-      (result + (item.periodAll?.poolDepth || 0))
-    ), 0);
+  */
+  liquidityDepthOverTime(state) {
+    const period = periodsMap[state.periodDepthAndVolume];
+    const allPoolsIntervals = state.poolIds.map((poolId) => {
+      const poolHistoryDepths = state.poolHistoryDepths[poolId];
+      const poolPeriodHD = poolHistoryDepths ? poolHistoryDepths[period] : undefined;
+      return poolPeriodHD?.intervals || [];
+    });
+    const combinedIntervals = allPoolsIntervals.reduce(combineIntervalDepthValues);
+    return combinedIntervals.map(val => ({
+      date: new Date(val.startTime * 1000),
+      value: ((val.runeDepth * 2) / runeDivider),
+    }));
   },
-  totalRuneDepth(state) {
+  totalPoolsDepth(state) {
+    const items = getters.poolDepthAndVolume(state);
+    return items.reduce((result, item) => (
+      result + item.totalDepth // NOTE: maybe should be the sum of depthAverage???
+    ), 0);
+    // return Object.values(state.pools).reduce((result, item) => (
+    //   (result + (item[state.periodDepthAndVolume]?.poolDepth || 0))
+    // ), 0);
+  },
+  totalRuneDepth(state) { // TODO: replace this with (poolDepthAndVolume().totalDepth / 2)
     return Object.values(state.pools).reduce((result, item) => (
-      (result + (item.periodAll?.runeDepth || 0))
+      (
+        result
+        + parseFloat(item[state.periodDepthAndVolume]?.runeDepth || 0)
+        + parseFloat(item[state.periodDepthAndVolume]?.assetDepth || 0)
+      )
     ), 0);
   },
 };
@@ -215,5 +322,14 @@ export const mutations = {
   },
   togglePeriod(state, period) {
     state.period = period;
+  },
+  togglePeriodDepthAndVolume(state, period) {
+    state.periodDepthAndVolume = period;
+  },
+  setPoolsHistoryDepths(state, poolsHD) {
+    state.poolHistoryDepths = poolsHD;
+  },
+  setPoolsHistorySwaps(state, poolsHS) {
+    state.poolHistorySwaps = poolsHS;
   },
 };
