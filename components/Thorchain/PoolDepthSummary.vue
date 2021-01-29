@@ -56,7 +56,7 @@
       </div>
       <AreaChart
         :data="liquidityDepthOverTime"
-        :format-label="e => `$${e}`"
+        :format-label="formatLabel"
         :y-axis-label-options="yAxisLabelOptions"
       />
     </div>
@@ -120,6 +120,9 @@ export default {
         this.$store.commit('pools/togglePeriodDepthAndVolume', optionsMap[period]);
       }
     },
+    formatLabel(value) {
+      return numeral(value).format('($0,0a)').toUpperCase();
+    }
   },
 };
 </script>
