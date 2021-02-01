@@ -1,3 +1,4 @@
+
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 const secondsPerBlock = 5.5;
 const runeDivider = 10 ** 8;
@@ -10,6 +11,9 @@ export const state = () => ({
   asgardVaults: [],
   minBond: null,
   secondsPerBlock,
+  badValidatorRedline: 3,
+  minSlashPointsForBadValidator: 100,
+  badValidatorRate: 0,
 });
 
 export const getters = {
@@ -34,6 +38,7 @@ export const getters = {
         lowScore: false,
         lowVersion: false,
         score: null,
+        slashPoints: null,
         countsForWillChurn: null,
         showAsWillChurn: null,
         churnStatusType: null,
@@ -46,8 +51,9 @@ export const getters = {
       // calculate scores for each active node
       const age = currentHeight - node.status_since;
       const slashPoints = node.slash_points;
+      nodeProperties.slashPoints = slashPoints;
       let score = null;
-      if (age > 720 && slashPoints > 0) {
+      if (age >= state.badValidatorRate && slashPoints > state.minSlashPointsForBadValidator) {
         // NOTE(Fede): Thorchain source code multiplies by 10 ^ 8 to do math using uint64s
         // but we don't really care.
         score = age / slashPoints;
@@ -85,7 +91,7 @@ export const getters = {
     if (scoredNodes.length) {
       // const badNodes = [];
       const avgScore = totalScore / scoredNodes.length;
-      threshold = avgScore / 3;
+      threshold = avgScore / state.badValidatorRedline;
       let underscoredNodesCount = 0;
       scoredNodes.forEach((scoredNodeAddr) => {
         const nodeProps = activeNodePropertiesMap[scoredNodeAddr];
@@ -166,6 +172,7 @@ export const getters = {
     return {
       activeNodes: sortedActiveNodes,
       threshold,
+      badValidatorRedline: state.badValidatorRedline,
     };
   },
   countsByStatus(state) {
@@ -313,7 +320,10 @@ export const getters = {
       count += 1;
     }
 
-    return count;
+    return Math.min(
+      count,
+      Math.floor(g.activeNodesSegmentedForChurnAndThreshold.activeNodes.length / 3),
+    );
   },
   totalActiveBonded(state) {
     return Object.values(state.nodes).reduce((total, node) => (
@@ -350,6 +360,15 @@ export const mutations = {
   },
   setAsgardVaults(state, asgardVaults) {
     state.asgardVaults = asgardVaults;
+  },
+  setBadValidatorRedline(state, threshold) {
+    state.badValidatorRedline = threshold;
+  },
+  setMinSlashPointsForBadValidator(state, threshold) {
+    state.minSlashPointsForBadValidator = threshold;
+  },
+  setBadValidatorRate(state, rate) {
+    state.badValidatorRate = rate;
   },
   setNodeAccounts(state, nodeAccounts) {
     const nodeIds = [];

@@ -14,8 +14,8 @@
                 Behaviour score is calculated by dividing the age of the node by the
                 slash points. A high score is good and a low score is bad.
                 Nodes are churned out for bad behaviour if their score is less than
-                1/3 of the average score, or if it has the worst score if all are
-                above that value.
+                1/{{ badBehaviourRedline }} of the average score, or if it has the
+                worst score if all are above that value.
               </div>
             </div>
           </div>
@@ -73,6 +73,9 @@ export default {
     },
     badBehaviourThreshold() {
       return Math.floor(this.$store.getters['nodes/activeNodesSegmentedForChurnAndThreshold'].threshold);
+    },
+    badBehaviourRedline() {
+      return Math.floor(this.$store.getters['nodes/activeNodesSegmentedForChurnAndThreshold'].badValidatorRedline);
     },
   },
 };
