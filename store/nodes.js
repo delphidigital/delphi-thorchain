@@ -1,3 +1,4 @@
+
 /* eslint no-shadow: ["error", { "allow": ["state"] }] */
 const secondsPerBlock = 5.5;
 const runeDivider = 10 ** 8;
@@ -12,6 +13,7 @@ export const state = () => ({
   secondsPerBlock,
   badValidatorRedline: 3,
   minSlashPointsForBadValidator: 100,
+  badValidatorRate: 0,
 });
 
 export const getters = {
@@ -51,7 +53,7 @@ export const getters = {
       const slashPoints = node.slash_points;
       nodeProperties.slashPoints = slashPoints;
       let score = null;
-      if (age > 720 && slashPoints > 0) {
+      if (age > state.badValidatorRate && slashPoints > state.minSlashPointsForBadValidator) {
         // NOTE(Fede): Thorchain source code multiplies by 10 ^ 8 to do math using uint64s
         // but we don't really care.
         score = age / slashPoints;
@@ -93,8 +95,7 @@ export const getters = {
       let underscoredNodesCount = 0;
       scoredNodes.forEach((scoredNodeAddr) => {
         const nodeProps = activeNodePropertiesMap[scoredNodeAddr];
-        if (nodeProps.score < threshold &&
-          nodeProps.slashPoints > state.minSlashPointsForBadValidator) {
+        if (nodeProps.score < threshold) {
           nodeProps.lowScore = true;
           underscoredNodesCount += 1;
         }
@@ -365,6 +366,9 @@ export const mutations = {
   },
   setMinSlashPointsForBadValidator(state, threshold) {
     state.minSlashPointsForBadValidator = threshold;
+  },
+  setBadValidatorRate(state, rate) {
+    state.badValidatorRate = rate;
   },
   setNodeAccounts(state, nodeAccounts) {
     const nodeIds = [];
