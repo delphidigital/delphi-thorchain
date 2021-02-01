@@ -10,6 +10,8 @@ export const state = () => ({
   asgardVaults: [],
   minBond: null,
   secondsPerBlock,
+  badValidatorRedline: 3,
+  minSlashPointsForBadValidator: 100,
 });
 
 export const getters = {
@@ -34,6 +36,7 @@ export const getters = {
         lowScore: false,
         lowVersion: false,
         score: null,
+        slashPoints: null,
         countsForWillChurn: null,
         showAsWillChurn: null,
         churnStatusType: null,
@@ -46,6 +49,7 @@ export const getters = {
       // calculate scores for each active node
       const age = currentHeight - node.status_since;
       const slashPoints = node.slash_points;
+      nodeProperties.slashPoints = slashPoints;
       let score = null;
       if (age > 720 && slashPoints > 0) {
         // NOTE(Fede): Thorchain source code multiplies by 10 ^ 8 to do math using uint64s
@@ -85,11 +89,12 @@ export const getters = {
     if (scoredNodes.length) {
       // const badNodes = [];
       const avgScore = totalScore / scoredNodes.length;
-      threshold = avgScore / 3;
+      threshold = avgScore / state.badValidatorRedline;
       let underscoredNodesCount = 0;
       scoredNodes.forEach((scoredNodeAddr) => {
         const nodeProps = activeNodePropertiesMap[scoredNodeAddr];
-        if (nodeProps.score < threshold) {
+        if (nodeProps.score < threshold &&
+          nodeProps.slashPoints > state.minSlashPointsForBadValidator) {
           nodeProps.lowScore = true;
           underscoredNodesCount += 1;
         }
@@ -166,6 +171,7 @@ export const getters = {
     return {
       activeNodes: sortedActiveNodes,
       threshold,
+      badValidatorRedline: state.badValidatorRedline,
     };
   },
   countsByStatus(state) {
@@ -350,6 +356,12 @@ export const mutations = {
   },
   setAsgardVaults(state, asgardVaults) {
     state.asgardVaults = asgardVaults;
+  },
+  setBadValidatorRedline(state, threshold) {
+    state.badValidatorRedline = threshold;
+  },
+  setMinSlashPointsForBadValidator(state, threshold) {
+    state.minSlashPointsForBadValidator = threshold;
   },
   setNodeAccounts(state, nodeAccounts) {
     const nodeIds = [];
