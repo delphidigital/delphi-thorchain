@@ -53,7 +53,7 @@ export const getters = {
       const slashPoints = node.slash_points;
       nodeProperties.slashPoints = slashPoints;
       let score = null;
-      if (age > state.badValidatorRate && slashPoints > state.minSlashPointsForBadValidator) {
+      if (age >= state.badValidatorRate && slashPoints > state.minSlashPointsForBadValidator) {
         // NOTE(Fede): Thorchain source code multiplies by 10 ^ 8 to do math using uint64s
         // but we don't really care.
         score = age / slashPoints;
