@@ -319,7 +319,10 @@ export const getters = {
       count += 1;
     }
 
-    return count;
+    return Math.min(
+      count,
+      Math.floor(g.activeNodesSegmentedForChurnAndThreshold.activeNodes.length / 3),
+    );
   },
   totalActiveBonded(state) {
     return Object.values(state.nodes).reduce((total, node) => (
