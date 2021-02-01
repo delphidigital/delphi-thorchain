@@ -9,7 +9,7 @@
     </thead>
     <tbody>
       <tr v-for="item in data" :key="item.poolId" class="table__row">
-        <td class="table__highlight">
+        <td class="table__highlight table__poolname">
           <span class="marker" :style="{backgroundColor: item.color}" />{{ item.poolId }}
         </td>
         <td class="table__data">
@@ -88,6 +88,12 @@ export default {
   font-size: 14px;
   td {
     padding: 7px 0;
+  }
+  .table__poolname {
+    max-width: 90px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 

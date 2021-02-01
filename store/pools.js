@@ -153,14 +153,14 @@ export const getters = {
         totalVolume,
         color: colors[index % (colors.length)],
       };
-    }).sort((a, b) => b.totalVolume - a.totalVolume);
+    }).sort((a, b) => b.depthAverage - a.depthAverage);
     const top5PoolsSortedByVolume = allPoolsSortedByVolume.slice(0, 5);
     const otherPoolsSortedByVolume = allPoolsSortedByVolume.slice(5, allPoolsSortedByVolume.length);
     const other = otherPoolsSortedByVolume.reduce((result, item) => ({
       poolId: 'Other',
-      depthAverage: runeE8toValue(item.depthAverage) + result.depthAverage,
-      totalDepth: runeE8toValue(item.totalDepth) + result.totalDepth,
-      totalVolume: runeE8toValue(item.totalVolume) + result.totalVolume,
+      depthAverage: item.depthAverage + result.depthAverage,
+      totalDepth: item.totalDepth + result.totalDepth,
+      totalVolume: item.totalVolume + result.totalVolume,
       color: '#3F4357',
     }), {
       poolId: 'Other',
@@ -247,7 +247,6 @@ export const getters = {
       (
         result
         + parseFloat(item[state.periodDepthAndVolume]?.runeDepth || 0)
-        + parseFloat(item[state.periodDepthAndVolume]?.assetDepth || 0)
       )
     ), 0);
   },

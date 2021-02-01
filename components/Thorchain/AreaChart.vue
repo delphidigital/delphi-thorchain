@@ -118,16 +118,16 @@ export default {
             },
           ],
           tickPositions: [0, this.data.length - 1],
-          min: 0.5,
-          max: this.data.length - 1.5,
+          // min: 0.5,
+          // max: this.data.length - 1.5,
           minPadding: 0,
           maxPadding: 0,
         },
         yAxis: {
           ...yAxisLabelOptions,
           className: 'highcharts-yaxis--title',
-          max: this.max,
-          tickAmount: 5,
+          // max: this.max,
+          // tickAmount: 5,
           labels: {
             formatter() {
               if (this.isLast || this.isFirst) {

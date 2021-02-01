@@ -108,9 +108,6 @@ export default {
     extend() {},
     plugins: [
       new ESLintPlugin(),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /@highcharts\/map-collection/,
-      }),
     ],
   },
   plugins: [{ src: '~plugins/vueAwesome', ssr: false }],

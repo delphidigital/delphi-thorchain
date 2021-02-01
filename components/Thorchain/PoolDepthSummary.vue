@@ -30,9 +30,6 @@
         <h3 class="section__subtitle">
           Liquidity depth over time
         </h3>
-        <!-- <pre>
-          {{currentTimeOption}}
-        </pre> -->
         <div>
           <span>
             <Icon

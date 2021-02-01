@@ -9,7 +9,7 @@
   padding: 30px;
   width: 100%;
   display: flex;
-  aligin-items: center;
+  align-items: center;
   justify-content: center;
 
   img {

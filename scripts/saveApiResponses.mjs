@@ -57,7 +57,7 @@ async function updateBlockchainData(blockchain) {
   const inboundAddresses = await api.loadInboundAddresses();
   const stats = await api.loadStats(); // NOTE: same as v1 without : [poolCount, totalEarned, totalVolume24hr]
   // IMPORTANT NOTE: disabling network since its failing
-  // const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
+  const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
   const constants = await api.loadConstants(); // same, some props updated?
   const versionRequest = await api.loadNodeVersion();
 
@@ -127,7 +127,7 @@ async function updateBlockchainData(blockchain) {
   });
 
   await set('stats', stats);
-  // await set('network', network);
+  await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
