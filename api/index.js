@@ -16,6 +16,8 @@ async function loadCached(id) {
 }
 
 thorchain.all('/overview', async (req, res) => {
+  const rawPriceData = await getAsync(`thorchain::rune_1y_daily_prices`);
+  const runePrices = rawPriceData ? JSON.parse(rawPriceData) : {};
   const pools = await loadCached(`${req.blockchain}::pools`) || [];
   const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
   const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
@@ -28,6 +30,9 @@ thorchain.all('/overview', async (req, res) => {
 
   const version = await loadCached(`${req.blockchain}::version`);
   const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
+
+  const technicalAnalysis = await loadCached(`${req.blockchain}::technicalAnalysis`);
+
   // NOTE: stats payload not used by frontend
   // const stats = await loadCached(`${req.blockchain}::stats`);
 
@@ -55,6 +60,8 @@ thorchain.all('/overview', async (req, res) => {
     availablePoolStats,
     availablePoolHistoryDepths,
     availablePoolHistorySwaps,
+    runePrices,
+    technicalAnalysis,
   });
 });
 

@@ -1,6 +1,6 @@
 <template>
   <div class="section">
-    <SlippageCalculator />
+    <!-- <SlippageCalculator /> -->
 
     <div class="section__header pool-list-header">
       <h2 class="section__title section__title--inline">
@@ -30,16 +30,6 @@
           {{ option }}
         </button>
       </div>
-
-      <div
-        class="slippage-calculator-toggle slippage-calculator-toggle--desktop"
-        @click="$store.commit('modals/toggleSlippageCalculator')"
-      >
-        <img src="/calculator.svg"></img>
-        <p>
-          Slippage Calculator
-        </p>
-      </div>
     </div>
 
     <div class="section__body pool-list-section">
@@ -53,6 +43,20 @@
               @click="toggleSort(field.name)"
             >
               {{ field.label }}
+              <span class="section__table__head--tooltip">
+                <Icon
+                  class="section__table__head--info"
+                  name="info"
+                  scale="0.4"
+                  @click="focusSearchInput"
+                >
+                </Icon>
+                <div class="app-tooltip table__head__tooltip">
+                  <div class="app-tooltip__body">
+                    {{field.info}}
+                  </div>
+                </div>
+              </span>
               <span class="pool-list-sort-mark">
                 {{ sortBy === field.name ? (sortDescending ? '▼' : '▲') : '&nbsp;' }}
               </span>
@@ -62,23 +66,16 @@
         <tbody>
           <tr
             v-for="pool in pools"
-            :key="pool.name"
-            :class="selectedPools.indexOf(pool.name) === -1 ? 'section__table__row' : `section__table__row selectedpool__color${selectedPools.indexOf(pool.name)}`"
+            :key="pool.poolId"
+            :class="selectedPools.indexOf(pool.poolId) === -1 ? 'section__table__row' : `section__table__row selectedpool__color${selectedPools.indexOf(pool.poolId)}`"
           >
             <td class="section__table__data section__table__data--highlight pool-list-pool">
-         
-          <!-- <label class="control control-checkbox">
-            First checkbox
-            <input type="checkbox" checked="checked" />
-            <div class="control_indicator"></div>
-          </label> -->
-
               <label class="container control control-checkbox">
-                {{ pool.name }}
+                {{ displayPoolName(pool.poolId) }}
                 <input type="checkbox"
                   v-model="selectedPools"
-                  :value="pool.name"
-                  :disabled="selectedPools.length > 4 && selectedPools.indexOf(pool.name) === -1"
+                  :value="pool.poolId"
+                  :disabled="selectedPools.length > 4 && selectedPools.indexOf(pool.poolId) === -1"
                 >
                 <div class="control_indicator"></div>
               </label>
@@ -87,132 +84,184 @@
               <div>
                 <Percentage :value="pool.apy" />
               </div>
-              <!-- OLD <div v-if="pool.apy < 1000">
-                <Percentage :value="pool.apy" />
-              </div>
-              <div v-if="pool.apy >= 1000">
-                n/a
-              </div> -->
-              <!-- OLD <ApyGauge :apy-real-rewards="pool.apyRealRewards" :name="pool.name" /> -->
             </td>
             <td class="section__table__data">
-                <RuneUSD :rune="pool.volume" />
-              <!-- OLD <div v-if="pool.volume >= 1">
-                <RuneUSD :rune="pool.volume" />
-              </div>
-              <div v-if="pool.volume < 1">
-                n/a
-              </div> -->
+              <span :class="(sortBy == 'poolId' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''">
+                {{ formatLabel(pool.volumeAverageUsd) }}
+              </span>
             </td>
             <td class="section__table__data">
-              <RuneUSD :rune="pool.slippageDepth" />
+              {{ formatLabel(pool.depthAverageUsd) }}
             </td>
+
             <td class="section__table__data">
-              <div v-if="!isNaN(pool.meanFeeAsPercentage)">
-                <Percentage :value="pool.meanFeeAsPercentage" />
+              <div v-if="!isNaN(pool.volumeOverDepthRatio)">
+                {{formatNumberDecimals(pool.volumeOverDepthRatio)}}
               </div>
-              <div v-if="isNaN(pool.meanFeeAsPercentage)">
+              <div v-if="isNaN(pool.volumeOverDepthRatio)">
                 n/a
+              </div>
+            </td>
+
+            <td class="section__table__data">
+              <div>
+                <Percentage :value="pool.correllation" />
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div class="slippage-calculator-toggle--mobile">
-        <div
-          class="slippage-calculator-toggle"
-          @click="$store.commit('modals/toggleSlippageCalculator')"
-        >
-          <img src="/calculator.svg"></img>
-          <p>
-            Slippage Calculator
-          </p>
+      <div v-if="selectedPools.length > 0" class="section__linearvolume__chart">
+        <div class="section__chart-title">
+          <h3 class="section__subtitle">
+            Volume of selected pools
+          </h3>
         </div>
+        <LineChart
+          :data="selectedPoolsLinechartData"
+          :format-label="formatLabel"
+          :y-axis-label-options="yAxisLabelOptions"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import numeral from 'numeral';
+import sortBy from 'sort-by';
 import Percentage from '../Common/Percentage.vue';
-import RuneUSD from '../Common/RuneUSD.vue';
+import LineChart from './LineChart.vue';
+import { periodsHistoryMap } from '../../store/pools';
 
 export default {
   components: {
     Percentage,
-    RuneUSD,
+    LineChart,
   },
   data() {
     return {
       dummyRealRewards: Math.random(),
-      timeOptions: ['all', '24h', '7d', '30d'],
-      currentTimeOption: 'all',
+      timeOptions: ['24H', '1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
+      currentTimeOption: '1W',
       searchinput: '',
       selectedPools: [],
+      sortBy: 'poolId',
+      sortDescending: false,
       fields: [
         {
-          name: 'name',
+          name: 'poolId',
           label: 'Pool',
+          info: 'The paired asset is always RUNE. Eg.: BTC : RUNE, ETH : RUNE',
         },
         {
           name: 'apy',
           label: 'APY',
+          info: 'Calculation (make clear that it includes IL), MA used and definition of APY.',
         },
         {
-          name: 'volume',
-          label: 'Volume',
+          name: 'volumeAverageUsd',
+          label: '24H Volume',
+          info: 'Avg. 24h volume over the selected timeframe.',
         },
         {
-          name: 'slippageDepth',
-          label: '1% Slippage Depth',
+          name: 'depthAverageUsd',
+          label: 'Depth',
+          info: 'Avg. depth over the selected timeframe.',
         },
         {
-          name: 'meanFeeAsPercentage',
-          label: 'Mean Fee',
+          name: 'volumeOverDepthRatio',
+          label: 'V/D Ratio',
+          info: 'A metric which indicates a pool’s potential. A higher number means higher potential.',
+        },
+        {
+          name: 'correllation',
+          label: 'Correllation',
+          info: 'A metric which indicates a pool’s risk. A higher number indicates lower risk as assets are more correlated, there’s a lower risk of impermanent loss.',
         },
       ],
+      yAxisLabelOptions: {
+        type: 'linear',
+        title: {
+          text: 'Volume',
+          useHTML: true,
+          style: {
+            color: 'rgba(255,255,255,0.7)',
+          }
+        },
+      }
     };
   },
   computed: {
     pools() {
-      const allPools =  this.$store.getters['pools/poolList'];
-      const filteredPools = allPools.filter(p => p.name.toLowerCase().includes(this.searchinput.toLowerCase()));
+      const unsortedPools = Object.keys(this.$store.state.pools.technicalAnalysis).map((poolId) => {
+        const period = periodsHistoryMap[this.currentTimeOption];
+        const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
+        const volumeOverDepthRatio = poolPeriodTA.totalVolume / poolPeriodTA.totalDepth;
+        return {
+          ...poolPeriodTA,
+          poolId,
+          volumeOverDepthRatio,
+        };
+      })
+      const descChar = this.sortDescending ? '-' : '';
+      const sortedPools = unsortedPools.sort(sortBy(`${descChar}${this.sortBy}`));
+      const filteredPools = sortedPools
+        .filter(p => p.poolId.toLowerCase().includes(this.searchinput.toLowerCase()));
       this.selectedPools.slice().reverse().forEach(selectedPool => {
-        const selectedIndex = filteredPools.findIndex(fp => fp && fp.name === selectedPool);
+        const selectedIndex = filteredPools.findIndex(fp => fp && fp.poolId === selectedPool);
         if (selectedIndex !== -1) {
           filteredPools.unshift(filteredPools.splice(selectedIndex, 1)[0]);
         }
       });
       return filteredPools;
     },
-    sortBy() {
-      return this.$store.state.pools.sortBy;
-    },
-    sortDescending() {
-      return this.$store.state.pools.sortDescending;
+    selectedPoolsLinechartData() {
+      const poolTA = this.$store.state.pools.technicalAnalysis
+      const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
+      const period = periodsHistoryMap[this.currentTimeOption];
+      const data = this.selectedPools.map((sp, colorIndex) => {
+        const periodTA = poolTA[sp][period];
+        return {
+          name: sp,
+          data: Object.keys(periodTA.intervalSwaps).map(timestamp => {
+            return {
+              x: (parseInt(periodTA.intervalSwaps[timestamp].startTime)*1000),
+              y: periodTA.intervalSwaps[timestamp].totalVolumeUsd,
+            }
+          }),
+          color: colorsList[colorIndex],
+        };
+      });
+      return data;
     },
   },
   methods: {
+    displayPoolName(poolId) {
+      if (poolId.length > 16) {
+        return `${poolId.slice(0, 16)}...`;
+      }
+      return poolId;
+    },
     focusSearchInput() {
       this.$refs.searchinputref.focus()
     },
+    formatLabel(value) {
+      return numeral(value).format('($0,0a)').toUpperCase();
+    },
+    formatNumberDecimals(value){
+      return value.toFixed(2);
+    },
     togglePeriod(period) {
-      const periodOptionsMap = {
-        all: 'periodAll',
-        '24h': 'period24h',
-        '7d': 'period7d',
-        '30d': 'period30d',
-      };
-      if (this.$store.period !== periodOptionsMap[period] && periodOptionsMap[period]) {
+      if (this.currentTimeOption !== period) {
         this.currentTimeOption = period;
-        this.$store.commit('pools/togglePeriod', periodOptionsMap[period]);
       }
     },
     toggleSort(fieldName) {
       if (fieldName === this.sortBy) {
-        this.$store.commit('pools/toggleSortDescending');
+        this.sortDescending = !this.sortDescending;
       } else {
-        this.$store.commit('pools/setSortBy', fieldName);
+        this.sortBy = fieldName;
       }
     },
   },
@@ -267,7 +316,7 @@ export default {
   }
 }
 
-.slippage-calculator-toggle {
+/* .slippage-calculator-toggle {
   padding: 0px 16px;
   height: 30px;
   margin-left: auto;
@@ -300,7 +349,7 @@ export default {
     padding: 10px;
     border-top: 1px solid $color-border;
   }
-}
+} */
 
 .pool-list-time-option--active {
   color: #fff;
@@ -318,6 +367,18 @@ export default {
   th {
     cursor: pointer;
   }
+  .section__table__head--info {
+    font-size: 0.4em;
+    width: 12px;
+    height: 12px;
+    background-color: rgb(120, 124, 161);
+    padding: 3px;
+    border-radius: 8px;
+    color: rgb(27, 28, 41);
+    vertical-align: middle;
+    line-height: 1;
+    margin-left: 4px;
+  }
 
   @media screen and (max-width: $pureg-lg) {
     min-width: 700px;
@@ -334,11 +395,8 @@ export default {
   display: inline-block;
   vertical-align: middle;
 }
-.pool-list-pool > label {
-  overflow: hidden;
+.pool-list-pool label {
   white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 220px;
 }
 .pool-list-apy {
   display: flex;
@@ -408,21 +466,55 @@ export default {
   opacity: 1;
   background: #2aa1c0;
 }
-
-.selectedpool__color0 .control input:checked ~ .control_indicator {
+.selectedpool__color0 {
+  .control input:checked ~ .control_indicator {
     background: #4346D3;
+  }
+  .column__highlight__colored {
+    border: 1px solid #4346D3;
+    padding: 6px 8px;
+    border-radius: 40%;
+  }
 }
-.selectedpool__color1 .control input:checked ~ .control_indicator {
-  background: #5E2BBC;
+.selectedpool__color1 {
+  .control input:checked ~ .control_indicator {
+    background: #5E2BBC;
+  }
+  .column__highlight__colored {
+    border: 1px solid #5E2BBC;
+    padding: 6px 8px;
+    border-radius: 40%;
+  }
 }
-.selectedpool__color2 .control input:checked ~ .control_indicator {
-  background: #F7517F;
+.selectedpool__color2 {
+  .control input:checked ~ .control_indicator{
+    background: #F7517F;
+  }
+  .column__highlight__colored {
+    border: 1px solid #F7517F;
+    padding: 6px 8px;
+    border-radius: 40%;
+  }
 }
-.selectedpool__color3 .control input:checked ~ .control_indicator {
-  background: #2D99FF;
+.selectedpool__color3 {
+  .control input:checked ~ .control_indicator {
+    background: #2D99FF;
+  }
+  .column__highlight__colored {
+    border: 1px solid #2D99FF;
+    padding: 6px 8px;
+    border-radius: 40%;
+  }
 }
-.selectedpool__color4 .control input:checked ~ .control_indicator {
-  background: #16CEB9;
+.selectedpool__color4 {
+  .control input:checked ~ .control_indicator {
+    background: #16CEB9;
+  }
+  .column__highlight__colored {
+    border: 1px solid #16CEB9;
+    padding: 4px 6px;
+    border-radius: 40%;
+  }
 }
 .control:hover input:not([disabled]):checked ~ .control_indicator,
 .control input:checked:focus ~ .control_indicator {
@@ -469,5 +561,43 @@ export default {
   opacity: 0.6;
   z-index: 99999;
   transform: scale(0);
+}
+.section__table__head--tooltip {
+  position: relative;
+  z-index: 10;
+
+  .table__head__tooltip {
+    display: none;
+    position: absolute;
+    top: calc(100% + 20px);
+    right: calc(50% - 125px);
+    background-color: $color-bg-popup;
+    border-radius: 4px;
+    width: 250px;
+    text-transform: none;
+  }
+
+  .table__head__tooltip:before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid $color-bg-popup;
+    top: -6px;
+    left: calc(50% - 6px);
+  }
+
+  &:hover {
+    .table__head__tooltip {
+      display: block;
+    }
+  }
+}
+.section__linearvolume__chart{
+  background-color: #262f4a;
+  border-top: 1px solid #353C50;
+  padding: 15px 25px;
 }
 </style>

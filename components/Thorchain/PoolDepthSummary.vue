@@ -18,10 +18,13 @@
     </div>
     <div class="pure-g section__body section__body--pie-chart">
       <div class="pure-u-lg-1-2 pure-u-1">
-        <PoolDepthVolumePieChart />
+        <PoolDepthVolumePieChart :top5PoolsWithOthers="top5PoolsWithOthers" />
       </div>
       <div class="pure-u-lg-1-2 pure-u-1">
-        <PoolDepthVolumeTable />
+        <PoolDepthVolumeTable
+          :top5PoolsWithOthers="top5PoolsWithOthers"
+          :totalPoolsDepthStats="totalPoolsDepthStats"
+        />
       </div>
     </div>
     <hr class="section__divider">
@@ -31,23 +34,21 @@
           Liquidity depth over time
         </h3>
         <div>
-          <span>
-            <Icon
-              class="liquidity-areachart-switch"
-              name="chart-area"
-              v-on:click="yAxisLabelOptions.type = 'linear'"
-              v-bind:class="[yAxisLabelOptions.type === 'linear' ? 'active' : '']"
-            >
-            </Icon>
+        <span
+            class="liquidity-areachart-switch"
+            name="chart-line"
+            v-on:click="yAxisLabelOptions.type = 'logarithmic'"
+            v-bind:class="[yAxisLabelOptions.type === 'logarithmic' ? 'active' : '']"
+          >
+            Log
           </span>
-          <span>
-            <Icon
-              class="liquidity-areachart-switch"
-              name="chart-line"
-              v-on:click="yAxisLabelOptions.type = 'logarithmic'"
-              v-bind:class="[yAxisLabelOptions.type === 'logarithmic' ? 'active' : '']"
-            >
-            </Icon>
+          <span
+            class="liquidity-areachart-switch"
+            name="chart-area"
+            v-on:click="yAxisLabelOptions.type = 'linear'"
+            v-bind:class="[yAxisLabelOptions.type === 'linear' ? 'active' : '']"
+          >
+            Linear
           </span>
         </div>
       </div>
@@ -62,9 +63,19 @@
 
 <script>
 import numeral from 'numeral';
+import { startOfDay } from 'date-fns';
 import PoolDepthVolumePieChart from './PoolDepthVolumePieChart.vue';
 import PoolDepthVolumeTable from './PoolDepthVolumeTable.vue';
 import AreaChart from './AreaChart.vue';
+import { periodsHistoryMap, runeDivider } from '../../store/pools';
+
+const colors = [
+  '#4346D3',
+  '#5E2BBC',
+  '#F7517F',
+  '#2D99FF',
+  '#16CEB9',
+];
 
 export default {
   components: {
@@ -75,6 +86,7 @@ export default {
   data() {
     return {
       timeOptions: ['1M', '3M', '1Y'],
+      currentTimeOption: '1M',
       yAxisLabelOptions: {
         type: 'linear', // 'logarithmic',
         title: {
@@ -88,33 +100,128 @@ export default {
     }
   },
   computed: {
-    currentTimeOption() {
-      const periodsMap = { period30d: '1M', period90d: '3M', period365d: '1Y' };
-      const period = this.$store.state.pools.periodDepthAndVolume || 'period30d';
-      return periodsMap[period];
+    top5PoolsWithOthers() {
+      const allPoolsSorted = Object.keys(this.$store.state.pools.technicalAnalysis).map((poolId, index) => {
+        const period = periodsHistoryMap[this.currentTimeOption];
+        const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
+        return {
+          ...poolPeriodTA,
+          poolId,
+          color: colors[index % (colors.length)],
+        };
+      }).sort((a, b) => b.totalVolume - a.totalVolume);
+      const top5PoolsSortedByVolume = allPoolsSorted.slice(0, 5);
+      const otherPoolsSorted = allPoolsSorted.slice(5, allPoolsSorted.length);
+      const other = otherPoolsSorted.reduce((result, item) => {
+        return {
+          ...result,
+          averageAssetPriceUsd: result.averageAssetPriceUsd + item.averageAssetPriceUsd,
+          averageEarningsRune: result.averageEarningsRune + item.averageEarningsRune,
+          averageRunePriceUsd: result.averageRunePriceUsd + item.averageRunePriceUsd,
+          depthAverage: result.depthAverage + item.depthAverage,
+          depthAverageUsd: result.depthAverageUsd + item.depthAverageUsd,
+          intervals: result.intervals + item.intervals,
+          totalDepth: result.totalDepth + item.totalDepth,
+          totalDepthUsd: result.totalDepthUsd + item.totalDepthUsd,
+          totalEarningsRune: result.totalEarningsRune + item.totalEarningsRune,
+          totalVolume: result.totalVolume + item.totalVolume,
+          totalVolumeUsd: result.totalVolumeUsd + item.totalVolumeUsd,
+          volumeAverage: result.volumeAverage + item.volumeAverage,
+          volumeAverageUsd: result.volumeAverageUsd + item.volumeAverageUsd,
+        };
+      }, {
+        poolId: 'Other',
+        averageAssetPriceUsd: 0.0,
+        averageEarningsRune: 0.0,
+        averageRunePriceUsd: 0.0,
+        depthAverage: 0.0,
+        depthAverageUsd: 0.0,
+        intervals: 0.0,
+        totalDepth: 0.0,
+        totalDepthUsd: 0.0,
+        totalEarningsRune: 0.0,
+        totalVolume: 0.0,
+        totalVolumeUsd: 0.0,
+        volumeAverage: 0.0,
+        volumeAverageUsd: 0.0,
+        color: '#3F4357',
+      });
+      other.depthAverage = other.depthAverage
+        ? other.depthAverage / otherPoolsSorted.length
+        : 0;
+      other.depthAverageUsd = other.depthAverageUsd
+        ? other.depthAverageUsd / otherPoolsSorted.length
+        : 0;
+      other.volumeAverage = other.volumeAverage
+        ? other.volumeAverage / otherPoolsSorted.length
+        : 0;
+      other.volumeAverageUsd = other.volumeAverageUsd
+        ? other.volumeAverageUsd / otherPoolsSorted.length
+        : 0;
+      return [...top5PoolsSortedByVolume, other];
     },
     liquidityDepthOverTime() {
-      const dataPoints = this.$store.getters['pools/liquidityDepthOverTime'];
-      const priceUSD = this.$store.state.runeMarketData.priceUSD;
-      return dataPoints.map(dp => ({
-        value: dp.value * priceUSD,
-        date: dp.date,
-      }));
+      const runePrices = this.$store.state.pools.runePrices;
+      const allPoolsHistoryDepths = this.$store.state.pools.poolHistoryDepths;
+      const period = periodsHistoryMap[this.currentTimeOption];
+      const allPoolsIntervals = Object.keys(allPoolsHistoryDepths).map((poolId) => {
+        const poolHistoryDepths = allPoolsHistoryDepths[poolId];
+        const poolPeriodHD = poolHistoryDepths ? poolHistoryDepths[period] : undefined;
+        return poolPeriodHD?.intervals || [];
+      });
+      // combine all pools, by each interval, so we have a series of the sum all pools in intervals
+      const combinedIntervals = allPoolsIntervals.reduce((intervals1, intervals2) => {
+        let firstIntervals = intervals1;
+        let secondIntervals = intervals2;
+        if (intervals1.length < intervals2.length) {
+          firstIntervals = intervals2;
+          secondIntervals = intervals1;
+        }
+        return firstIntervals.map((item, idx) => {
+          const runeDepth = (
+            (parseFloat(item.runeDepth) || 0)
+            + (secondIntervals[idx] ? (parseFloat(secondIntervals[idx].runeDepth) || 0) : 0)
+          );
+          return { runeDepth, startTime: item.startTime };
+        });
+      });
+      return combinedIntervals.map(val => {
+        const date = new Date(val.startTime * 1000);
+        const runePricesDay = startOfDay(date);
+        const value = ((val.runeDepth * 2) / runeDivider);
+        let usdValue = null;
+        if (runePrices[runePricesDay.getTime()]) {
+          usdValue = runePrices[runePricesDay.getTime()] * value;
+        }
+        return {
+          date,
+          // value,
+          value: usdValue,
+        }
+      });
     },
-    poolsHistoryDepth() {
-      return JSON.stringify(
-        this.$store.getters['pools/poolHistoryDepths'],
-        null,
-        2
-      );
+    totalPoolsDepthStats() {
+      const period = periodsHistoryMap[this.currentTimeOption];
+      return Object.keys(this.$store.state.pools.technicalAnalysis).reduce((result, poolId) => {
+        const item = this.$store.state.pools.technicalAnalysis[poolId];
+        return {
+          depthAverage: result.depthAverage + item[period].depthAverage,
+          depthAverageUsd: result.depthAverageUsd + item[period].depthAverageUsd,
+          totalDepth: result.totalDepth + item[period].totalDepth,
+          totalDepthUsd: result.totalDepthUsd + item[period].totalDepthUsd,
+        };
+      }, {
+        depthAverage: 0.0,
+        depthAverageUsd: 0.0,
+        totalDepth: 0.0,
+        totalDepthUsd: 0.0,
+      });
     },
   },
   methods: {
     togglePeriod(period) {
-      const optionsMap = { '1M': 'period30d', '3M': 'period90d', '1Y': 'period365d' };
-      const currentPeriod = this.$store.state.pools.periodDepthAndVolume
-      if (currentPeriod !== optionsMap[period] && optionsMap[period]) {
-        this.$store.commit('pools/togglePeriodDepthAndVolume', optionsMap[period]);
+      if (this.currentTimeOption !== period) {
+        this.currentTimeOption = period;
       }
     },
     formatLabel(value) {
@@ -168,8 +275,11 @@ export default {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  padding: 4px;
+  padding: 4px 6px;
   cursor: pointer;
+  font-size: 11px;
+  margin-right: 8px;
+  font-weight: 500;
 }
 .liquidity-areachart-switch.active {
   background-color: transparent;

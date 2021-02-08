@@ -13,10 +13,10 @@
           <span class="marker" :style="{backgroundColor: item.color}" />{{ item.poolId }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="item.totalVolume" />
+          {{ formatUsd(item.totalVolumeUsd) }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="item.depthAverage" />
+          {{ formatUsd(item.totalDepthUsd) }}
         </td>
       </tr>
       <tr class="table__row">
@@ -24,10 +24,10 @@
           <span class="marker" :style="{backgroundColor: aggregate.color}" />{{ aggregate.poolId }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="aggregate.totalVolume" />
+          {{ formatUsd(aggregate.totalVolumeUsd) }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="aggregate.depthAverage" />
+          {{ formatUsd(aggregate.totalDepthUsd) }}
         </td>
       </tr>
       <tr class="table__footer">
@@ -35,7 +35,7 @@
           Total value locked in pools:
         </td>
         <td class="table__highlight">
-          <RuneUSD :rune="totalPoolsDepth" />
+          {{ formatUsd(totalPoolsDepthStats.totalDepthUsd) }}
         </td>
       </tr>
     </tbody>
@@ -43,26 +43,31 @@
 </template>
 
 <script>
-import RuneUSD from '../Common/RuneUSD.vue';
+import numeral from 'numeral';
 
 export default {
-  components: {
-    RuneUSD,
+  props: {
+    top5PoolsWithOthers: {
+      type: Array,
+      default: [],
+    },
+    totalPoolsDepthStats: {
+      type: Object,
+    }
   },
   computed: {
-    poolDepthAndVolume() {
-      return this.$store.getters['pools/poolDepthAndVolume'];
-    },
     data() {
-      return this.poolDepthAndVolume.filter(d => d.poolId !== 'Other');
+      return this.top5PoolsWithOthers.filter(d => d.poolId !== 'Other');
     },
     aggregate() {
-      return this.poolDepthAndVolume.find(d => d.poolId === 'Other');
-    },
-    totalPoolsDepth() {
-      return this.$store.getters['pools/totalPoolsDepth'];
+      return this.top5PoolsWithOthers.find(d => d.poolId === 'Other');
     },
   },
+  methods: {
+    formatUsd(n) {
+      return numeral(n).format('($0,00a)').toUpperCase();
+    },
+  }
 };
 </script>
 

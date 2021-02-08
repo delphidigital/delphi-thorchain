@@ -83,4 +83,7 @@ export default {
   border-radius: 3px;
   background-color: $color-green;
 }
+.coming-soon__parent {
+  height: 100%;
+}
 </style>

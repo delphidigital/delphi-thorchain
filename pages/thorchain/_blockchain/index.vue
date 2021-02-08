@@ -26,8 +26,9 @@
 
       <div class="pure-g">
         <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
+          <TopPerformers />
         </div>
-        <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right">
+        <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right section-comming-soon">
           <StandbyPools />
         </div>
       </div>
@@ -96,3 +97,12 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+  .section-comming-soon {
+    display: flex;
+    flex-direction: column;
+    > div {
+      flex: 1;
+    }
+  }
+</style>
