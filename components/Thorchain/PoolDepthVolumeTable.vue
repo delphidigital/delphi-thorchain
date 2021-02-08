@@ -9,14 +9,14 @@
     </thead>
     <tbody>
       <tr v-for="item in data" :key="item.poolId" class="table__row">
-        <td class="table__highlight">
+        <td class="table__highlight table__poolname">
           <span class="marker" :style="{backgroundColor: item.color}" />{{ item.poolId }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="item.poolVolume" />
+          {{ formatUsd(item.totalVolumeUsd) }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="item.poolDepth" />
+          {{ formatUsd(item.totalDepthUsd) }}
         </td>
       </tr>
       <tr class="table__row">
@@ -24,10 +24,10 @@
           <span class="marker" :style="{backgroundColor: aggregate.color}" />{{ aggregate.poolId }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="aggregate.poolVolume" />
+          {{ formatUsd(aggregate.totalVolumeUsd) }}
         </td>
         <td class="table__data">
-          <RuneUSD :rune="aggregate.poolDepth" />
+          {{ formatUsd(aggregate.totalDepthUsd) }}
         </td>
       </tr>
       <tr class="table__footer">
@@ -35,7 +35,7 @@
           Total value locked in pools:
         </td>
         <td class="table__highlight">
-          <RuneUSD :rune="totalPoolDepth" />
+          {{ formatUsd(totalPoolsDepthStats.totalDepthUsd) }}
         </td>
       </tr>
     </tbody>
@@ -43,26 +43,31 @@
 </template>
 
 <script>
-import RuneUSD from '../Common/RuneUSD.vue';
+import numeral from 'numeral';
 
 export default {
-  components: {
-    RuneUSD,
+  props: {
+    top5PoolsWithOthers: {
+      type: Array,
+      default: [],
+    },
+    totalPoolsDepthStats: {
+      type: Object,
+    }
   },
   computed: {
-    poolVolumeAndDepth() {
-      return this.$store.getters['pools/poolVolumeAndDepth'];
-    },
     data() {
-      return this.poolVolumeAndDepth.filter(d => d.poolId !== 'Other');
+      return this.top5PoolsWithOthers.filter(d => d.poolId !== 'Other');
     },
     aggregate() {
-      return this.poolVolumeAndDepth.find(d => d.poolId === 'Other');
-    },
-    totalPoolDepth() {
-      return this.$store.getters['pools/totalPoolDepth'];
+      return this.top5PoolsWithOthers.find(d => d.poolId === 'Other');
     },
   },
+  methods: {
+    formatUsd(n) {
+      return numeral(n).format('($0,00a)').toUpperCase();
+    },
+  }
 };
 </script>
 
@@ -88,6 +93,12 @@ export default {
   font-size: 14px;
   td {
     padding: 7px 0;
+  }
+  .table__poolname {
+    max-width: 90px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 

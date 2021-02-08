@@ -19,6 +19,9 @@
 </template>
 
 <style lang="scss">
+.coming-soon__parent {
+  height: 100%;
+}
 .coming-soon {
   position: absolute;
   top: 0;

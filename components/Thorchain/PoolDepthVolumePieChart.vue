@@ -37,19 +37,23 @@ export default {
   components: {
     AppHighchart,
   },
+  props: {
+    top5PoolsWithOthers: {
+      type: Array,
+      default: [],
+    },
+    currentTimeOption: {
+      type: String,
+      default: '1M',
+    },
+  },
   computed: {
     data() {
-      const pvds = this.$store.getters['pools/poolVolumeAndDepth'];
-      const priceUSD = this.$store.state.runeMarketData.priceUSD;
-
-      // TODO(Fede): This is in rune for now, but maybe it should be in another unit?
-      // The table means to show everything in USD I think. Show the correct units
-      // when it becomes clear what to do where.
-      return pvds.map(pvd => ({
-        name: pvd.poolId,
-        y: pvd.poolDepth * priceUSD,
-        z: pvd.poolVolume * priceUSD,
-        color: pvd.color,
+      return this.top5PoolsWithOthers.map(p => ({
+        name: p.poolId,
+        y: p.totalDepthUsd,
+        z: p.totalVolumeUsd,
+        color: p.color,
       }));
     },
     chartOptions() {

@@ -103,15 +103,14 @@ export default {
     /*
     ** You can extend webpack config here
     */
+    vendor: ['vue-awesome'],
     watch: ['api'],
     extend() {},
     plugins: [
       new ESLintPlugin(),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /@highcharts\/map-collection/,
-      }),
     ],
   },
+  plugins: [{ src: '~plugins/vueAwesome', ssr: false }],
   router: {
     linkActiveClass: 'link--active',
   },
