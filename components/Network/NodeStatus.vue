@@ -20,22 +20,22 @@ export default {
       const statusDisplay = [
         {
           status: 'Active',
-          key: 'active',
+          key: 'Active',
           color: '#16CEB9',
         },
         {
           status: 'Standby',
-          key: 'standby',
+          key: 'Standby',
           color: '#2D99FF',
         },
         {
           status: 'Ready',
-          key: 'ready',
+          key: 'Whitelisted',
           color: '#5E2BBC',
         },
         {
           status: 'Disabled',
-          key: 'disabled',
+          key: 'Disabled',
           color: '#3F4357',
         },
       ].map((statusDisplayItem) => {

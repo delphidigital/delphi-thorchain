@@ -38,7 +38,7 @@ export default {
     },
   },
   mounted() {
-    if (typeof window === 'object') {
+    if (typeof Highcharts === 'object' && typeof window === 'object') {
       this.chart = Highcharts.chart(this.$refs.chart, this.chartOptions);
       this.updatedAt = new Date();
     }

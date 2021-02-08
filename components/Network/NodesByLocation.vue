@@ -205,7 +205,7 @@ export default {
     },
   },
   mounted() {
-    if (typeof window === 'object') {
+    if (typeof Highcharts === 'object' && typeof window === 'object') {
       this.map = Highcharts.mapChart('location-map', this.chartOptions);
     }
   },

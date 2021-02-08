@@ -26,7 +26,7 @@ async function updateBlockchainData(blockchain) {
   // FETCH DATA
   // Thorchain
   const poolList = await api.loadPools({ axios });
-  const poolIds = poolList.filter(i => i.status === 'Enabled').map(i => i.asset);
+  const poolIds = poolList.filter(i => i.status === 'Available').map(i => i.asset);
   const poolDetails = {};
   for (const poolId of poolIds) {
     const poolDetail = await api.loadPoolDetail({ axios, poolId });
@@ -41,9 +41,9 @@ async function updateBlockchainData(blockchain) {
   const lastBlock = await api.loadLastBlock({ axios });
   const mimir = await api.loadMimir({ axios });
   const asgardVaults = await api.loadAsgardVaults({ axios });
-  const poolAddresses = await api.loadPoolAddresses({ axios });
+  const poolAddresses = await api.loadInboundAddresses({ axios });
   const stats = await api.loadStats({ axios });
-  const network = await api.loadNetwork({ axios });
+  // const network = await api.loadNetwork({ axios }); // TODO: this api is not working atm
   const constants = await api.loadConstants({ axios });
   const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
 
@@ -57,7 +57,7 @@ async function updateBlockchainData(blockchain) {
   // Get Binance accounts
   // only query as many as there are asgard vaults
   const asgardVaultsCount = asgardVaults.length;
-  const binancePoolAddressData = poolAddresses.current.find(a => a.chain === 'BNB');
+  const binancePoolAddressData = poolAddresses.find(a => a.chain === 'BNB');
   const binanceCachedAddresses = await redisClient.lrangeAsync(redisKey('asgardAddresses::BNB'), 0, 3);
   if (binancePoolAddressData) {
     binanceCachedAddresses.unshift(binancePoolAddressData.address);
@@ -93,7 +93,7 @@ async function updateBlockchainData(blockchain) {
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
   // Keep a list of most recent asgard vault addresses
-  poolAddresses.current.forEach(async (addressData) => {
+  poolAddresses.forEach(async (addressData) => {
     const chain = addressData.chain;
     const address = addressData.address;
     const key = redisKey(`asgardAddresses::${chain}`);
@@ -109,7 +109,7 @@ async function updateBlockchainData(blockchain) {
   });
 
   await set('stats', stats);
-  await set('network', network);
+  // await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest.data);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });
@@ -152,4 +152,4 @@ async function fetchDataJob(blockchain) {
 }
 
 fetchDataJob('testnet');
-fetchDataJob('chaosnet');
+// fetchDataJob('chaosnet'); // only testnet v2
