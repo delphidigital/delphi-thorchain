@@ -41,6 +41,8 @@ export default {
       const unlocked = circulatingSupply - totalLocked;
 
       const percentage = value => value / circulatingSupply;
+      // eslint-disable-next-line no-debugger
+      debugger;
 
       const result = [
         {
