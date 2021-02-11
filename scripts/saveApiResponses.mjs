@@ -334,7 +334,7 @@ async function updateBlockchainData(blockchain) {
   const asgardVaults = await api.loadAsgardVaults();
   const inboundAddresses = await api.loadInboundAddresses();
   const stats = await api.loadStats(); // NOTE: same as v1 without : [poolCount, totalEarned, totalVolume24hr]
-  // const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
+  const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
   const constants = await api.loadConstants(); // same, some props updated?
   const versionRequest = await api.loadNodeVersion();
 
@@ -367,12 +367,12 @@ async function updateBlockchainData(blockchain) {
  const binanceAccounts = await binanceFetchAccounts({ axios }, blockchain, binanceAddresses);
 
   // PROCESS RESULTS
-  const totalStaked = parseInt(stats.totalStaked);
+  const runeDepth = parseInt(stats.runeDepth);
   const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
     total + parseInt(node.bond)
   ), 0);
   const circulating = blockchain === 'testnet' ?
-    ((totalBonded + totalStaked) / (10 ** 8)).toFixed(2) : runeMarketData.circulating_supply;
+    ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2) : runeMarketData.circulating_supply;
   const priceUsd = runeMarketData.current_price.usd;
 
   const ta = technicalAnalysis(
@@ -410,7 +410,7 @@ async function updateBlockchainData(blockchain) {
   });
 
   await set('stats', stats);
-  // await set('network', network);
+  await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating });

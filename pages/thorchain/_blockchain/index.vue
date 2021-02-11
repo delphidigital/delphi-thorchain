@@ -33,7 +33,8 @@
         </div>
       </div>
 
-      <NodeSummary />
+      <RuneDataInfo />
+      <!-- <NodeSummary /> -->
 
       <Footer />
     </div>
