@@ -29,36 +29,34 @@ export default {
       type: Function,
       default: v => v,
     },
-    yAxisLabelOptions: {
-      type: Object,
-      default: {
-        title: false,
-        type: 'linear',
-      },
+    xAxisCategories: {
+      type: Array,
+      default: () => [],
     },
   },
   computed: {
     chartOptions() {
       const formatLabel = this.formatLabel;
       const areaColor = '#323f64';
-      const yAxisLabelOptions = this.yAxisLabelOptions;
+      const xAxisCategories = this.xAxisCategories;
       return {
         chart: {
           backgroundColor: 'transparent',
           height: 330,
           margin: [5, 0, 75, 32],
+          type: 'column'
         },
         title: false,
         labels: false,
         credits: false,
         legend: false,
+        marker: {
+          enabled: false,
+        },
         tooltip: {
           formatter() {
             return `
               <div class="app-tooltip">
-                <div class="app-tooltip__header">
-                  <span>${format(this.point.x, 'dd MMM yyyy')}</span>
-                </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text">
                     ${formatLabel(this.point.y)}
@@ -80,9 +78,13 @@ export default {
             marker: {
               enabled: false
             }
-          }
+          },
+          column: {
+            borderWidth: 0,
+          },
         },
         xAxis: {
+          categories: xAxisCategories,
           labels: {
             useHTML: true,
             style: { color: '#fff', fontSize: 10 },
@@ -91,13 +93,10 @@ export default {
             margin: 0,
             padding: 0,
           },
-          type: 'datetime',
           lineColor: areaColor,
-          minPadding: 0,
-          maxPadding: 0,
         },
         yAxis: {
-          ...yAxisLabelOptions,
+          min: 0,
           className: 'highcharts-yaxis--title',
           labels: {
             formatter() {
@@ -115,8 +114,9 @@ export default {
           minPadding: 0,
           maxPadding: 0,
         },
+
         legend:{
-          enabled:true,
+          enabled:false,
           align: 'center',
           verticalAlign: 'bottom',
           x: 0,
@@ -133,7 +133,7 @@ export default {
 </script>
 
 <style lang="scss">
-.highcharts-yaxis--title > span.highcharts-axis-title {
+.highcharts-xaxis--title > span.highcharts-axis-title {
   font-size: 11px !important;
   left: -10px !important;
 }

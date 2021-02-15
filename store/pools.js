@@ -32,7 +32,6 @@ export const state = () => ({
   poolHistoryDepths: {},
   poolHistorySwaps: {},
   poolIds: [],
-  runePrices: {},
   technicalAnalysis: {},
 
   // TODO: remove when totalRuneDepth is gone
@@ -59,9 +58,6 @@ export const mutations = {
   },
   setPoolsHistorySwaps(state, poolsHS) {
     state.poolHistorySwaps = poolsHS;
-  },
-  setRunePrices(state, payload) {
-    state.runePrices = payload;
   },
   setTechnicalAnalysis(state, payload) {
     state.technicalAnalysis = payload;

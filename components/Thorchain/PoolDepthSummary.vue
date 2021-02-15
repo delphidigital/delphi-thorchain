@@ -63,7 +63,6 @@
 
 <script>
 import numeral from 'numeral';
-import { startOfDay } from 'date-fns';
 import PoolDepthVolumePieChart from './PoolDepthVolumePieChart.vue';
 import PoolDepthVolumeTable from './PoolDepthVolumeTable.vue';
 import AreaChart from './AreaChart.vue';
@@ -161,13 +160,22 @@ export default {
       return [...top5PoolsSortedByVolume, other];
     },
     liquidityDepthOverTime() {
-      const runePrices = this.$store.state.pools.runePrices;
       const allPoolsHistoryDepths = this.$store.state.pools.poolHistoryDepths;
       const period = periodsHistoryMap[this.currentTimeOption];
       const allPoolsIntervals = Object.keys(allPoolsHistoryDepths).map((poolId) => {
         const poolHistoryDepths = allPoolsHistoryDepths[poolId];
         const poolPeriodHD = poolHistoryDepths ? poolHistoryDepths[period] : undefined;
-        return poolPeriodHD?.intervals || [];
+        return (poolPeriodHD?.intervals || []).map(iv => {
+          const assetPriceUsd = parseFloat(iv.assetPriceUSD);
+          const assetPrice = parseFloat(iv.assetPrice);
+          const runePriceUsd = isNaN(assetPriceUsd) || isNaN(assetPrice) ? 0 : (assetPriceUsd / assetPrice);
+          const runeDepthUsd = runePriceUsd * (iv.runeDepth/runeDivider);
+          return {
+            ...iv,
+            runePriceUsd,
+            runeDepthUsd,
+          }
+        });
       });
       // combine all pools, by each interval, so we have a series of the sum all pools in intervals
       const combinedIntervals = allPoolsIntervals.reduce((intervals1, intervals2) => {
@@ -178,27 +186,19 @@ export default {
           secondIntervals = intervals1;
         }
         return firstIntervals.map((item, idx) => {
-          const runeDepth = (
-            (parseFloat(item.runeDepth) || 0)
-            + (secondIntervals[idx] ? (parseFloat(secondIntervals[idx].runeDepth) || 0) : 0)
-          );
-          return { runeDepth, startTime: item.startTime };
+          const runeDepth1 = (parseFloat(item.runeDepth) || 0);
+          const runeDepth2 = secondIntervals[idx]
+            ? (parseFloat(secondIntervals[idx].runeDepth) || 0)
+            : 0;
+          const runeDepth = runeDepth1 + runeDepth2;
+          const runeDepthUsd = item.runeDepthUsd + secondIntervals[idx].runeDepthUsd;
+          return { runeDepth, runeDepthUsd, startTime: item.startTime };
         });
       });
-      return combinedIntervals.map(val => {
-        const date = new Date(val.startTime * 1000);
-        const runePricesDay = startOfDay(date);
-        const value = ((val.runeDepth * 2) / runeDivider);
-        let usdValue = null;
-        if (runePrices[runePricesDay.getTime()]) {
-          usdValue = runePrices[runePricesDay.getTime()] * value;
-        }
-        return {
-          date,
-          // value,
-          value: usdValue,
-        }
-      });
+      return combinedIntervals.map(val => ({
+        date: new Date(parseInt(val.startTime, 10)*1000),
+        value: (val.runeDepthUsd * 2),
+      }));
     },
     totalPoolsDepthStats() {
       const period = periodsHistoryMap[this.currentTimeOption];

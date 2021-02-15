@@ -48,7 +48,7 @@
             </td>
             <td class="section__table__data">
               <span>
-                {{ pool.impermanentLoss }}
+                {{ pool.impermanentLoss.toFixed(4) }}
               </span>
             </td>
 

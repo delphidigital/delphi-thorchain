@@ -22,20 +22,20 @@ $pureg-lg: 64em;
 $pureg-xl: 80em;
 
 $namespace: 'customdatepkr';
-$default-color: #30354b !default;
-$primary-color: #1284e7 !default;
-$today-color: mix(#fff, $primary-color, 10%) !default;
+$default-color: #ccc !default;
+$primary-color: #9993f0 !default;
+$today-color: mix(#353c50, $primary-color, 10%) !default;
 $popup-z-index: 2001 !default;
 $input-border-color: #ccc !default;
 $input-color: #555 !default;
-$input-hover-border-color: #409aff !default;
+$input-hover-border-color: rgba(120,124,170,0.95) !default;
 $disabled-color: #ccc !default;
 $disabled-background-color: #f3f3f3 !default;
 $border-color: rgba(112, 115, 150, 0.65) !default;
-$calendar-active-color: #30354b !default;
+$calendar-active-color: #fff !default;
 $calendar-active-background-color: $primary-color !default;
 $calendar-hover-color: $default-color !default;
-$calendar-hover-background-color: mix(rgb(112, 115, 150), $calendar-active-background-color, 95%) !default;
+$calendar-hover-background-color: rgba(137, 140, 177, 0.7) !default;
 $calendar-in-range-color: $default-color !default;
 $calendar-in-range-background-color: mix(rgb(112, 115, 150), $calendar-active-background-color, 85%) !default;
 $time-active-color: $primary-color !default;
@@ -46,3 +46,32 @@ $input-border-radius: 4px !default;
 $sidebar-margin-left: 100px !default;
 
 @import '~vue2-datepicker/scss/index.scss';
+.customdatepkr-datepicker-main {
+    background-color: #30354b !important;
+}
+.customdatepkr-input {
+    background-color: #262f4a;
+    font-family: Montserrat, sans-serif;
+    border: 1px solid rgba(112, 115, 150, 0.65);
+    padding: 4px 8px 4px 25px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    caret-color: rgba(255, 255, 255, 0.8);
+    line-height: 20px;
+    height: 38px;
+    width: 100%;
+
+    :focus {
+        outline:none;
+        border:1px solid rgba(120,124,170,0.95);
+    }
+}
+.customdatepkr-icon-calendar,
+.customdatepkr-icon-clear {
+    color: rgba(255, 255, 255, 0.8);
+}
+.customdatepkr-datepicker {
+    width: 100%;
+}

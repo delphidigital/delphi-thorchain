@@ -7,7 +7,7 @@ import { withCache } from '../lib/cacheUtils.mjs';
 import redisClient from '../lib/redisClient.mjs';
 import EmailProvider from '../lib/emailProvider.mjs';
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Utility methods for rune value parsing
 const runeDivider = 10 ** 8;
@@ -20,20 +20,6 @@ async function redisSet(key, data) {
 async function getRuneMarketData() {
   const response = await axios.get('https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
   return response.data.market_data;
-}
-
-// requires a date formatted like 'dd-MM-yyyy'
-async function getRunePriceAtDate(dateFormatted) {
-  console.log(`[CoinGecko] Got Rune price for ${dateFormatted}`)
-  // e.g.: https://api.coingecko.com/api/v3/coins/thorchain/history?date=22-01-2020&localization=false
-  const response = await axios.get(
-    `https://api.coingecko.com/api/v3/coins/thorchain/history?date=${dateFormatted}&localization=false`
-  );
-  const runeUsdValue = response.data?.market_data?.current_price?.usd;
-  if (runeUsdValue) {
-    return runeUsdValue
-  }
-  throw new Error('No CoinGecko valid rune USD response.');
 }
 
 // returns an array of 365 items representing each a day from today to 1 year ago
@@ -49,36 +35,22 @@ function get1YearDailyDates() {
   return dates;
 }
 
-// given an object mapping to 365 prev. dates
-// this method validates that it containes the last 365 dates or downloads the data from coingecko
-async function updateAndGetRunePrices() {
-  const rawPriceData = await redisClient.getAsync(`thorchain::rune_1y_daily_prices`);
-  const rune1YearPricesCache = rawPriceData ? JSON.parse(rawPriceData) : {};
-  const dailyDates1Y = get1YearDailyDates();
-  const yearDailyPricesMap = {};
-  let dailyPricesNeededUpdate = false;
-  for (const dayDate of dailyDates1Y) {
-    if (rune1YearPricesCache[dayDate.timestamp]) {
-      yearDailyPricesMap[dayDate.timestamp] = rune1YearPricesCache[dayDate.timestamp];
-    } else {
-      dailyPricesNeededUpdate = true;
-      yearDailyPricesMap[dayDate.timestamp] = await getRunePriceAtDate(dayDate.date);
-      await sleep(150); // To avoid coingecko limit of 10 calls per second
-    }
-    await redisClient.setAsync(`thorchain::rune_1y_daily_prices`, JSON.stringify(yearDailyPricesMap));
-  }
-  console.log(`[CoinGecko] Rune 1 year daily prices are up to date. ${dailyPricesNeededUpdate ? 'Update was required.' : 'No update was required.'}`);
-  return yearDailyPricesMap;
-}
-
 // History depth and swaps contain this keys: 
 function technicalAnalysis(
-  poolStats, historyDepth, historySwaps, allPoolsHistoryEarnings, rune1YearPrices,
+  poolStats, historyDepth, historySwaps, allPoolsHistoryEarnings,
 ) {
   const technicalAnalysisCache = {};
   // TA from historySwaps payload
   Object.keys(historySwaps).forEach(poolId => {
     Object.keys(historySwaps[poolId]).forEach(periodKey => {
+      const runeUSDPrices = {};
+      historyDepth[poolId][periodKey].intervals.forEach(i => {
+        const assetPriceUSD = parseFloat(i.assetPriceUSD);
+        const assetPrice = parseFloat(i.assetPrice);
+        runeUSDPrices[i.startTime] = isNaN(assetPriceUSD) || isNaN(assetPrice)
+          ? 0
+          : assetPriceUSD/assetPrice;
+      });
       // { intervals: any[], meta: { endTime: string; startTime: string; }}
       const { intervals } = historySwaps[poolId][periodKey];
       const totalVolume = intervals.reduce((result, item) => (
@@ -86,18 +58,12 @@ function technicalAnalysis(
       ), 0);
       const volumeAverage = (totalVolume / intervals.length);
       const totalVolumeUsd = intervals.reduce((result, item) => {
-        const startTime = parseInt(item.startTime, 10) * 1000;
-        const startDate = new Date(startTime);
-        const intervalStartOfDayTimestamp = startOfDay(startDate).getTime();
-        const runePriceUsd = rune1YearPrices[intervalStartOfDayTimestamp];
+        const runePriceUsd = runeUSDPrices[item.startTime];
         return (result + (runeE8toValue(item.totalVolume)*runePriceUsd));
       }, 0);
       const intervalSwaps = {};
       intervals.forEach(interval => {
-        const startTime = parseInt(interval.startTime, 10) * 1000;
-        const startDate = new Date(startTime);
-        const intervalStartOfDayTimestamp = startOfDay(startDate).getTime();
-        const runePriceUsd = rune1YearPrices[intervalStartOfDayTimestamp];
+        const runePriceUsd = runeUSDPrices[interval.startTime];
         intervalSwaps[interval.startTime] = {
           totalVolumeUsd: runeE8toValue(interval.totalVolume) * runePriceUsd,
           startTime: interval.startTime
@@ -128,10 +94,9 @@ function technicalAnalysis(
       ), 0);
       const depthAverage = (totalDepth / intervals.length);
       const totalDepthUsd = intervals.reduce((result, item) => {
-        const startTime = parseInt(item.startTime, 10) * 1000;
-        const startDate = new Date(startTime);
-        const intervalStartOfDayTimestamp = startOfDay(startDate).getTime();
-        const runePriceUsd = rune1YearPrices[intervalStartOfDayTimestamp];
+        const assetPriceUSD = parseFloat(item.assetPriceUSD);
+        const assetPrice = parseFloat(item.assetPrice);
+        const runePriceUsd = isNaN(assetPriceUSD) || isNaN(assetPrice) ? 0 : assetPriceUSD/assetPrice;
         return (result + (runeE8toValue(item.runeDepth)*2*runePriceUsd));
       }, 0);
       const depthAverageUsd = totalDepthUsd/intervals.length;
@@ -154,23 +119,14 @@ function technicalAnalysis(
         // {
         //   assetDepth: "0"
         //   assetPrice: "0"
+        //   assetPriceUSD: "99.1302878324524",
         //   endTime: "1609977600"
         //   runeDepth: "0"
         //   startTime: "1609891200"
         // }
-        // using price at startTime value
-        const intervalStartTime = parseInt(interval.startTime, 10) * 1000;
-        const intervalStartDate = new Date(intervalStartTime);
-        const intervalStartOfDayTimestamp = startOfDay(intervalStartDate).getTime()
-        const runePriceUsd = rune1YearPrices[intervalStartOfDayTimestamp];
-        if (!runePriceUsd) {
-          console.error(
-            `[ERROR] Tried to get Rune Price USD for date ${intervalStartOfDayTimestamp} but was not found. Using price 0.0 for that date.`
-          );
-          runePriceUsd = 0.0;
-        }
+        const assetPriceUsd = parseFloat(interval.assetPriceUSD);
         const assetPrice = parseFloat(interval.assetPrice);
-        const assetPriceUsd = assetPrice * runePriceUsd;
+        const runePriceUsd = isNaN(assetPriceUsd) || isNaN(assetPrice) ? 0 : assetPriceUsd/assetPrice;
         const runeAssetRatio = runePriceUsd ? (assetPriceUsd / runePriceUsd) : 0;
         let priceSwing = 0.0;
         let impermanentLoss = 0.0;
@@ -210,7 +166,7 @@ function technicalAnalysis(
               //       for 6M and 1Y period in weeks
               let numberOfPeriods = 365 / intervals.length;
               if (periodKey === 'period24H') {
-                numberOfPeriods = 365;
+                numberOfPeriods = 365*24;
               }
               periodAPY = ((1+periodicRate)**numberOfPeriods)-1;
             }
@@ -301,7 +257,6 @@ async function updateBlockchainData(blockchain) {
   const set = (key, data) => redisSet(redisKey(key), data);
   const api = thorchainDataFetcher(blockchain);
 
-  const rune1YearPrices = await updateAndGetRunePrices(); // download 1 year rune prices
   // FETCH DATA
   // Thorchain
   const poolList = await api.loadPools();
@@ -376,7 +331,7 @@ async function updateBlockchainData(blockchain) {
   const priceUsd = runeMarketData.current_price.usd;
 
   const ta = technicalAnalysis(
-    poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings, rune1YearPrices,
+    poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
   );
 
   // SET DATA
