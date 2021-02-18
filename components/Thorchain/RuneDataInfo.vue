@@ -1,6 +1,6 @@
 <template>
   <div class="section">
-    <div class="section__header">
+    <div class="section__header" id="pool-prediction-analysis">
       <div class="section__title" :class="{'plot--active': plot == 'rewards'}" @click="setPlotRewards">
         Historical pool data
       </div>
@@ -14,6 +14,12 @@
         Predict future returns
       </div>
       <div class="section__title section__title--empty"></div>
+      <a class="deeplink-selector" href="#pool-prediction-analysis">
+        <Icon
+          name="link"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="section__body">
       <div class="section__headinputs">
@@ -38,7 +44,6 @@
               type="number"
               min="0.00"
               step="0.01"
-              @change="formUpdatedGetData"
             />
           </div>
         </div>
@@ -48,8 +53,8 @@
           <div class="dropdown">
             <select
               v-model="selectedPool"
-              @change="formUpdatedGetData"
               class="dropdown-select"
+              @change="onChangePool($event)"
             >
               <option disabled value="">Select Pool…</option>
               <option
@@ -63,19 +68,112 @@
           </div>
         </div>
 
-        <div class="section__date_invested">
+        <div class="section__date_invested" v-if="plot !== 'predict_future'">
           <div class="section__headtitle">DATE INVESTED</div>
           <div>
             <date-picker
               v-model="dateInvested"
               valueType="format"
               prefix-class="customdatepkr"
-              @change="formUpdatedGetData"
             >
             </date-picker>
           </div>
         </div>
+
+        <div class="section__date_invested" v-if="plot == 'predict_future'">
+          <div class="section__headtitle">PREDICT RESULT ON</div>
+          <div>
+            <date-picker
+              v-model="predictResultOnDate"
+              valueType="format"
+              prefix-class="customdatepkr"
+            >
+            </date-picker>
+          </div>
+        </div>
+        
+        <div class="submit-button-wrapper">
+          <button v-if="plot != 'predict_future'" @click="formUpdatedGetData">
+            Update
+          </button>
+        </div>
       </div>
+
+
+
+      <div v-if="plot == 'predict_future'" class="section__headinputs">
+        <div class="section__rune_ptarget">
+          <div class="section__headtitle">
+            PRICE TARGET FOR RUNE
+          </div>
+          <div class="amountinput-wrapper">
+            <Icon
+              class="amountinput-icon"
+              name="dollar-sign"
+              scale="0.7"
+              @click="focusRunePTargetInput"
+            >
+            </Icon>
+            <input
+              v-model="runeTargetPrice"
+              placeholder="RUNE price"
+              name="rune_ptarget"
+              ref="runePTargetRef"
+              type="number"
+              min="0.00"
+              step="0.01"
+            />
+          </div>
+        </div>
+        <div class="section__asset_ptarget">
+          <div class="section__headtitle">
+            PRICE TARGET FOR ASSET
+          </div>
+          <div class="amountinput-wrapper">
+            <Icon
+              class="amountinput-icon"
+              name="dollar-sign"
+              scale="0.7"
+              @click="focusAssetPTargetInput"
+            >
+            </Icon>
+            <input
+              v-model="assetTargetPrice"
+              placeholder="Asset price"
+              name="asset_ptarget"
+              ref="assetPTargetRef"
+              type="number"
+              min="0.00"
+              step="0.01"
+            />
+          </div>
+        </div>
+        <div class="section__roiavg">
+          <div class="section__headtitle">USE AVERAGE ROI OF THE LAST</div>
+          <div class="dropdown">
+            <select
+              v-model="selectedRoiAvg"
+              class="dropdown-select"
+            >
+              <option disabled value="">Select…</option>
+              <option key="3days" value="3days">3 Days</option>
+              <option key="7days" value="7days">7 Days</option>
+              <option key="14days" value="14days">14 Days</option>
+              <option key="30days" value="30days">30 Days</option>
+            </select>
+          </div>
+        </div>
+        <div class="submit-button-wrapper">
+          <div class="submit-button-wrapper">
+            <button @click="formUpdatedGetData">
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+
       <div v-if="plot == 'rewards' || plot == 'total_value'">
         <LineChart
           :data="getPlotData"
@@ -88,9 +186,20 @@
         <ColumnChart
           :data="getProfitLossData"
           :format-label="formatLabel"
-          :x-axis-categories="xAxisColumCategories"
+          :x-axis-categories="xAxisProfitColumCategories"
           class="runedatainfo-chart"
         />
+      </div>
+      <div v-if="plot == 'predict_future'">
+        <ColumnChart
+          :data="getPredictFutureData"
+          :format-label="formatLabel"
+          :x-axis-categories="xAxisPredictColumCategories"
+          class="runedatainfo-chart"
+        />
+      </div>
+      <div class="section__footer__credits">
+        Inspired by Runedata.info
       </div>
     </div>
   </div>
@@ -100,37 +209,53 @@
 import { format, parse, startOfMonth } from "date-fns";
 import numeral from "numeral";
 import DatePicker from "vue2-datepicker";
-import { calculatePLBreakdown, getPastSimulation } from '../../lib/runeDataInfoCalculateUserData.mjs';
+import { calculatePLBreakdown, getPastSimulation, calculatePrediction } from '../../lib/runeDataInfoCalculateUserData.mjs';
 import LineChart from "./LineChart.vue";
 import ColumnChart from "./ColumnChart.vue";
 
 export default {
   components: { DatePicker, LineChart, ColumnChart },
-  data: () => ({
-    amountInvested: "100000.00",
-    selectedPool: null,
-    dateInvested: format(startOfMonth(new Date()), "yyyy-MM-dd"),
-    plot: 'rewards',
-    yAxisLabelOptions: {
-      type: "linear",
-      title: {
-        text: "Volume",
-        useHTML: true,
-        style: {
-          color: "rgba(255,255,255,0.7)",
+  data() {
+    return {
+      amountInvested: "100000.00",
+      selectedPool: null,
+      selectedRoiAvg: null,
+      runeTargetPrice: this.$store.state.pools.pools.length
+        ? (this.$store.state.pools.pools[0].poolStats.period1H.assetPriceUSD / this.$store.state.pools.pools[0].poolStats.period1H.assetPrice)
+        : '',
+      assetTargetPrice: '',
+      dateInvested: format(startOfMonth(new Date()), "yyyy-MM-dd"),
+      predictResultOnDate: null,
+      plot: 'rewards',
+      yAxisLabelOptions: {
+        type: "linear",
+        title: {
+          text: "Volume",
+          useHTML: true,
+          style: {
+            color: "rgba(255,255,255,0.7)",
+          },
         },
       },
-    },
-    xAxisColumCategories: [
-      'Rune price movement',
-      'Asset price movement',
-      'Fees & incentives',
-      'Impermanent loss',
-      'Total profit',
-    ],
-    pastSimulationData: [],
-    profitLossBreakdown: null,
-  }),
+      xAxisProfitColumCategories: [
+        'Rune price movement',
+        'Asset price movement',
+        'Fees & incentives',
+        'Impermanent loss',
+        'Total profit',
+      ],
+      xAxisPredictColumCategories: [
+        'Rune price movement',
+        'Asset price movement',
+        'Fees & incentives',
+        'Impermanent loss',
+        'Total profit',
+      ],
+      pastSimulationData: [],
+      predictionData: null,
+      profitLossBreakdown: null,
+    };
+  },
   computed: {
     getPlotData() {
       if (this.plot === 'rewards') {
@@ -154,8 +279,30 @@ export default {
         ]
       }];
     },
+    getPredictFutureData() {
+      if (!this.predictionData) {
+        return [];
+      }
+      const pd = this.predictionData.prediction;
+      return [{
+        data: [
+          { y: pd.keepProvidingLiquidity.change, color: '#19ceb8' },
+          { y: pd.withdrawAndHoldRune.change, color: '#2d99fe' },
+          { y: pd.withdrawAndHoldAsset.change, color: '#4346D3' },
+          { y: pd.withdrawAndHoldBoth.change, color: '#f7517f' },
+        ]
+      }];
+    },
   },
   methods: {
+    onChangePool(event) {
+      if (event.target.value) {
+        const pool = this.$store.state.pools.pools.find(p => p.poolId === event.target.value);
+        if (pool) {
+          this.assetTargetPrice = pool.poolStats.period1H.assetPriceUSD;
+        }
+      }
+    },
     setPlotRewards() {
       if (this.plot === 'rewards') { return; }
       this.plot = 'rewards';
@@ -244,9 +391,27 @@ export default {
       }
       this.pastSimulationData =  getPastSimulation(amountInvested, dateInvested, this.selectedPool, this.$store.state.pools);
       this.profitLossBreakdown = calculatePLBreakdown(this.pastSimulationData);
+
+      if (this.predictResultOnDate && this.selectedRoiAvg && this.runeTargetPrice && this.assetTargetPrice) {
+        const predictResultOnDate = parse(this.predictResultOnDate, "yyyy-MM-dd", new Date());
+        const runetg = parseFloat(this.runeTargetPrice);
+        const assettg = parseFloat(this.assetTargetPrice);
+        if (!runetg || !assettg ||  isNaN(runetg) || isNaN(assettg) || isNaN(predictResultOnDate.getTime())) {
+          return;
+        }
+        this.predictionData = calculatePrediction(
+          amountInvested, predictResultOnDate.getTime(), this.selectedPool, this.selectedRoiAvg, runetg, assettg, this.$store.state.pools,
+        );
+      }
     },
     focusAmountInvestedInput() {
       this.$refs.amountInvestedRef.focus();
+    },
+    focusRunePTargetInput() {
+      this.$refs.runePTargetRef.focus();
+    },
+    focusAssetPTargetInput() {
+      this.$refs.assetPTargetRef.focus();
     },
     formatLabel(value) {
       return numeral(value).format("($0,0a)").toUpperCase();
@@ -259,6 +424,32 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.section__footer__credits {
+  background-color: transparent;
+  font-size: 11px;
+  text-align: right;
+  padding: .5rem 1.2rem 1.2rem .5rem;
+  background-color: #262f4a;
+  color: rgba(255,255,255,0.7);
+}
+.submit-button-wrapper {
+  justify-content: space-between;
+  align-self: flex-end;
+  flex: 0.5 !important;
+  > button {
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0;
+    border-radius: 15px;
+    padding: 13px 25px;
+    color: rgba(255, 255, 255, 0.5);
+    background-color: $color-bg-tint;
+    border: none;
+  }
+  > button:hover {opacity: 0.8;}
+  > button:focus {background-color: $color-bg-popup;}
+
 }
 .section > .section__header {
   > .section__title {
@@ -287,7 +478,6 @@ export default {
     flex-basis: 0;
     flex: 1 1 0px;
     padding: 16px 22px;
-    border-bottom: 1px solid #353c50;
 
     .section__headtitle {
       font-size: 12px;
@@ -297,6 +487,11 @@ export default {
       text-align: left;
       padding: 8px 0;
     }
+  }
+}
+.section__headinputs:last-child {
+  > div {
+    border-bottom: 1px solid #353c50;
   }
 }
 .amountinput-wrapper {
@@ -425,6 +620,17 @@ export default {
 @-moz-document url-prefix() {
   .dropdown-select {
     padding-left: 6px;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .section__header {
+    flex-direction: column;
+    height: auto;
+  }
+  .section__headinputs {
+    flex-direction: column;
+    height: auto;
   }
 }
 </style>

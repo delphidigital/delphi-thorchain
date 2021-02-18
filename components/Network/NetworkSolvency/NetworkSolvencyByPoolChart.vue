@@ -47,7 +47,9 @@ export default {
         xAxis: {
           categories: this.chartData.map(cd => cd.name),
           labels: {
-            style: { color: '#fff', fontSize: 12, fontFamily: 'Montserrat', fontWeight: 400 },
+            style: {
+              color: '#fff', fontSize: 12, fontFamily: 'Montserrat', fontWeight: 400,
+            },
           },
           lineColor: 'transparent',
         },

@@ -470,11 +470,14 @@ a {
 .bad-behavior-tooltip {
     display: none;
     position: absolute;
-    top: -200px;
+    top: -140px;
     right: 0;
     background-color: $color-bg-popup;
     font-size: 12px;
     border-radius: 4px;
+    > .app-tooltip {
+      width: 290px;
+    }
 }
 .section__title__node--behavior {
   position: relative;

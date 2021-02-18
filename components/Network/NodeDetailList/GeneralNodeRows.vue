@@ -62,7 +62,7 @@ export default {
       formatLocation,
       numeral,
       timeFromBlock(sinceBlock) {
-        const secondsPerBlock = this.$store.state.nodes.secondsPerBlock;
+        const { secondsPerBlock } = this.$store.state.nodes;
         const blocksSince = this.lastBlock - sinceBlock;
         const secondsSince = blocksSince * secondsPerBlock;
         return formatDistance(0, secondsSince * 1000);

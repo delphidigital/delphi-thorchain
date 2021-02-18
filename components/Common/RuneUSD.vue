@@ -16,7 +16,7 @@ export default {
   },
   computed: {
     usd() {
-      const priceUSD = this.$store.state.runeMarketData.priceUSD;
+      const { priceUSD } = this.$store.state.runeMarketData;
       return numeral(this.rune * priceUSD).format('($0,00a)').toUpperCase();
     },
   },

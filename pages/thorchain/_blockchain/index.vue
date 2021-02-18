@@ -102,6 +102,7 @@ export default {
   .section-comming-soon {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     > div {
       flex: 1;
     }

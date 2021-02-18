@@ -75,3 +75,17 @@ $sidebar-margin-left: 100px !default;
 .customdatepkr-datepicker {
     width: 100%;
 }
+.deeplink-selector {
+    color: white;
+    height: 30px;
+    background-color: $color-bg-tint;
+    border-radius: 15px;
+    padding: 0 16px;
+    cursor: pointer;
+    opacity: 0.6;
+    display: flex;
+    align-items: center; 
+    &:active {
+      color: white;
+    }
+}

@@ -137,12 +137,14 @@ export default {
       return this.$store.getters['nodes/totalActiveBonded'];
     },
     runeBondedPercentage() {
+      if (!this.runeStaked || !this.totalRune) { return 0; }
       return this.runeBonded / this.totalRune;
     },
     runeStaked() {
-      return this.$store.state.networkHealth.totalPooledRune;
+      return this.$store.state.networkHealth.totalStaked;
     },
     runeStakedPercentage() {
+      if (!this.runeStaked || !this.totalRune) { return 0; }
       return this.runeStaked / this.totalRune;
     },
     optimal() {

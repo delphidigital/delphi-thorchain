@@ -21,6 +21,7 @@
 <style lang="scss">
 .coming-soon__parent {
   height: 100%;
+  min-height: 160px;
 }
 .coming-soon {
   position: absolute;

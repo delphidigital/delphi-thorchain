@@ -1,6 +1,6 @@
 <template>
   <div class="section">
-    <div class="section__header">
+    <div class="section__header" id="pool-depth-volume">
       <h2 class="section__title">
         Pool depth & volume
       </h2>
@@ -15,6 +15,12 @@
           {{ option }}
         </button>
       </div>
+      <a class="deeplink-selector" href="#pool-depth-volume">
+        <Icon
+          name="link"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="pure-g section__body section__body--pie-chart">
       <div class="pure-u-lg-1-2 pure-u-1">
@@ -241,7 +247,7 @@ export default {
   background-color: $color-bg-tint;
   border-radius: 15px;
   padding: 0 16px;
-    margin-right: 16px;
+  margin-right: 16px;
 }
 
 .pool-depth-time-option {

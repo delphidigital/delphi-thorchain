@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     favourited() {
-
+      return false;
     },
   },
   methods: {

@@ -2,7 +2,7 @@
   <div class="section">
     <!-- <SlippageCalculator /> -->
 
-    <div class="section__header pool-list-header">
+    <div class="section__header pool-list-header" id="pools-list">
       <h2 class="section__title section__title--inline">
         Pool list
       </h2>
@@ -30,6 +30,12 @@
           {{ option }}
         </button>
       </div>
+      <a class="deeplink-selector" href="#pools-list">
+        <Icon
+          name="link"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
 
     <div class="section__body pool-list-section">

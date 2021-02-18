@@ -70,7 +70,6 @@
   justify-content: space-between;
 }
 
-
 h3 {
   font-size: 14px;
   font-weight: 400;

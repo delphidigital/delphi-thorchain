@@ -96,36 +96,30 @@ export default {
               color = this.point.color;
               city = null;
             } else if (this.series.name === 'cities') {
-              city =
-                citiesData.find(c => c.lat === this.point.lat && c.lon === this.point.lon);
-
+              city = citiesData.find(c => (
+                c.lat === this.point.lat && c.lon === this.point.lon
+              ));
               color = countriesData.find(c => c.country === city.country).color;
               country = city.country;
             } else {
               return false;
             }
-
-            const cities =
-              citiesData
-                .filter(c => c.country === country);
-
-            const countryName = cities[0].countryName;
-
-            const cityRows =
-              cities.reduce(
-                (acc, ct) => {
-                  if (city && (ct.city === city.city)) {
-                    return `
-                      ${acc}<tr style="font-weight: 600;">
-                        <td>${ct.city}</td>
-                        <td>${ct.count}</td>
-                      </tr>
-                    `;
-                  }
-                  return `${acc}<tr><td>${ct.city}</td><td>${ct.count}</td></tr>`;
-                },
-                '',
-              );
+            const cities = citiesData.filter(c => c.country === country);
+            const { countryName } = cities[0];
+            const cityRows = cities.reduce(
+              (acc, ct) => {
+                if (city && (ct.city === city.city)) {
+                  return `
+                    ${acc}<tr style="font-weight: 600;">
+                      <td>${ct.city}</td>
+                      <td>${ct.count}</td>
+                    </tr>
+                  `;
+                }
+                return `${acc}<tr><td>${ct.city}</td><td>${ct.count}</td></tr>`;
+              },
+              '',
+            );
 
             return `
               <div class="app-tooltip">
@@ -205,7 +199,7 @@ export default {
     },
   },
   mounted() {
-    if (typeof window === 'object') {
+    if (typeof Highcharts === 'object' && typeof window === 'object') {
       this.map = Highcharts.mapChart('location-map', this.chartOptions);
     }
   },

@@ -1,7 +1,7 @@
 <template>
   <div class="section">
 
-    <div class="section__header top-performers-header">
+    <div class="section__header top-performers-header" id="top-performers">
       <h2 class="section__title">
         Top Performers
       </h2>
@@ -17,6 +17,12 @@
           {{ option }}
         </button>
       </div>
+      <a class="deeplink-selector" href="#top-performers">
+        <Icon
+          name="link"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
 
     <div class="section__body top-performers-section">

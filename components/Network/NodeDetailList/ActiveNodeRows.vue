@@ -49,7 +49,7 @@
             <span class="churn-status churn-status--out">May churn due to age</span>
           </div>
           <div v-if="node.churnStatusType === 'badNode'">
-            <span class="churn-status churn-status--out">Behaviour score</span>
+            <span class="churn-status churn-status--out">Low behaviour score</span>
           </div>
           <div v-if="node.churnStatusType === 'lowVersion'">
             <span class="churn-status churn-status--out">Version is low</span>
@@ -94,7 +94,7 @@ export default {
       },
       numeral,
       timeFromBlock(sinceBlock) {
-        const secondsPerBlock = this.$store.state.nodes.secondsPerBlock;
+        const { secondsPerBlock } = this.$store.state.nodes;
         const blocksSince = this.lastBlock - sinceBlock;
         const secondsSince = blocksSince * secondsPerBlock;
         return formatDistance(0, secondsSince * 1000);

@@ -33,8 +33,8 @@ export default {
   },
   methods: {
     toggleBlockchain() {
-      const blockchain = this.$route.params.blockchain === 'chaosnet' ? 'testnet' : 'chaosnet';
-      const name = this.$route.name;
+      const { name, params } = this.$route;
+      const blockchain = params.blockchain === 'chaosnet' ? 'testnet' : 'chaosnet';
       this.$store.commit('thorchain/loadingOn');
       this.$router.push({ name, params: { blockchain } });
     },

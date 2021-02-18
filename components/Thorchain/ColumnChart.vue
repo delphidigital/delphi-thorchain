@@ -1,6 +1,6 @@
 <template>
   <div>
-    <highchart 
+    <highchart
       :options="chartOptions"
       :redraw="true"
     />
@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { format } from 'date-fns';
 
 export default {
   props: {
@@ -36,15 +35,14 @@ export default {
   },
   computed: {
     chartOptions() {
-      const formatLabel = this.formatLabel;
       const areaColor = '#323f64';
-      const xAxisCategories = this.xAxisCategories;
+      const { formatLabel } = this;
       return {
         chart: {
           backgroundColor: 'transparent',
           height: 330,
           margin: [5, 0, 75, 32],
-          type: 'column'
+          type: 'column',
         },
         title: false,
         labels: false,
@@ -76,7 +74,7 @@ export default {
         plotOptions: {
           series: {
             marker: {
-              enabled: false
+              enabled: false,
             }
           },
           column: {
@@ -84,7 +82,7 @@ export default {
           },
         },
         xAxis: {
-          categories: xAxisCategories,
+          categories: this.xAxisCategories,
           labels: {
             useHTML: true,
             style: { color: '#fff', fontSize: 10 },

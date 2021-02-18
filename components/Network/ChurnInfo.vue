@@ -112,7 +112,8 @@ export default {
     nextChurnHeight() {
       if (this.progressToNextChurnPoint.retiring) {
         return 'Vault is retiring';
-      } else if (this.progressToNextChurnPoint.noEligible) {
+      }
+      if (this.progressToNextChurnPoint.noEligible) {
         return 'No eligible nodes';
       }
       return this.progressToNextChurnPoint.targetBlock;
@@ -121,7 +122,7 @@ export default {
       return this.$store.state.nodes.rotatePerBlockHeight;
     },
     rotatePerTimeText() {
-      const secondsPerBlock = this.$store.state.nodes.secondsPerBlock;
+      const { secondsPerBlock } = this.$store.state.nodes;
       const minutes = Math.round((secondsPerBlock * this.rotatePerBlockHeight) / 60);
       const hours = Math.round(minutes / 60);
       if (hours === 1) {
@@ -146,7 +147,8 @@ export default {
 
       if (daysRemaining > 0) {
         return `${daysRemaining}d : ${hoursRemaining}h : ${minutesRemaining}m`;
-      } else if (hoursRemaining > 0) {
+      }
+      if (hoursRemaining > 0) {
         return `${hoursRemaining}h : ${minutesRemaining}m`;
       }
 

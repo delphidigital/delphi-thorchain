@@ -27,17 +27,16 @@ export default {
     },
     yAxisLabelOptions: {
       type: Object,
-      default: {
+      default: () => ({
         title: false,
         type: 'linear',
-      },
+      }),
     },
   },
   computed: {
     chartOptions() {
-      const formatLabel = this.formatLabel;
+      const { formatLabel, yAxisLabelOptions } = this;
       const areaColor = '#323f64';
-      const yAxisLabelOptions = this.yAxisLabelOptions;
       return {
         chart: {
           type: 'areaspline',

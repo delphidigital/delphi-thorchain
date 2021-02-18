@@ -1,9 +1,15 @@
 <template>
   <div class="section">
-    <div class="section__header">
+    <div class="section__header" id="percentage-rune-locked">
       <h2 class="section__title">
         Percentage RUNE locked
       </h2>
+      <a class="deeplink-selector" href="#percentage-rune-locked">
+        <Icon
+          name="link"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="pure-g section__body section__body--pie-chart">
       <div class="pure-u-lg-1-2 pure-u-1">
