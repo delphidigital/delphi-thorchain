@@ -53,3 +53,8 @@ For v2 dashboard development, this command deploys the v2 branch to heroku
 ```
 git push heroku rod/v2-dashboard:master
 ```
+
+For logs:
+```
+heroku logs --tail   
+```

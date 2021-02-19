@@ -184,7 +184,7 @@ export default {
         });
       });
       // combine all pools, by each interval, so we have a series of the sum all pools in intervals
-      const combinedIntervals = allPoolsIntervals.reduce((intervals1, intervals2) => {
+      const combinedIntervals = (allPoolsIntervals || []).reduce((intervals1, intervals2) => {
         let firstIntervals = intervals1;
         let secondIntervals = intervals2;
         if (intervals1.length < intervals2.length) {
