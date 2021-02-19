@@ -184,23 +184,25 @@ export default {
         });
       });
       // combine all pools, by each interval, so we have a series of the sum all pools in intervals
-      const combinedIntervals = (allPoolsIntervals || []).reduce((intervals1, intervals2) => {
-        let firstIntervals = intervals1;
-        let secondIntervals = intervals2;
-        if (intervals1.length < intervals2.length) {
-          firstIntervals = intervals2;
-          secondIntervals = intervals1;
-        }
-        return firstIntervals.map((item, idx) => {
-          const runeDepth1 = (parseFloat(item.runeDepth) || 0);
-          const runeDepth2 = secondIntervals[idx]
-            ? (parseFloat(secondIntervals[idx].runeDepth) || 0)
-            : 0;
-          const runeDepth = runeDepth1 + runeDepth2;
-          const runeDepthUsd = item.runeDepthUsd + secondIntervals[idx].runeDepthUsd;
-          return { runeDepth, runeDepthUsd, startTime: item.startTime };
-        });
-      });
+      const combinedIntervals = allPoolsIntervals && allPoolsIntervals.length
+        ? allPoolsIntervals.reduce((intervals1, intervals2) => {
+          let firstIntervals = intervals1;
+          let secondIntervals = intervals2;
+          if (intervals1.length < intervals2.length) {
+            firstIntervals = intervals2;
+            secondIntervals = intervals1;
+          }
+          return firstIntervals.map((item, idx) => {
+            const runeDepth1 = (parseFloat(item.runeDepth) || 0);
+            const runeDepth2 = secondIntervals[idx]
+              ? (parseFloat(secondIntervals[idx].runeDepth) || 0)
+              : 0;
+            const runeDepth = runeDepth1 + runeDepth2;
+            const runeDepthUsd = item.runeDepthUsd + secondIntervals[idx].runeDepthUsd;
+            return { runeDepth, runeDepthUsd, startTime: item.startTime };
+          });
+        })
+        : [];
       return combinedIntervals.map(val => ({
         date: new Date(parseInt(val.startTime, 10)*1000),
         value: (val.runeDepthUsd * 2),
