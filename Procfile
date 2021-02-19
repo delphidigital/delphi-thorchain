@@ -1,2 +1,2 @@
-web:     npx nuxt
+web:     npx nuxt start
 worker:  npm run fetch
