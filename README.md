@@ -45,3 +45,11 @@ $ yarn develop
 - NOTIFICATION_MINUTE_TIME_INTERVAL: interval in minutes between notification emails (30 minutes by default). 
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+
+
+### Heroku
+
+For v2 dashboard development, this command deploys the v2 branch to heroku
+```
+git push heroku rod/v2-dashboard:master
+```
