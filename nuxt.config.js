@@ -3,7 +3,7 @@ import ESLintPlugin from 'eslint-webpack-plugin';
 
 const APP_URL = process.env.NODE_ENV === 'production' && process.env.HOST && process.env.PORT
   ? `http://${process.env.HOST}:${process.env.PORT}`
-  : process.env.APP_URL || 'http://localhost:3021',
+  : process.env.APP_URL || 'http://localhost:3021';
 
 export default {
   /*
@@ -78,8 +78,6 @@ export default {
     CHAOSNET_NODE_IP: process.env.CHAOSNET_NODE_IP,
     APP_URL,
   },
-
-  http://localhost:3021
   
   /*
   ** Nuxt.js modules
