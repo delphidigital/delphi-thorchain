@@ -72,9 +72,9 @@ export default {
     pollingFrequency: process.env.POLLING_FREQUENCY || 5000,
     TESTNET_NODE_IP: process.env.TESTNET_NODE_IP,
     CHAOSNET_NODE_IP: process.env.CHAOSNET_NODE_IP,
-    APP_URL: (process.env.NODE_ENV === 'production' && process.env.HOST && process.env.PORT)
+    APP_URL: (process.env.HOST && process.env.PORT && !process.env.APP_URL)
       ? `http://${process.env.HOST}:${process.env.PORT}`
-      : process.env.APP_URL || 'http://localhost:3021',
+      : (process.env.APP_URL || 'http://localhost:3021'),
   },
   
   /*
