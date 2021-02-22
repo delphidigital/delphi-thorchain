@@ -22,8 +22,6 @@
         </div>
       </div>
 
-      <PoolList />
-
       <div class="pure-g">
         <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
           <TopPerformers />
@@ -32,6 +30,8 @@
           <StandbyPools />
         </div>
       </div>
+
+      <PoolList />
 
       <RuneDataInfo />
       <!-- <NodeSummary /> -->

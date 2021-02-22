@@ -103,14 +103,14 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    vendor: ['vue-awesome'],
+    transpile: [/^vue-awesome/],
     watch: ['api'],
     extend() {},
     plugins: [
       new ESLintPlugin(),
     ],
   },
-  plugins: [{ src: '~plugins/vueAwesome', ssr: false }],
+  plugins: ['~plugins/vueAwesome'],
   router: {
     linkActiveClass: 'link--active',
   },

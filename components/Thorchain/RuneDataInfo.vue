@@ -174,7 +174,7 @@
 
 
 
-      <div v-if="plot == 'rewards' || plot == 'total_value'">
+      <div v-if="selectedPool && (plot == 'rewards' || plot == 'total_value')">
         <LineChart
           :data="getPlotData"
           :format-label="formatLabel"
@@ -182,7 +182,7 @@
           class="runedatainfo-chart"
         />
       </div>
-      <div v-if="plot == 'profit_loss'">
+      <div v-if="selectedPool && plot == 'profit_loss'">
         <ColumnChart
           :data="getProfitLossData"
           :format-label="formatLabel"
@@ -190,7 +190,7 @@
           class="runedatainfo-chart"
         />
       </div>
-      <div v-if="plot == 'predict_future'">
+      <div v-if="selectedPool && plot == 'predict_future'">
         <ColumnChart
           :data="getPredictFutureData"
           :format-label="formatLabel"
@@ -198,7 +198,7 @@
           class="runedatainfo-chart"
         />
       </div>
-      <div class="section__footer__credits">
+      <div v-if="selectedPool" class="section__footer__credits">
         Inspired by Runedata.info
       </div>
     </div>
