@@ -52,7 +52,7 @@ Use heroku cli:
 heroku git:remote -a v1dashboard-v2testnet
 ```
 
-Or edit `~/.git/config` so that the remote heroku points to the correct instance:
+Validate or edit `~/.git/config` to verify that the remote heroku points to the correct instance:
 
 ```
 [remote "heroku"]
@@ -65,5 +65,8 @@ Then scale the worker and web:
 heroku ps:scale web=1 worker=1
 ```
 
-git push heroku rod/v2-dashboard:master
+Then push-deploy the branch to heroku app
+```
+git push heroku rodrigo/v1-dashboard-with-v2-testnet:master
+```
 
