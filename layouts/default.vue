@@ -612,6 +612,8 @@ $padding-section-table: 25px;
 
 .coming-soon__parent {
   position: relative;
+  overflow: hidden;
+  clear: both;
 }
 
 .coming-soon__target {

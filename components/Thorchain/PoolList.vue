@@ -49,7 +49,7 @@
         </thead>
         <tbody>
           <tr v-for="pool in pools" :key="pool.name" class="section__table__row">
-            <td class="section__table__data section__table__data--highlight">
+            <td class="section__table__data section__table__data--highlight poollist__poolname">
               {{ pool.name }}
             </td>
             <td class="section__table__data">
@@ -213,6 +213,13 @@ export default {
   }
 }
 
+.poollist__poolname {
+  display: inline-block;
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .slippage-calculator-toggle--desktop {
   @media screen and (max-width: 500px) {
     display: none;
