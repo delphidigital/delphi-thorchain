@@ -11,14 +11,11 @@ const chaosnet = express.Router();
 const testnet = express.Router();
 
 async function loadCached(id) {
-  console.log(`LOADCACHED REQ: ${id}`);
   const rawdata = await getAsync(`thorchain::${id}`);
-  console.log(`LOADCACHED RES: ${rawdata}`);
   return JSON.parse(rawdata);
 }
 
 thorchain.all('/overview', async (req, res) => {
-  console.log(`OVERVIEW REQ: ${req.blockchain}`);
   const pools = await loadCached(`${req.blockchain}::pools`) || [];
   const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
   const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
