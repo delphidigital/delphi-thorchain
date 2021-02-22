@@ -43,3 +43,27 @@ $ DATA_SOURCE=cache PORT=3021 yarn dev
 - NOTIFICATION_MINUTE_TIME_INTERVAL: interval in minutes between notification emails (30 minutes by default). 
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+
+
+### Managing Heroku
+
+Use heroku cli:
+```
+heroku git:remote -a v1dashboard-v2testnet
+```
+
+Or edit `~/.git/config` so that the remote heroku points to the correct instance:
+
+```
+[remote "heroku"]
+	url = https://git.heroku.com/v1dashboard-v2testnet.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
+```
+
+Then scale the worker and web:
+```
+heroku ps:scale web=1 worker=1
+```
+
+git push heroku rod/v2-dashboard:master
+
