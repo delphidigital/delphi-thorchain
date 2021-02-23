@@ -49,7 +49,24 @@ For detailed explanation on how things work, check out [Nuxt.js docs](https://nu
 
 ### Heroku
 
-For v2 dashboard development, this command deploys the v2 branch to heroku
+Use heroku cli:
+```
+heroku git:remote -a thorchain-v2-dashboard
+```
+
+Validate or edit ~/.git/config to verify that the remote heroku points to the correct instance:
+```
+[remote "heroku"]
+	url = https://git.heroku.com/thorchain-v2-dashboard.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
+```
+
+Then scale the worker and web:
+```
+heroku ps:scale web=1 worker=1
+```
+
+Then push-deploy the branch to heroku app
 ```
 git push heroku rod/v2-dashboard:master
 ```
