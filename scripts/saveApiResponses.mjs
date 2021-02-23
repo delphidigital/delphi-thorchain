@@ -22,19 +22,6 @@ async function getRuneMarketData() {
   return response.data.market_data;
 }
 
-// returns an array of 365 items representing each a day from today to 1 year ago
-function get1YearDailyDates() {
-  const dates = [];
-  const referentialDate = startOfDay(new Date());
-  // adding extra days for rune price calculations
-  for (const [idx, _value] of new Array(368).entries()) {
-    const indexDay = subDays(referentialDate, idx);
-    const date = format(indexDay, 'dd-MM-yyyy')
-    dates.push({ date, timestamp: indexDay.getTime()});
-  }
-  return dates;
-}
-
 // History depth and swaps contain this keys: 
 function technicalAnalysis(
   poolStats, historyDepth, historySwaps, allPoolsHistoryEarnings,

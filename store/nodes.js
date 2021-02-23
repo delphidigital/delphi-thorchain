@@ -16,7 +16,7 @@ export const getters = {
   activeNodesSegmentedForChurnAndThreshold(state, g, rootState) {
     const currentHeight = rootState.networkHealth.lastThorchainBlock;
     const activeNodePropertiesMap = {}; // will store properties by node address
-    const activeNodes = Object.values(state.nodes).filter(node => (node.status === 'active'));
+    const activeNodes = Object.values(state.nodes).filter(node => (node.status === 'Active'));
 
     let oldestNodeStatusSince = currentHeight;
     let oldestNodeAddress = null;
@@ -175,7 +175,7 @@ export const getters = {
   },
   disabledNodes(state) {
     return Object.values(state.nodes).filter(node => (
-      node.status === 'disabled'
+      node.status === 'Disabled'
     )).sort((a, b) => {
       const aBlock = parseInt(a['status_since'], 10);
       const bBlock = parseInt(b['status_since'], 10);
@@ -185,12 +185,12 @@ export const getters = {
     });
   },
   isAsgardVaultRetiring(state) {
-    return !!(state.asgardVaults || []).filter(vault => vault.status === 'retiring').length;
+    return !!(state.asgardVaults || []).filter(vault => vault.status === 'Retiring').length;
   },
   progressToNextChurnPoint(state, g, rootState) {
     // lastChurnHeight is max block height from all active vaults
     const lastChurnHeight = (state.asgardVaults || []).reduce((acc, av) => (
-      (av.status === 'active') ? Math.max(av.block_height, acc) : acc
+      (av.status === 'ActiveVault') ? Math.max(av.block_height, acc) : acc
     ), 0);
     const currentHeight = rootState.networkHealth.lastThorchainBlock;
 
@@ -259,7 +259,7 @@ export const getters = {
     const belowMinBondNodes = [];
     const otherNodes = [];
     const nodes = Object.values(state.nodes).filter(node => (
-      node.status === 'standby' || node.status === 'ready'
+      node.status === 'Standby' || node.status === 'Ready'
     )).sort((a, b) => {
       const aBlock = parseInt(a.bond, 10);
       const bBlock = parseInt(b.bond, 10);
@@ -309,28 +309,28 @@ export const getters = {
   },
   totalActiveBonded(state) {
     return Object.values(state.nodes).reduce((total, node) => (
-      node.status === 'active' ? total + node.bond : total
+      node.status === 'Active' ? total + node.bond : total
     ), 0);
   },
   totalStandbyBonded(state) {
     return Object.values(state.nodes).reduce((total, node) => (
-      node.status === 'standby' ? total + node.bond : total
+      node.status === 'Standby' ? total + node.bond : total
     ), 0);
   },
   totalActiveCount(state) {
     return Object.values(state.nodes).reduce((total, node) => (
-      node.status === 'active' ? total + 1 : total
+      node.status === 'Active' ? total + 1 : total
     ), 0);
   },
   totalStandbyCount(state) {
     // NOTE(Fede): Including Ready nodes here too, as they are shown on the standby list
     return Object.values(state.nodes).reduce((total, node) => (
-      (node.status === 'standby' || node.status === 'ready') && !node['requested_to_leave'] ? total + 1 : total
+      (node.status === 'Standby' || node.status === 'Ready') && !node['requested_to_leave'] ? total + 1 : total
     ), 0);
   },
   activeRequestedToLeaveCount(state) {
     return Object.values(state.nodes).reduce((total, node) => (
-      node.status === 'active' && node['requested_to_leave'] ? total + 1 : total
+      node.status === 'Active' && node['requested_to_leave'] ? total + 1 : total
     ), 0);
   },
 };

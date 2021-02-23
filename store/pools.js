@@ -11,14 +11,14 @@ export const periodsHistoryMap = {
   '1Y': 'period1Y',
 };
 // period1H, period24H, period7D, period30D, period90D, period365D, periodALL
-const periodToStatsMap = {
-  '24H': 'period24H',
-  '1W': 'period7D',
-  '1M': 'period30D',
-  '3M': 'period90D',
-  // '6M': 'period180D', // TODO
-  '1Y': 'period365D',
-};
+// const periodToStatsMap = {
+//   '24H': 'period24H',
+//   '1W': 'period7D',
+//   '1M': 'period30D',
+//   '3M': 'period90D',
+//   // '6M': 'period180D', // TODO
+//   '1Y': 'period365D',
+// };
 
 export const runeE8toValue = runeString => (
   runeString
@@ -40,10 +40,10 @@ export const state = () => ({
 
 export const getters = {
   totalRuneDepth(state) { // TODO: replace this with (allPoolsDepthsAndVolumesWithAverages().totalDepth / 2)
-    return Object.values(state.pools).reduce((result, item) => (
+    return state.pools.reduce((result, item) => (
       (
         result
-        + parseFloat(item[periodToStatsMap[state.periodDepthAndVolume]]?.runeDepth || 0)
+        + parseInt((item?.poolStats?.periodALL?.runeDepth || 0), 10) / runeDivider
       )
     ), 0);
   },

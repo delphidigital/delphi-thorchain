@@ -15,10 +15,10 @@ export const getters = {
   coins(s, g, rootState) {
     const runePrice = (asset) => {
       if (assetFromString(asset).ticker === 'RUNE') return 1;
-      if (!rootState.pools.pools[asset]) return null;
-      return rootState.pools.pools[asset].price;
+      const pool = rootState.pools.pools.find(p => p.poolId === asset);
+      if (!pool) return null;
+      return pool.poolStats.periodALL.assetPrice;
     };
-
     const vaults = rootState.nodes.asgardVaults;
     const amountsRecorded = {};
 
