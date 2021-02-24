@@ -184,6 +184,8 @@ export const getters = {
     return statusMap;
   },
   disabledNodes(state) {
+    // API NODE status values:
+    // https://gitlab.com/thorchain/thornode/-/blob/develop/x/thorchain/types/type_node_account.pb.go#L49
     return Object.values(state.nodes).filter(node => (
       node.status === 'Disabled'
     )).sort((a, b) => {

@@ -10,7 +10,10 @@
     <tbody>
       <tr v-for="item in data" :key="item.poolId" class="table__row">
         <td class="table__highlight">
-          <span class="marker" :style="{backgroundColor: item.color}" />{{ item.poolId }}
+          <div class="tablerow__tablecell">
+            <span class="marker" :style="{backgroundColor: item.color}" />
+            <span class="tablerow__poolid">{{ item.poolId }}</span>
+          </div>
         </td>
         <td class="table__data">
           <RuneUSD :rune="item.poolVolume" />
@@ -88,6 +91,18 @@ export default {
   font-size: 14px;
   td {
     padding: 7px 0;
+
+    .tablerow__tablecell {
+      display: flex;
+      flex-direction: row;
+      .tablerow__poolid {
+        display: inline-block;
+        max-width: 140px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
   }
 }
 

@@ -386,6 +386,7 @@ a {
   height: 300px;
   display: flex;
   padding-right: 25px;
+  overflow: hidden;
 
   @media screen and (max-width: $pureg-lg) {
     height: 580px;

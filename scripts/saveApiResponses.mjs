@@ -48,7 +48,6 @@ async function updateBlockchainData(blockchain) {
   const versionRequest = await axios.get(`${api.nodeUrl()}/thorchain/version`);
 
   // Other sources
-  const runeMarketData = await getRuneMarketData();
   let runevaultBalance = 0;
   if (blockchain === 'chaosnet') {
     const frozenBalancesReq = await axios.get('http://frozenbalances.herokuapp.com/stats/RUNE-B1A');
@@ -79,9 +78,13 @@ async function updateBlockchainData(blockchain) {
   const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
     total + parseInt(node.bond)
   ), 0);
-  const circulating = blockchain === 'testnet' ?
-    ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2) : runeMarketData.circulating_supply;
-  const priceUsd = runeMarketData.current_price.usd;
+
+  let circulating = ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2);
+  const priceUsd = stats.runePriceUSD;
+  if (blockchain === 'chaosnet') {
+    const runeMarketData = await getRuneMarketData();
+    circulating = runeMarketData.circulating_supply;
+  }
 
   // SET DATA
   await set('pools', poolList);
