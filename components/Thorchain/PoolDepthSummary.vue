@@ -114,7 +114,7 @@ export default {
           poolId,
           color: colors[index % (colors.length)],
         };
-      }).sort((a, b) => b.totalVolume - a.totalVolume);
+      }).sort((a, b) => b.totalDepthUsd - a.totalDepthUsd);
       const top5PoolsSortedByVolume = allPoolsSorted.slice(0, 5);
       const otherPoolsSorted = allPoolsSorted.slice(5, allPoolsSorted.length);
       const other = otherPoolsSorted.reduce((result, item) => {
@@ -125,7 +125,7 @@ export default {
           averageRunePriceUsd: result.averageRunePriceUsd + item.averageRunePriceUsd,
           depthAverage: result.depthAverage + item.depthAverage,
           depthAverageUsd: result.depthAverageUsd + item.depthAverageUsd,
-          intervals: result.intervals + item.intervals,
+          // intervals: todo: combine intervals
           totalDepth: result.totalDepth + item.totalDepth,
           totalDepthUsd: result.totalDepthUsd + item.totalDepthUsd,
           totalEarningsRune: result.totalEarningsRune + item.totalEarningsRune,
@@ -141,7 +141,7 @@ export default {
         averageRunePriceUsd: 0.0,
         depthAverage: 0.0,
         depthAverageUsd: 0.0,
-        intervals: 0.0,
+        // intervals: {},
         totalDepth: 0.0,
         totalDepthUsd: 0.0,
         totalEarningsRune: 0.0,
@@ -174,8 +174,8 @@ export default {
         return (poolPeriodHD?.intervals || []).map(iv => {
           const assetPriceUsd = parseFloat(iv.assetPriceUSD);
           const assetPrice = parseFloat(iv.assetPrice);
-          const runePriceUsd = isNaN(assetPriceUsd) || isNaN(assetPrice) ? 0 : (assetPriceUsd / assetPrice);
-          const runeDepthUsd = runePriceUsd * (iv.runeDepth/runeDivider);
+          const runePriceUsd = isNaN(assetPriceUsd) || isNaN(assetPrice) || !assetPrice ? 0 : (assetPriceUsd / assetPrice);
+          const runeDepthUsd = runePriceUsd * (parseInt(iv.runeDepth,10)/runeDivider);
           return {
             ...iv,
             runePriceUsd,
@@ -255,7 +255,6 @@ export default {
 .pool-depth-time-option {
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
   color: rgba(255, 255, 255, 0.5);
   background-color: transparent;
   border: none;

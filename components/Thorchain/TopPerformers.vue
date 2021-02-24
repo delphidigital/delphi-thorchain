@@ -54,7 +54,7 @@
             </td>
             <td class="section__table__data">
               <span>
-                {{ pool.impermanentLoss.toFixed(4) }}
+                {{ (pool.impermanentLoss || 0).toFixed(4) }}
               </span>
             </td>
 
@@ -91,8 +91,8 @@ export default {
     return {
       timeOptions: ['1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
       currentTimeOption: '1W',
-      sortBy: 'poolId',
-      sortDescending: false,
+      sortBy: 'totalEarningsRune',
+      sortDescending: true,
       fields: [
         {
           name: 'poolId',
@@ -130,7 +130,7 @@ export default {
           poolId,
           impermanentLoss: poolPeriodTA.intervals[lastInterval].impermanentLoss,
         };
-      })
+      });
       const descChar = this.sortDescending ? '-' : '';
       return unsortedPools.sort(sortBy(`${descChar}${this.sortBy}`));
     },
@@ -143,7 +143,7 @@ export default {
       return poolId;
     },
     formatLabel(value) {
-      return numeral(value).format('($0,0a)').toUpperCase();
+      return numeral(value).format('($0,0.0a)').toUpperCase();
     },
     formatNumberDecimals(value){
       return value.toFixed(2);

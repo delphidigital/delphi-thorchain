@@ -34,7 +34,7 @@ function technicalAnalysis(
       historyDepth[poolId][periodKey].intervals.forEach(i => {
         const assetPriceUSD = parseFloat(i.assetPriceUSD);
         const assetPrice = parseFloat(i.assetPrice);
-        runeUSDPrices[i.startTime] = isNaN(assetPriceUSD) || isNaN(assetPrice)
+        runeUSDPrices[i.startTime] = isNaN(assetPriceUSD) || isNaN(assetPrice) || !assetPrice
           ? 0
           : assetPriceUSD/assetPrice;
       });
@@ -45,12 +45,12 @@ function technicalAnalysis(
       ), 0);
       const volumeAverage = (totalVolume / intervals.length);
       const totalVolumeUsd = intervals.reduce((result, item) => {
-        const runePriceUsd = runeUSDPrices[item.startTime];
+        const runePriceUsd = runeUSDPrices[item.startTime] || 0;
         return (result + (runeE8toValue(item.totalVolume)*runePriceUsd));
       }, 0);
       const intervalSwaps = {};
       intervals.forEach(interval => {
-        const runePriceUsd = runeUSDPrices[interval.startTime];
+        const runePriceUsd = runeUSDPrices[interval.startTime] || 0;
         intervalSwaps[interval.startTime] = {
           totalVolumeUsd: runeE8toValue(interval.totalVolume) * runePriceUsd,
           startTime: interval.startTime
@@ -281,7 +281,6 @@ async function updateBlockchainData(blockchain) {
   const versionRequest = await api.loadNodeVersion();
 
   // Other sources
-  const runeMarketData = await getRuneMarketData();
   let runevaultBalance = 0;
   if (blockchain === 'chaosnet') {
     const frozenBalancesReq = await axios.get('http://frozenbalances.herokuapp.com/stats/RUNE-B1A');
@@ -313,10 +312,13 @@ async function updateBlockchainData(blockchain) {
   const totalBonded = Object.values(nodeAccounts).reduce((total, node) => (
     total + parseInt(node.bond)
   ), 0);
-  const circulating = blockchain === 'testnet' ?
-    ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2) : runeMarketData.circulating_supply;
-  const priceUsd = runeMarketData.current_price.usd;
 
+  let circulating = ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2);
+  const priceUsd = stats.runePriceUSD;
+  if (blockchain === 'chaosnet') {
+    const runeMarketData = await getRuneMarketData();
+    circulating = runeMarketData.circulating_supply;
+  }
   const ta = technicalAnalysis(
     poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
   );

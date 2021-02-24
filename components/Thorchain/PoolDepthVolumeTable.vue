@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     formatUsd(n) {
-      return numeral(n).format('($0,00a)').toUpperCase();
+      return numeral(n).format('($0,00.0a)').toUpperCase();
     },
   }
 };
