@@ -40,7 +40,7 @@ export default {
   computed: {
     chartOptions() {
       const formatLabel = this.formatLabel;
-      const areaColor = '#323f64';
+      const areaColor = '#343d4e';
       const yAxisLabelOptions = this.yAxisLabelOptions;
       return {
         chart: {
@@ -95,6 +95,9 @@ export default {
           lineColor: areaColor,
           minPadding: 0,
           maxPadding: 0,
+    	    gridLineWidth: 1,
+          gridLineColor: areaColor,
+          gridLineDashStyle: 'longdash'
         },
         yAxis: {
           ...yAxisLabelOptions,

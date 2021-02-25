@@ -240,15 +240,15 @@ export default {
       xAxisProfitColumCategories: [
         'Rune price movement',
         'Asset price movement',
-        'Fees & incentives',
+        'Rewards',
         'Impermanent loss',
         'Total profit',
       ],
       xAxisPredictColumCategories: [
-        'Keep providing liquidity',
-        'Withdraw and hold RUNE',
-        'Withdraw and hold asset',
-        'Withdraw and hold both',
+        'Provide liquidity',
+        'Hold 100% RUNE',
+        'Hold 100% asset',
+        'Hold RUNE: Asset 50:50',
       ],
       pastSimulationData: [],
       predictionData: null,
@@ -413,7 +413,7 @@ export default {
       this.$refs.assetPTargetRef.focus();
     },
     formatLabel(value) {
-      return numeral(value).format("($0,0a)").toUpperCase();
+      return numeral(value).format("$0,0.0a").toUpperCase();
     },
   },
 };
@@ -429,7 +429,7 @@ export default {
   font-size: 11px;
   text-align: right;
   padding: .5rem 1.2rem 1.2rem .5rem;
-  background-color: #262f4a;
+  /* background-color: #262f4a; */
   color: rgba(255,255,255,0.7);
 }
 .submit-button-wrapper {
@@ -527,7 +527,7 @@ export default {
   }
 }
 .runedatainfo-chart {
-    background-color: #262f4a;
+    /* background-color: #262f4a; */
     border-top: 1px solid #353C50;
     padding: 15px 25px;
 }

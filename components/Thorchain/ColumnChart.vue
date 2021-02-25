@@ -8,6 +8,12 @@
 </template>
 
 <script>
+import Highcharts from 'highcharts';
+import highchartsBorderRadius from '../../plugins/highchartsBorderRadius';
+
+if (typeof Highcharts === 'object') {
+  highchartsBorderRadius(Highcharts);
+}
 
 export default {
   props: {
@@ -35,7 +41,7 @@ export default {
   },
   computed: {
     chartOptions() {
-      const areaColor = '#323f64';
+      const areaColor = '#343d4e';
       const { formatLabel } = this;
       return {
         chart: {
@@ -56,7 +62,7 @@ export default {
             return `
               <div class="app-tooltip">
                 <div class="app-tooltip__body">
-                  <p class="app-tooltip__text">
+                  <p class="app-tooltip__text" style="font-weight: bold; font-size: 12px;">
                     ${formatLabel(this.point.y)}
                   </p>
                 </div>
@@ -79,6 +85,9 @@ export default {
           },
           column: {
             borderWidth: 0,
+            borderRadiusStart: 0,
+            borderRadiusEnd: 11,
+            pointWidth: 28,
           },
         },
         xAxis: {
@@ -92,18 +101,18 @@ export default {
             padding: 0,
           },
           lineColor: areaColor,
+    	    gridLineWidth: 1,
+          gridLineColor: areaColor,
+          gridLineDashStyle: 'longdash'
         },
         yAxis: {
-          min: 0,
+          // min: 0,
           className: 'highcharts-yaxis--title',
           labels: {
             formatter() {
-              if (this.isLast || this.isFirst) {
-                return formatLabel(this.value);
-              }
-              return null;
+              return formatLabel(this.value);
             },
-            style: { color: '#fff', fontSize: 7 },
+            style: { color: '#fff', fontSize: "7px" },
             x: -5,
           },
           gridLineColor: areaColor,
@@ -111,6 +120,12 @@ export default {
           lineWidth: 1,
           minPadding: 0,
           maxPadding: 0,
+          plotLines: [{
+            color: '#c4c4c4',
+            width: 1,
+            value: 0,
+            zIndex:2
+          }]
         },
 
         legend:{
