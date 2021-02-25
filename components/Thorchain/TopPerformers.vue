@@ -143,7 +143,7 @@ export default {
       return poolId;
     },
     formatLabel(value) {
-      return numeral(value).format('($0,0.0a)').toUpperCase();
+      return numeral(value).format('($0,00.0a)').toUpperCase();
     },
     formatNumberDecimals(value){
       return value.toFixed(2);

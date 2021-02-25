@@ -97,7 +97,9 @@
               </span>
             </td>
             <td class="section__table__data">
-              {{ formatLabel(pool.depthAverageUsd) }}
+              <span :class="(sortBy == 'depthAverageUsd') ? 'column__highlight__colored' : ''">
+                {{ formatLabel(pool.depthAverageUsd) }}
+              </span>
             </td>
 
             <td class="section__table__data">
@@ -138,7 +140,7 @@ import numeral from 'numeral';
 import sortBy from 'sort-by';
 import Percentage from '../Common/Percentage.vue';
 import LineChart from './LineChart.vue';
-import { periodsHistoryMap } from '../../store/pools';
+import { periodsHistoryMap, runeDivider } from '../../store/pools';
 
 export default {
   components: {
@@ -223,21 +225,36 @@ export default {
       return filteredPools;
     },
     selectedPoolsLinechartData() {
-      const poolTA = this.$store.state.pools.technicalAnalysis
       const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
       const period = periodsHistoryMap[this.currentTimeOption];
       const data = this.selectedPools.map((sp, colorIndex) => {
-        const periodTA = poolTA[sp][period];
-        return {
-          name: sp,
-          data: Object.keys(periodTA.intervalSwaps).map(timestamp => {
-            return {
-              x: (parseInt(periodTA.intervalSwaps[timestamp].startTime)*1000),
-              y: periodTA.intervalSwaps[timestamp].totalVolumeUsd,
-            }
-          }),
-          color: colorsList[colorIndex],
-        };
+        if (this.sortBy === 'depthAverageUsd') {
+          const poolTA = this.$store.state.pools.poolHistoryDepths
+          const periodDepths = poolTA[sp][period];
+          return {
+            name: sp,
+            data: periodDepths.intervals.map(pd => {
+              return {
+                x: (parseInt(pd.startTime, 10) * 1000),
+                y: ((parseInt(pd.assetDepth, 10) / runeDivider) * parseFloat(pd.assetPriceUSD) * 2),
+              }
+            }),
+            color: colorsList[colorIndex],
+          };
+        } else { // if (this.chartedValue === 'volumeAverageUsd') {
+          const poolTA = this.$store.state.pools.technicalAnalysis
+          const periodTA = poolTA[sp][period];
+          return {
+            name: sp,
+            data: Object.keys(periodTA.intervalSwaps).map(timestamp => {
+              return {
+                x: (parseInt(periodTA.intervalSwaps[timestamp].startTime)*1000),
+                y: periodTA.intervalSwaps[timestamp].totalVolumeUsd,
+              }
+            }),
+            color: colorsList[colorIndex],
+          };
+        }
       });
       return data;
     },
@@ -253,7 +270,7 @@ export default {
       this.$refs.searchinputref.focus()
     },
     formatLabel(value) {
-      return numeral(value).format('($0,0a)').toUpperCase();
+      return numeral(value).format('($0,00.0a)').toUpperCase();
     },
     formatNumberDecimals(value){
       return value.toFixed(2);
@@ -372,6 +389,11 @@ export default {
 
   th {
     cursor: pointer;
+    padding-left: 22px;
+    text-align: center;
+    &:first-child {
+      text-align: left;
+    }
   }
   .section__table__head--info {
     font-size: 0.4em;
@@ -384,6 +406,20 @@ export default {
     vertical-align: middle;
     line-height: 1;
     margin-left: 4px;
+  }
+
+  .section__table__row {
+    .section__table__data {
+      text-align: center;
+      > div, > span {
+        text-align: center;
+        margin: auto;
+      }
+      &:first-child {
+        text-align: left;
+      }
+    }
+
   }
 
   @media screen and (max-width: $pureg-lg) {
