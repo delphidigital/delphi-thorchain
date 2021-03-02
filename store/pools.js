@@ -33,6 +33,7 @@ export const state = () => ({
   poolHistorySwaps: {},
   poolIds: [],
   technicalAnalysis: {},
+  poolsOverview: [],
 
   // TODO: remove when totalRuneDepth is gone
   periodDepthAndVolume: '1M',
@@ -50,6 +51,9 @@ export const getters = {
 };
 
 export const mutations = {
+  setPoolsOverview(state, poolsOverview) {
+    state.poolsOverview = poolsOverview;
+  },
   setPools(state, pools) {
     state.pools = pools;
   },

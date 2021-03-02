@@ -313,6 +313,7 @@ async function updateBlockchainData(blockchain) {
     total + parseInt(node.bond)
   ), 0);
 
+  const totalValueLockedUSD = (((runeDepth * 2) + totalBonded) /  (10 ** 8));
   let circulating = ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2);
   const priceUsd = stats.runePriceUSD;
   if (blockchain === 'chaosnet') {
@@ -357,7 +358,7 @@ async function updateBlockchainData(blockchain) {
   await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest);
-  await set('marketData', { priceUsd: priceUsd.toString(), circulating });
+  await set('marketData', { priceUsd: priceUsd.toString(), circulating, totalValueLockedUSD });
   await set('runevaultBalance', runevaultBalance);
   await set('binanceAccounts', binanceAccounts);
 
