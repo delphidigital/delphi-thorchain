@@ -51,8 +51,8 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 section--split-left">
-        <div class="section">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="display: inline-flex;">
+        <div class="section" style="flex: 1;">
           <div class="section__header" id="deterministic-rune">
             <h2 class="section__title">
               Deterministic RUNE
@@ -71,8 +71,8 @@
         </div>
       </div>
 
-      <div class="pure-u-1 pure-u-md-1-2 section--split-right">
-        <div class="section">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;">
+        <div class="section" style="flex: 1;">
           <div class="section__header" id="block-rewards-per-day">
             <h2 class="section__title">
               Block Rewards per Day
@@ -83,6 +83,53 @@
                 scale="0.7"
               ></Icon>
             </a>
+          </div>
+          <BlockRewardsPerDayColumnChart />
+          <hr class="section__divider" />
+          <div class="section__footer">
+            <div class="section_footer_info">
+              <span>Bond Reward / Node:</span>
+              <span>$24.000 / Month</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pure-g">
+      <div class="pure-u-1 pure-u-md-2-3 section--split-right" style="display: inline-flex;">
+        <div class="section" style="flex: 1;">
+          <div class="section__header" id="volumebypool_vs_total_volume">
+            <h2 class="section__title">
+              Volume by pool vs. Total volume
+            </h2>
+            <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
+              <Icon name="link" scale="0.7"></Icon>
+            </a>
+          </div>
+          <VolumeByPoolVsTotalVolume />
+        </div>
+      </div>
+
+      <div class="pure-u-1 pure-u-md-1-3 section--split-right" style="display: inline-flex;">
+        <div class="section" style="flex: 1;">
+          <div class="section__header" id="activity_levels">
+            <h2 class="section__title">
+              Activity levels
+            </h2>
+            <a class="deeplink-selector" href="#activity_levels">
+              <Icon name="link" scale="0.7"></Icon>
+            </a>
+          </div>
+          <div class="section__body section__body--list">
+            <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span>Total Depth:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span>Total Earnings:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span># of Swaps:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span>Daily Users:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span># of liquidity providers:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(100999) }}</div>
           </div>
         </div>
       </div>
@@ -134,6 +181,8 @@ import NodesByLocation from '../../../components/Network/NodesByLocation.vue';
 import ChurnInfo from '../../../components/Network/ChurnInfo.vue';
 import NodeDetailList from '../../../components/Network/NodeDetailList.vue';
 import DeterministicRunePieChart from '../../../components/Network/DeterministicRunePieChart.vue';
+import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewardsPerDayColumnChart.vue';
+import VolumeByPoolVsTotalVolume from '../../../components/Network/VolumeByPoolVsTotalVolume.vue';
 
 export default {
   // load data here
@@ -141,6 +190,7 @@ export default {
     NodesByLocation,
     NodeDetailList,
     DeterministicRunePieChart,
+    BlockRewardsPerDayColumnChart,
     ChurnInfo,
   },
   async fetch() {
@@ -242,4 +292,37 @@ export default {
     opacity: 0.75;
   }
 }
+.section__body--list {
+  > .body__listitem {
+    display: flex;
+    padding: 18px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.8;
+    border-bottom: 2px solid rgba(150,150,150,0.3);
+    > span:first-child {
+      flex: 1;
+    }
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+.section__footer {
+  margin-top: 12px;
+}
+.section_footer_info {
+  display: flex;
+  flex-direction: row;
+  font-size: 15px;
+  font-weight: 500;
+  margin: 26px 26px 0 26px;
+  padding-bottom: 26px;
+
+  > span:first-child {
+    display: inline-flex;
+    flex: 1;
+  }
+}
+
 </style>

@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { format } from 'date-fns';
 import Highcharts from 'highcharts';
 import highchartsBorderRadius from '../../plugins/highchartsBorderRadius';
 
@@ -34,10 +35,18 @@ export default {
       type: Function,
       default: v => v,
     },
+    xAxisOptions: {
+      type: Array,
+      default: () => ({}),
+    },
     xAxisCategories: {
       type: Array,
       default: () => [],
     },
+    customPlotOptions: {
+      type: Object,
+      default: () => ({}),
+    }
   },
   computed: {
     chartOptions() {
@@ -89,6 +98,7 @@ export default {
             borderRadiusEnd: 11,
             pointWidth: 28,
           },
+          ...this.customPlotOptions,
         },
         xAxis: {
           categories: this.xAxisCategories,
@@ -103,7 +113,8 @@ export default {
           lineColor: areaColor,
     	    gridLineWidth: 1,
           gridLineColor: areaColor,
-          gridLineDashStyle: 'longdash'
+          gridLineDashStyle: 'longdash',
+          ...this.xAxisOptions,
         },
         yAxis: {
           // min: 0,

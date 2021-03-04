@@ -1,5 +1,5 @@
 <template>
-  <AppHighchart :chart-options="chartOptions" :placeholder-height="350" />
+  <AppHighchart :chart-options="chartOptions" :placeholder-height="320" />
 </template>
 
 <script>
@@ -21,7 +21,7 @@ export default {
         chart: {
           type: 'pie',
           backgroundColor: 'transparent',
-          height: 350,
+          height: 320,
           margin: [0, 0, 0, 0],
         },
         title: {
@@ -33,7 +33,7 @@ export default {
                 <div style="font-size: 13px; opacity: 0.75;font-weight: 600;margin-bottom: 20px;">
                     Deterministic Price
                 </div>
-                <hr style="opacity: 0.3"/>
+                <hr style="opacity: 0.2"/>
                 <div style="margin-bottom: 12px; font-family: Montserrat; font-size: 24px; font-weight: 500; line-height: 32px;font-weight: 700;margin-top: 20px;">
                     x9.25
                 </div>
@@ -102,6 +102,6 @@ export default {
 
 <style>
 .chart-placeholder {
-  height: 350px;
+  height: 320px;
 }
 </style>
