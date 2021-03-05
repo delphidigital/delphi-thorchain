@@ -47,5 +47,8 @@ export default {
 .blockrewardsperday-chart {
     border-top: 1px solid #353C50;
     padding: 15px 25px;
+    max-width: inherit;
+    width: inherit;
+    margin: auto;
 }
 </style>
