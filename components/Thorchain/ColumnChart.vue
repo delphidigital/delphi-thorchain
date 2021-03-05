@@ -36,7 +36,7 @@ export default {
       default: v => v,
     },
     xAxisOptions: {
-      type: Array,
+      type: Object,
       default: () => ({}),
     },
     xAxisCategories: {

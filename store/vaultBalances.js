@@ -56,8 +56,8 @@ export const getters = {
     const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
     const otherAmountRecorded = other.reduce((total, item) => total + item.amountRecorded, 0);
     const otherAmountStored = other.reduce((total, item) => total + item.amountStored, 0);
-    const runeSolvency = rune.amountRecorded === 0 ? 1 : rune.amountStored / rune.amountRecorded;
-    const otherSolvency = otherAmountRecorded === 0 ? 1 : otherAmountStored / otherAmountRecorded;
+    const runeSolvency = rune && rune.amountRecorded ? (rune.amountStored / rune.amountRecorded) : 1;
+    const otherSolvency = otherAmountRecorded ? (otherAmountStored / otherAmountRecorded) : 1;
 
     return {
       rune: runeSolvency,
