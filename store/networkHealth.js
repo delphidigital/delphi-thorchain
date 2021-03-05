@@ -7,6 +7,8 @@ export const state = () => ({
   poolShareFactor: null,
   lastThorchainBlock: null,
   lastBinanceChainBlock: null,
+  network: null,
+  stats: null,
 });
 
 export const mutations = {
@@ -14,6 +16,7 @@ export const mutations = {
     state.totalReserve = parseInt(networkInfo.totalReserve, 10) / runeDivider;
     state.totalPooledRune = parseInt(networkInfo.totalPooledRune, 10) / runeDivider;
     state.poolShareFactor = parseFloat(networkInfo.poolShareFactor);
+    state.network = networkInfo.network || null;
   },
   setLastThorchainBlock(state, lastBlock) {
     if (lastBlock) {
@@ -24,5 +27,8 @@ export const mutations = {
     if (lastBlock) {
       state.lastBinanceBlock = parseInt(lastBlock, 10);
     }
+  },
+  setStats(state, payload) {
+    state.stats = payload;
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="max-width: 520px; margin: auto;">
     <ColumnChart
       :data="getBlockRewardsPerDayData"
       :format-label="formatLabel"
@@ -27,18 +27,25 @@ export default {
   },
   computed: {
     getBlockRewardsPerDayData() {
+      const blocksPerYear = this.$store.state.nodes.constants?.int_64_values?.BlocksPerYear || 0;
+      const blocksPerDay = blocksPerYear/365;
+      const runeDivider = 10 ** 8;
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      const bondReward = (this.$store.state.networkHealth.network.blockRewards.bondReward / runeDivider) * price * blocksPerDay
+      const poolReward = (this.$store.state.networkHealth.network.blockRewards.poolReward / runeDivider) * price * blocksPerDay;
+      const blockReward = (this.$store.state.networkHealth.network.blockRewards.blockReward / runeDivider) * price * blocksPerDay; 
       return [{
         data: [
-          { y: 50, color: '#19ceb8' },
-          { y: 120, color: '#2d99fe' },
-          { y: 170, color: '#4346D3' },
+          { y: bondReward, color: '#19ceb8' },
+          { y: poolReward, color: '#2d99fe' },
+          { y: blockReward, color: '#4346D3' },
         ]
       }];
     },
   },
   methods: {
     formatLabel(value) {
-      return numeral(value).format("$0,0.000a").toUpperCase();
+      return numeral(value).format("$0,0.0a").toUpperCase();
     },
   },
 };

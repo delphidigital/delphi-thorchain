@@ -37,6 +37,7 @@ export const state = () => ({
 
   // TODO: remove when totalRuneDepth is gone
   periodDepthAndVolume: '1M',
+  allPoolsHistoryEarnings: null,
 });
 
 export const getters = {
@@ -65,5 +66,8 @@ export const mutations = {
   },
   setTechnicalAnalysis(state, payload) {
     state.technicalAnalysis = payload;
+  },
+  setAllPoolsHistoryEarnings(state, payload) {
+    state.allPoolsHistoryEarnings = payload;
   },
 };

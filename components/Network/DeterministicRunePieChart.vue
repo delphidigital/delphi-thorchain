@@ -1,5 +1,7 @@
 <template>
-  <AppHighchart :chart-options="chartOptions" :placeholder-height="320" />
+  <div>
+    <AppHighchart :chart-options="chartOptions" :placeholder-height="320" />
+  </div>
 </template>
 
 <script>

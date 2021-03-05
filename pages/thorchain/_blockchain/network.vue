@@ -93,7 +93,7 @@
           <div class="section__footer">
             <div class="section_footer_info">
               <span>Bond Reward / Node:</span>
-              <span>$24.000 / Month</span>
+              <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
             </div>
           </div>
         </div>
@@ -126,14 +126,14 @@
             </a>
           </div>
           <div class="section__body section__body--list">
-            <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span>Total Depth:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span>Total Earnings:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span># of Swaps:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span>Daily Users:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span># of liquidity providers:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(100999) }}</div>
-            <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(100999) }}</div>
+            <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(swapVolume) }}</div>
+            <div class="body__listitem"><span>Total Depth:</span> {{ formatUsd(totalDepth) }}</div>
+            <div class="body__listitem"><span>Total Earnings:</span> {{ formatUsd(totalEarnings) }}</div>
+            <div class="body__listitem"><span># of Swaps:</span> {{ swapCount }}</div>
+            <div class="body__listitem"><span>Daily Users:</span> {{ dailyActiveUsers }}</div>
+            <div class="body__listitem"><span># of liquidity providers:</span> {{ addLiquidityCount }}</div>
+            <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(addLiquidityVolume) }}</div>
+            <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(liquidityWithdraw) }}</div>
           </div>
         </div>
       </div>
@@ -188,6 +188,8 @@ import DeterministicRunePieChart from '../../../components/Network/Deterministic
 import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewardsPerDayColumnChart.vue';
 import VolumeByPoolVsTotalVolume from '../../../components/Network/VolumeByPoolVsTotalVolume.vue';
 
+const runeDivider = 10 ** 8;
+
 export default {
   // load data here
   components: {
@@ -218,10 +220,46 @@ export default {
     window.removeEventListener('blur', this.pollDataDeactivate);
   },
   computed: {
+    totalEarnings() {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      return parseInt(this.$store.state.pools.allPoolsHistoryEarnings.allTimePeriod.meta.earnings || '0', 10) / runeDivider * price;
+    },
+    swapVolume() {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      return parseInt(this.$store.state.networkHealth.stats.swapVolume || '0', 10) / runeDivider * price;
+    },
+    totalDepth() {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      return parseInt(this.$store.state.networkHealth.stats.runeDepth || '0', 10) / runeDivider * price;
+    },
+    liquidityWithdraw() {
+      // TODO: FIX THIS
+      // withdrawVolume should return a value that requires runeDivider but the api has a bug
+      return parseInt(this.$store.state.networkHealth?.stats?.withdrawVolume || '0', 10);
+    },
+    addLiquidityVolume() {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      return parseInt(this.$store.state.networkHealth?.stats?.addLiquidityVolume || '0', 10) / runeDivider * price;
+    },
+    addLiquidityCount() {
+      return parseFloat(this.$store.state.networkHealth?.stats?.addLiquidityCount) || 0;
+    },
+    swapCount() {
+      return parseFloat(this.$store.state.networkHealth?.stats?.swapCount) || 0;
+    },
+    dailyActiveUsers() {
+      return parseFloat(this.$store.state.networkHealth.stats.dailyActiveUsers) || 0;
+    },
+    monthBondRewardPerNode() {
+      const monthBondingEarnings = parseInt(this.$store.state.pools.allPoolsHistoryEarnings?.period1M?.meta?.bondingEarnings || '0', 10);
+      const monthAvgNodeCount = parseFloat(this.$store.state.pools.allPoolsHistoryEarnings?.period1M?.meta?.avgNodeCount || '0.0');
+      const monthBondRewardPerNode = ((monthBondingEarnings / (10**8)) / monthAvgNodeCount);
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      return monthBondRewardPerNode * price;
+    },
     deterministicRunePrice() {
       // The deterministic Rune Price chart is a hisorical chart of the deterministic price. Formula: 
       // Deterministic Price = 3 * non-RUNE assets pooled / circulating supply
-      const runeDivider = 10 ** 8;
       const nonRuneDepthsPooled = this.$store.state.pools.poolsOverview.reduce((acc, next) => (
         acc + (parseInt(next.runeDepth, 0) / runeDivider) // rune depth value is = to assetDepth value
       ), 0);

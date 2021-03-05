@@ -32,7 +32,7 @@ thorchain.all('/overview', async (req, res) => {
   const technicalAnalysis = await loadCached(`${req.blockchain}::technicalAnalysis`);
 
   // NOTE: stats payload not used by frontend
-  // const stats = await loadCached(`${req.blockchain}::stats`);
+  const stats = await loadCached(`${req.blockchain}::stats`);
 
   // NOTE: provide by default all available pools info in advance
   const poolIds = pools.filter(i => (i.status || '').toLowerCase() === 'available').map(i => i.asset);
@@ -43,7 +43,9 @@ thorchain.all('/overview', async (req, res) => {
   const availablePoolHistoryDepths = await loadCached(`${req.blockchain}::poolHistoryDepths`);
   const availablePoolHistorySwaps = await loadCached(`${req.blockchain}::poolHistorySwaps`);
 
+  const allPoolsHistoryEarnings = await loadCached(`${req.blockchain}::allPoolsHistoryEarnings`);
   res.json({
+    stats,
     pools,
     nodes,
     lastBlock,
@@ -59,6 +61,7 @@ thorchain.all('/overview', async (req, res) => {
     availablePoolHistoryDepths,
     availablePoolHistorySwaps,
     technicalAnalysis,
+    allPoolsHistoryEarnings,
   });
 });
 

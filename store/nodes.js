@@ -10,6 +10,7 @@ export const state = () => ({
   asgardVaults: [],
   minBond: null,
   secondsPerBlock,
+  constants: null,
 });
 
 export const getters = {
@@ -359,9 +360,13 @@ export const mutations = {
     state.nodes = nodeMap;
     state.nodeIds = nodeIds;
   },
-  setChurnConstants(state, { rotatePerBlockHeight, rotateRetryBlocks, desireValidatorSet }) {
+  setChurnConstants(state, payload) {
+    const {
+      rotatePerBlockHeight, rotateRetryBlocks, desireValidatorSet, constants,
+    } = payload;
     state.rotatePerBlockHeight = parseInt(rotatePerBlockHeight, 10);
     state.rotateRetryBlocks = parseInt(rotateRetryBlocks, 10);
     state.desireValidatorSet = parseInt(desireValidatorSet, 10);
+    state.constants = constants;
   },
 };
