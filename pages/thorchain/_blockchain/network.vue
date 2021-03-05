@@ -51,7 +51,7 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="display: inline-flex;">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="display: inline-flex;overflow: overlay;">
         <div class="section" style="flex: 1;">
           <div class="section__header" id="deterministic-rune">
             <h2 class="section__title">
@@ -64,14 +64,18 @@
               ></Icon>
             </a>
           </div>
-          <div class="section__body">
-            <DeterministicRunePieChart :chart-data="deterministicRuneData"/>
+          <div class="section__body" style="padding-top: 34px;">
+            <DeterministicRunePieChart
+              :chart-data="deterministicRuneData"
+              :deterministic-rune-price="deterministicRunePrice"
+              :speculative-multiplier="speculativeMultiplier"
+            />
           </div>
 
         </div>
       </div>
 
-      <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;">
+      <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
         <div class="section" style="flex: 1;">
           <div class="section__header" id="block-rewards-per-day">
             <h2 class="section__title">
@@ -97,7 +101,7 @@
     </div>
 
     <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-2-3 section--split-right" style="display: inline-flex;">
+      <div class="pure-u-1 pure-u-md-2-3 section--split-left" style="display: inline-flex;">
         <div class="section" style="flex: 1;">
           <div class="section__header" id="volumebypool_vs_total_volume">
             <h2 class="section__title">
@@ -192,6 +196,7 @@ export default {
     DeterministicRunePieChart,
     BlockRewardsPerDayColumnChart,
     ChurnInfo,
+    VolumeByPoolVsTotalVolume,
   },
   async fetch() {
     await frontendFetcher(this, this.$route.params.blockchain);
@@ -213,16 +218,37 @@ export default {
     window.removeEventListener('blur', this.pollDataDeactivate);
   },
   computed: {
+    deterministicRunePrice() {
+      // The deterministic Rune Price chart is a hisorical chart of the deterministic price. Formula: 
+      // Deterministic Price = 3 * non-RUNE assets pooled / circulating supply
+      const runeDivider = 10 ** 8;
+      const nonRuneDepthsPooled = this.$store.state.pools.poolsOverview.reduce((acc, next) => (
+        acc + (parseInt(next.runeDepth, 0) / runeDivider) // rune depth value is = to assetDepth value
+      ), 0);
+      const cirqSupply = this.$store.state.runeMarketData && this.$store.state.runeMarketData.circulatingSupply || 0;
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      let deterministicRunePrice = 0;
+      if (nonRuneDepthsPooled && cirqSupply && price) {
+        deterministicRunePrice = ((3 * nonRuneDepthsPooled) / cirqSupply) * price;
+      }
+      return deterministicRunePrice;
+    },
+    speculativeMultiplier() {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      const detPrice = this.deterministicRunePrice;
+      return price && detPrice ? (price / detPrice) : 0;
+    },
     deterministicRuneData() {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
       return [
         {
-          name: "Loren Ipsum",
-          y: 75,
+          name: "Actual price",
+          y: price,
           color: "#5529a9",
         },
         {
-          name: "Loren Ipsum",
-          y: 25,
+          name: "Deterministic price",
+          y: this.deterministicRunePrice,
           color: "#2d99fe",
         },
       ];

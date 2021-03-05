@@ -3,8 +3,8 @@
 </template>
 
 <script>
+import numeral from 'numeral';
 import AppHighchart from '../Common/AppHighchart.vue';
-
 export default {
   components: {
     AppHighchart,
@@ -14,9 +14,19 @@ export default {
       type: Array,
       default: () => [],
     },
+    deterministicRunePrice: {
+      type: Number,
+      default: () => 0,
+    },
+    speculativeMultiplier: {
+      type: Number,
+      default: () => 0,
+    },
   },
   computed: {
     chartOptions() {
+      const deterministicRunePrice = numeral(this.deterministicRunePrice).format('($0,0.00)')
+      const speculativeMultiplier = this.speculativeMultiplier.toFixed(2);
       return {
         chart: {
           type: 'pie',
@@ -28,14 +38,14 @@ export default {
           text: `
             <div style="text-align: center;">
                 <div style="margin-bottom: 12px; font-family: Montserrat; font-size: 24px; font-weight: 500; line-height: 32px;font-weight: 700;">
-                    $0.50
+                    ${deterministicRunePrice}
                 </div>
                 <div style="font-size: 13px; opacity: 0.75;font-weight: 600;margin-bottom: 20px;">
                     Deterministic Price
                 </div>
                 <hr style="opacity: 0.2"/>
                 <div style="margin-bottom: 12px; font-family: Montserrat; font-size: 24px; font-weight: 500; line-height: 32px;font-weight: 700;margin-top: 20px;">
-                    x9.25
+                    x ${speculativeMultiplier}
                 </div>
                 <div style="font-size: 13px; opacity: 0.75;font-weight: 500;">
                     Speculative Multiplier
@@ -66,7 +76,7 @@ export default {
                 </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text">
-                    ${this.point.y}
+                    ${numeral(this.point.y).format('($0,0.00)')}
                   </p>
                 </div>
               </div>
