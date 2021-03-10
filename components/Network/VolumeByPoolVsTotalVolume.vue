@@ -158,7 +158,15 @@ export default {
 </script>
 <style lang="scss" scoped>
 .blockrewardsperday-chart {
-    border-top: 1px solid #353C50;
-    padding: 15px 25px;
+  border-top: 1px solid #353C50;
+  padding: 15px 25px;
+  :first-child {
+    > .highcharts-container {
+      text-align: center;
+      align-items: center;
+      align-content: center;
+      margin: auto;
+    }
+  }
 }
 </style>

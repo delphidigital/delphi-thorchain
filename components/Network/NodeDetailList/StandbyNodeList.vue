@@ -45,6 +45,10 @@
               :nodes="standbyNodesByBond.belowMinBond"
               type="belowMinBond"
             />
+            <GeneralNodeRows
+              :nodes="standbyNodesByBond.withPreflightStatusIssue"
+              type="withPreflightStatusIssue"
+            />
             <tbody>
               <tr v-if="emptyList">
                 <td colspan="8" class="section__table__data--no-nodes">

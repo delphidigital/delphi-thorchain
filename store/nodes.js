@@ -259,6 +259,8 @@ export const getters = {
 
     const belowMinBondNodes = [];
     const otherNodes = [];
+    const withPreflightStatusIssue = [];
+
     const nodes = Object.values(state.nodes).filter(node => (
       node.status === 'Standby' || node.status === 'Ready'
     )).sort((a, b) => {
@@ -269,18 +271,22 @@ export const getters = {
       return 0;
     });
     nodes.forEach((node) => {
-      if (node.bond < state.minBond) {
-        belowMinBondNodes.push(node);
+      if (node['requested_to_leave']) {
         return;
       }
-
-      if (node['requested_to_leave']) {
+      if (node['preflight_status'] && node['preflight_status'].code !== 0) {
+        withPreflightStatusIssue.push(node);
+        return;
+      }
+      if (node.bond < state.minBond) {
+        belowMinBondNodes.push(node);
         return;
       }
 
       otherNodes.push(node);
     });
     return {
+      withPreflightStatusIssue,
       belowMinBond: belowMinBondNodes,
       toChurnIn: otherNodes.slice(0, toChurnIn),
       otherValidatorsByBond: otherNodes.slice(toChurnIn),

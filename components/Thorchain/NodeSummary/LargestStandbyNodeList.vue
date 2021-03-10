@@ -56,6 +56,23 @@
             <span class="churn-status churn-status--out">Bond too low</span>
           </td>
         </tr>
+        <tr
+          v-for="node in standbyNodesByBond.withPreflightStatusIssue"
+          :key="node['node_address']"
+          class="section__table__row section__table__row--will-churn"
+        >
+          <td class="section__table__data section__table__data--address">
+            <Address :address="node['node_address']" :max-chars="maxChars" />
+          </td>
+          <td class="section__table__data">
+            {{ Math.round(node.bond) }}
+          </td>
+          <td class="section__table__data">
+            <span class="churn-status churn-status--out">
+              {{JSON.stringify(node, null, 2)}}
+            </span>
+          </td>
+        </tr>
         <tr v-if="emptyList">
           <td colspan="3" class="section__table__data--no-nodes">
             No eligible standby nodes

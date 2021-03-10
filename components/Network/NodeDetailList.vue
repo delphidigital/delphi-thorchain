@@ -32,12 +32,15 @@ export default {
 
 .jailed {
   color: $color-red;
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .jailed-detail {
   color: $color-text-secondary;
   padding-top: 0.4rem;
-  font-size: 12px;
+  font-size: 9px;
 }
 
 .status-since-time {

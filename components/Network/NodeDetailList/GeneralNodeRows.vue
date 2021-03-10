@@ -25,6 +25,9 @@
         <span v-if="type === 'belowMinBond'" class="churn-status churn-status--out">
           Bond too low
         </span>
+        <span v-if="type === 'withPreflightStatusIssue'" class="churn-status churn-status--out">
+          {{node.preflight_status.reason}}
+        </span>
       </td>
       <td class="section__table__data section__table__data--bond">
         {{ numeral(Math.round(node.bond)).format('0,0') }}

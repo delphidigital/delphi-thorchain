@@ -507,15 +507,25 @@ $padding-section-table: 25px;
 
   .churn-status--in {
     color: $color-green;
-    font-size: 0.6rem;
     font-weight: bold;
     text-transform: uppercase;
+    max-width: 140px;
+    overflow: hidden;
+    display: block;
+    text-align: center;
+    font-size: 9px;
+    max-height: 30px;
   }
   .churn-status--out {
     color: $color-red;
-    font-size: 0.6rem;
     font-weight: bold;
     text-transform: uppercase;
+    max-width: 140px;
+    overflow: hidden;
+    display: block;
+    text-align: center;
+    font-size: 9px;
+    max-height: 30px;
   }
 }
 .section__table__data--longvalue {
