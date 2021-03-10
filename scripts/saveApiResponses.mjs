@@ -386,10 +386,11 @@ async function fetchDataJob(blockchain) {
     }
     console.log(`[${blockchain}]: Data fetch failed with: `, e);
     timeout = 100000;
+  } finally {
+    setTimeout(() => {
+      fetchDataJob(blockchain);
+    }, timeout);
   }
-  setTimeout(() => {
-    fetchDataJob(blockchain);
-  }, timeout);
 }
 
 fetchDataJob('testnet');

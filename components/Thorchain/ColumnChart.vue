@@ -46,6 +46,10 @@ export default {
     customPlotOptions: {
       type: Object,
       default: () => ({}),
+    },
+    legendOptions: {
+      type: Object,
+      default: () => ({}),
     }
   },
   computed: {
@@ -68,12 +72,21 @@ export default {
         },
         tooltip: {
           formatter() {
+            let tooltipName = '';
+            if (this.point.name && typeof this.point.name === 'string') {
+              tooltipName = `
+                <p class="app-tooltip__text" style="font-weight: bold; font-size: 12px;">
+                    ${this.point.name}
+                </p>
+              `;
+            }
             return `
               <div class="app-tooltip">
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text" style="font-weight: bold; font-size: 12px;">
                     ${formatLabel(this.point.y)}
                   </p>
+                  ${tooltipName}
                 </div>
               </div>
             `;
@@ -85,6 +98,7 @@ export default {
           backgroundColor: 'transparent',
           shadow: false,
           padding: 0,
+          ...this.customTooltipOptions,
         },
         plotOptions: {
           series: {
@@ -138,7 +152,6 @@ export default {
             zIndex:2
           }]
         },
-
         legend:{
           enabled:false,
           align: 'center',
@@ -147,7 +160,8 @@ export default {
           y: 10,
           itemStyle: {
             color: '#ffffff',
-          }
+          },
+          ...this.legendOptions
         },
         series: this.data,
       };
