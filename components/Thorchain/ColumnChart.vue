@@ -1,8 +1,10 @@
 <template>
   <div>
     <highchart
+      :ref="refName"
       :options="chartOptions"
       :redraw="true"
+      :reflow="true"
     />
   </div>
 </template>
@@ -18,8 +20,12 @@ if (typeof Highcharts === 'object') {
 
 export default {
   props: {
+    refName: {
+      type: String,
+      default: () => undefined,
+    },
     // NOTE(Fede): data prop should be a list of objects {date: Date, value: number}
-    data: {
+    chartData: {
       type: Array,
       default: () => [],
     },
@@ -50,7 +56,37 @@ export default {
     legendOptions: {
       type: Object,
       default: () => ({}),
-    }
+    },
+    customChartOptions: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  watch: {
+    // NOTE: Hack to fix a possible bug with highcharts, where for some column stacked bars
+    //       are not shown properly. This hack forces a full reflow redraw by hiding and showing a value.
+    // reference: https://github.com/highcharts/highcharts/issues/7516
+    //            https://www.highcharts.com/forum/viewtopic.php?t=39153
+    chartData: {
+      immediate: true, 
+      handler (val, _oldVal) {
+        if (
+          typeof this.refName === 'string'
+          && this.$refs[this.refName]?.chart
+          && this.$refs[this.refName]?.chart.series
+          && this.$refs[this.refName]?.chart.series.length
+        ) {
+          this.$refs[this.refName].chart.series[this.$refs[this.refName].chart.series.length-1].hide();
+          setTimeout(() => {
+            if (this.$refs[this.refName]?.chart) {
+              this.$refs[this.refName].chart.series[this.$refs[this.refName].chart.series.length-1].show();
+              this.$refs[this.refName].chart.reflow();
+              this.$refs[this.refName].chart.redraw();
+            }
+          }, 500); // wait for 400ms animation to end
+        }
+      }
+    },
   },
   computed: {
     chartOptions() {
@@ -62,6 +98,7 @@ export default {
           height: 330,
           margin: [5, 0, 75, 32],
           type: 'column',
+          ...this.customChartOptions,
         },
         title: false,
         labels: false,
@@ -163,7 +200,7 @@ export default {
           },
           ...this.legendOptions
         },
-        series: this.data,
+        series: this.chartData,
       };
     },
   },

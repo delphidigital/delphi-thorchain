@@ -1,33 +1,85 @@
 <template>
   <div>
     <ColumnChart
-      :data="chartData"
+      ref-name="vol_chart"
+      :chart-data="chartData"
       :format-label="formatLabel"
       :x-axis-options="xAxisOptions"
       :x-axis-categories="xAxisCategories"
       :custom-plot-options="customPlotOptions"
       :legend-options="customLegendOptions"
+      :custom-chart-options="customChartOptions"
       class="blockrewardsperday-chart"
     />
   </div>
 </template>
 
 <script>
-import { subDays, format } from "date-fns";
+import { format } from "date-fns";
 import numeral from "numeral";
 import ColumnChart from "../Thorchain/ColumnChart";
 import { periodsHistoryMap } from '../../store/pools';
 export default {
   components: { ColumnChart },
+  props: {
+    currentTimeOption: {
+      type: String,
+      default: '1W',
+    },
+  },
   data() {
-
-      const _this = this;
-      const price = _this.$store.state.runeMarketData && _this.$store.state.runeMarketData.priceUSD || 0;
-      const allPoolsSorted = Object.keys(_this.$store.state.pools.poolHistorySwaps).map((poolId, index) => {
-        const period = periodsHistoryMap['1W'];
+    return {
+      customChartOptions: {
+        marginBottom: 120,
+        height: 370,
+        reflow: true,
+        redraw: true,
+      },
+      customLegendOptions: {
+        enabled: true,
+        alignColumns: true
+      },
+      chartData: [],
+      xAxisCategories: [],
+      xAxisOptions: {
+        // type: 'datetime',
+      },
+      customPlotOptions: {
+        column: {
+          pointWidth: 26,
+          borderWidth: 0,
+          stacking: 'normal',
+          dataLabels: {
+            enabled: false
+          },
+        },
+      },
+    };
+  },
+  watch: {
+    currentTimeOption: {
+      // the callback will be called immediately after the start of the observation
+      immediate: true, 
+      handler (val, _oldVal) {
+        const {
+          chartData, allPoolsTimeKeys
+        } = this.getChartData(val);
+        this.chartData = chartData;
+        this.xAxisCategories = allPoolsTimeKeys;
+      }
+    }
+  },
+  methods: {
+    formatLabel(value) {
+      return numeral(value).format("$0,0.000a").toUpperCase();
+    },
+    getChartData(currentTimeOption) {
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      const allPoolsSorted = Object.keys(this.$store.state.pools.poolHistorySwaps).map((poolId, _index) => {
+        const period = periodsHistoryMap[currentTimeOption];
         let data = [];
         if (this.$store.state.pools.poolHistorySwaps[poolId][period]) {
-          data = this.$store.state.pools.poolHistorySwaps[poolId][period].intervals.map((iv, idx) => {
+          data = this.$store.state.pools.poolHistorySwaps[poolId][period].intervals.map((iv, _idx) => {
             return {
               totalVolume: parseInt(iv.totalVolume,10),
               startTime: iv.startTime
@@ -95,98 +147,12 @@ export default {
           y: (pd.totalVolume / 10**8) * price,
           x: dateIndex,
           name: pool.poolId,
-          color: colors[poolIdx]
+          color: colors[poolIdx],
         }))
         };
       });
-    return {
-      // allPoolsTimeKeys: tt.allPoolsTimeKeys,
-      // chartData: tt.chartData,
-      customLegendOptions: {
-        enabled: true,
-      },
-      // xAxisColumCategories: [
-      //   format(subDays(new Date(), 0), 'dd MMM yyyy'),
-      //   format(subDays(new Date(), 1), 'dd MMM yyyy'),
-      //   format(subDays(new Date(), 2), 'dd MMM yyyy'),
-      //   format(subDays(new Date(), 3), 'dd MMM yyyy'),
-      //   format(subDays(new Date(), 4), 'dd MMM yyyy'),
-      //   format(subDays(new Date(), 5), 'dd MMM yyyy'),
-      //   format(subDays(new Date(), 6), 'dd MMM yyyy'),
-      // ],
-      chartData,
-      xAxisCategories: allPoolsTimeKeys,
-      xAxisOptions: {
-        type: 'datetime',
-      },
-      currentTimeOption: '1W',
-      timeOptions: ['1W', '1M'],
-      customPlotOptions: {
-        column: {
-          pointWidth: 26,
-          borderWidth: 0,
-          stacking: 'normal',
-          dataLabels: {
-            enabled: false
-          },
-        },
-      },
-    };
-  },
-  computed: {
-    getVolumeByPoolVsTotalVolume() {
-      return [
-        {
-          data: [
-            { y: 2, x: 0, name: "BNB", color: "#f8c950" },
-            { y: 8, x: 1, name: "BNB", color: "#f8c950" },
-            { y: 9, x: 2, name: "BNB", color: "#f8c950" },
-            { y: 3, x: 3, name: "BNB", color: "#f8c950" },
-            { y: 5, x: 4, name: "BNB", color: "#f8c950" },
-            { y: 7, x: 5, name: "BNB", color: "#f8c950" },
-            { y: 3, x: 6, name: "BNB", color: "#f8c950" },
-          ]
-        },
-        {
-            data: [
-              { y: 5, x: 0, name: "ETH", color: "#5e2bbc" },
-              { y: 3, x: 1, name: "ETH", color: "#5e2bbc" },
-              { y: 4, x: 2, name: "ETH", color: "#5e2bbc" },
-              { y: 7, x: 3, name: "ETH", color: "#5e2bbc" },
-              { y: 4, x: 4, name: "ETH", color: "#5e2bbc" },
-              { y: 7, x: 5, name: "ETH", color: "#5e2bbc" },
-              { y: 4, x: 6, name: "ETH", color: "#5e2bbc" },
-            ]
-        },
-        {
-          data: [
-            { y: 1, x: 0, name: "BTC", color: "#2d99fe" },
-            { y: 12, x: 1, name: "BTC", color: "#2d99fe"  },
-            { y: 3, x: 2, name: "BTC", color: "#2d99fe"  },
-            { y: 7, x: 3, name: "BTC", color: "#2d99fe" },
-            { y: 5, x: 4, name: "BTC", color: "#2d99fe"  },
-            { y: 4, x: 5, name: "BTC", color: "#2d99fe"  },
-            { y: 7, x: 6, name: "BTC", color: "#2d99fe" },
-          ]
-        },
-        {
-          data: [
-            { y: 5, x: 0, name: "Other", color: "#3f4456" },
-            { y: 3, x: 1, name: "Other", color: "#3f4456" },
-            { y: 4, x: 2, name: "Other", color: "#3f4456" },
-            { y: 7, x: 3, name: "Other", color: "#3f4456" },
-            { y: 3, x: 4, name: "Other", color: "#3f4456" },
-            { y: 4, x: 5, name: "Other", color: "#3f4456" },
-            { y: 7, x: 6, name: "Other", color: "#3f4456" },
-          ]
-        },
-      ];
-    },
-  },
-  methods: {
-    formatLabel(value) {
-      return numeral(value).format("$0,0.000a").toUpperCase();
-    },
+      return { chartData, allPoolsTimeKeys };
+    }
   },
 };
 </script>

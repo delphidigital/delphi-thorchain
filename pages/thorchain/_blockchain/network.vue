@@ -107,11 +107,22 @@
             <h2 class="section__title">
               Volume by pool vs. Total volume
             </h2>
+            <div class="volume-by-pool-time-selector">
+              <button
+                v-for="option in timeOptions"
+                :key="option"
+                class="volume-by-pool-time-option"
+                :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
+                @click="togglePeriod(option)"
+              >
+                {{ option }}
+              </button>
+            </div>
             <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
               <Icon name="link" scale="0.7"></Icon>
             </a>
           </div>
-          <VolumeByPoolVsTotalVolume />
+          <VolumeByPoolVsTotalVolume :currentTimeOption="currentTimeOption" />
         </div>
       </div>
 
@@ -199,6 +210,12 @@ export default {
     BlockRewardsPerDayColumnChart,
     ChurnInfo,
     VolumeByPoolVsTotalVolume,
+  },
+  data() {
+    return {
+      currentTimeOption: '1W',
+      timeOptions: ['1W', '1M', '3M', '6M', '1Y'],
+    };
   },
   async fetch() {
     await frontendFetcher(this, this.$route.params.blockchain);
@@ -313,6 +330,11 @@ export default {
     }
   },
   methods: {
+    togglePeriod(period) {
+      if (this.currentTimeOption !== period) {
+        this.currentTimeOption = period;
+      }
+    },
     formatUsd(n) {
       return numeral(n).format('($0,0)').toUpperCase();
     },
@@ -387,6 +409,43 @@ export default {
     display: inline-flex;
     flex: 1;
   }
+}
+
+.volume-by-pool-time-selector {
+  display: flex;
+  height: 30px;
+  margin-left: 20px;
+  opacity: 0.6;
+  justify-content: space-between;
+  background-color: $color-bg-tint;
+  border-radius: 15px;
+  padding: 0 16px;
+    margin-right: 16px;
+}
+
+.volume-by-pool-time-option {
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+  padding-right: 8px;
+
+  &:last-child {
+    padding-right: 0;
+  }
+
+  &:hover, &:focus {
+    border: none;
+    outline: none;
+  }
+}
+
+.volume-by-pool-time-option--active {
+  color: #fff;
 }
 
 </style>

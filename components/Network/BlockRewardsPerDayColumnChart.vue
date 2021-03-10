@@ -1,9 +1,10 @@
 <template>
   <div style="max-width: 520px; margin: auto;">
     <ColumnChart
-      :data="getBlockRewardsPerDayData"
+      :chart-data="getBlockRewardsPerDayData"
       :format-label="formatLabel"
       :x-axis-categories="xAxisColumCategories"
+      :custom-chart-options="customChartOptions"
       class="blockrewardsperday-chart"
     />
   </div>
@@ -18,6 +19,10 @@ export default {
   components: { ColumnChart },
   data() {
     return {
+      customChartOptions: {
+        height: 330,
+        width: 470,
+      },
       xAxisColumCategories: [
         "Bond Reward",
         "Pool Reward",

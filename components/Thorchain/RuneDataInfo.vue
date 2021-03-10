@@ -184,7 +184,7 @@
       </div>
       <div v-if="selectedPool && plot == 'profit_loss'">
         <ColumnChart
-          :data="getProfitLossData"
+          :chart-data="getProfitLossData"
           :format-label="formatLabel"
           :x-axis-categories="xAxisProfitColumCategories"
           class="runedatainfo-chart"
@@ -192,7 +192,7 @@
       </div>
       <div v-if="selectedPool && plot == 'predict_future'">
         <ColumnChart
-          :data="getPredictFutureData"
+          :chart-data="getPredictFutureData"
           :format-label="formatLabel"
           :x-axis-categories="xAxisPredictColumCategories"
           class="runedatainfo-chart"
