@@ -25,8 +25,23 @@
         <span v-if="type === 'belowMinBond'" class="churn-status churn-status--out">
           Bond too low
         </span>
-        <span v-if="type === 'withPreflightStatusIssue'" class="churn-status churn-status--out">
-          {{node.preflight_status.reason}}
+        <span v-if="type === 'withPreflightStatusIssue'" class="churn-status churn-status--out preflight-issues-notif">
+          <Icon
+            name="exclamation-circle"
+            scale="1"
+          ></Icon>
+          <div class="app-tooltip">
+            <div class="app-tooltip__body">
+              <table class="app-tooltip__table">
+                <tbody>
+                  <tr>
+                    <td>{{node.preflight_status.reason}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </span>
       </td>
       <td class="section__table__data section__table__data--bond">
@@ -88,3 +103,27 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.preflight-issues-notif {
+  position: relative;
+  overflow: initial;
+  .app-tooltip {
+    position: absolute;
+    visibility: hidden;
+    display: none;
+    top: -80px;
+    width: 250px;
+    text-transform: capitalize;
+    font-size: 10px;
+    opacity: 0.9;
+    color: #ffdada;
+  }
+  &:hover {
+    .app-tooltip {
+      visibility: visible;
+      display: block;
+    } 
+  }
+}
+</style>
