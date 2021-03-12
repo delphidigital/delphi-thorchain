@@ -88,7 +88,9 @@
             </td>
             <td class="section__table__data pool-list-apy">
               <div>
-                <Percentage :value="pool.apy" />
+                <span :class="(sortBy == 'apy') ? 'column__highlight__colored' : ''">
+                  <Percentage :value="pool.averagePeriodAPY" />
+                </span>
               </div>
             </td>
             <td class="section__table__data">
@@ -104,7 +106,9 @@
 
             <td class="section__table__data">
               <div v-if="!isNaN(pool.volumeOverDepthRatio)">
+                <span :class="(sortBy == 'volumeOverDepthRatio') ? 'column__highlight__colored' : ''">
                 {{formatNumberDecimals(pool.volumeOverDepthRatio)}}
+                </span>
               </div>
               <div v-if="isNaN(pool.volumeOverDepthRatio)">
                 n/a
@@ -122,12 +126,12 @@
       <div v-if="selectedPools.length > 0" class="section__linearvolume__chart">
         <div class="section__chart-title">
           <h3 class="section__subtitle">
-            Volume of selected pools
+            {{ selectedPoolsChartTitle.title }}
           </h3>
         </div>
         <LineChart
           :data="selectedPoolsLinechartData"
-          :format-label="formatLabel"
+          :format-label="formatYValueTooltip"
           :y-axis-label-options="yAxisLabelOptions"
         />
       </div>
@@ -154,7 +158,7 @@ export default {
       currentTimeOption: '1W',
       searchinput: '',
       selectedPools: [],
-      sortBy: 'poolId',
+      sortBy: 'apy',
       sortDescending: false,
       fields: [
         {
@@ -224,11 +228,38 @@ export default {
       });
       return filteredPools;
     },
-    selectedPoolsLinechartData() {
+    selectedPoolsChartTitle() {
+      if (this.sortBy === 'apy') {
+        return { title: 'APY of selected pools' };
+      } else if (this.sortBy === 'depthAverageUsd') {
+        return { title: 'Depth of selected pools' };
+      } else if (this.sortBy === 'volumeOverDepthRatio') {
+        return { title: 'V/D of selected pools' };
+      }
+      return { title: 'Volume of selected pools' };
+    },
+     selectedPoolsLinechartData() {
       const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
       const period = periodsHistoryMap[this.currentTimeOption];
       const data = this.selectedPools.map((sp, colorIndex) => {
-        if (this.sortBy === 'depthAverageUsd') {
+        if (this.sortBy === 'apy') {
+          // _this2.$store.state.pools.technicalAnalysis["BTC.BTC"].period1W.intervals["1614902400"].periodAPY
+          const poolTA = this.$store.state.pools.technicalAnalysis;
+          const periodTA = poolTA[sp][period];
+          const ret = {
+            name: sp,
+            data: Object.keys(periodTA.intervals)
+              .sort((a,b) => (parseInt(a) - parseInt(b)))
+              .map(intervalKey => {
+                return {
+                  x: (parseInt(periodTA.intervals[intervalKey].startTime, 10) * 1000),
+                  y: periodTA.intervals[intervalKey].periodAPY,
+                };
+              }),
+            color: colorsList[colorIndex],
+          };
+          return ret;
+        } else if (this.sortBy === 'depthAverageUsd') {
           const poolTA = this.$store.state.pools.poolHistoryDepths
           const periodDepths = poolTA[sp][period];
           return {
@@ -241,6 +272,25 @@ export default {
             }),
             color: colorsList[colorIndex],
           };
+        } else if (this.sortBy === 'volumeOverDepthRatio') {
+          const poolHD = this.$store.state.pools.poolHistoryDepths
+          const poolTA = this.$store.state.pools.technicalAnalysis
+          const periodTA = poolTA[sp][period];
+          const periodDepths = poolHD[sp][period];
+          const ret = {
+            name: sp,
+            data: periodDepths.intervals.map(pd => {
+              const totalVolume = periodTA.intervalSwaps[pd.startTime]?.totalVolumeUsd || 0;
+              const assetDepth = (parseInt(pd.assetDepth, 10) / runeDivider) * pd.assetPriceUSD;
+              const y = assetDepth ? (totalVolume/assetDepth) : 0;
+              return {
+                x: (parseInt(pd.startTime, 10) * 1000),
+                y,
+              }
+            }),
+            color: colorsList[colorIndex],
+          };
+          return ret;
         } else { // if (this.chartedValue === 'volumeAverageUsd') {
           const poolTA = this.$store.state.pools.technicalAnalysis
           const periodTA = poolTA[sp][period];
@@ -260,6 +310,9 @@ export default {
     },
   },
   methods: {
+    displayPoolAPY(value) {
+      return `${((value || 0.0)*100).toFixed(2)}%`;
+    },
     displayPoolName(poolId) {
       if (poolId.length > 16) {
         return `${poolId.slice(0, 16)}...`;
@@ -268,6 +321,14 @@ export default {
     },
     focusSearchInput() {
       this.$refs.searchinputref.focus()
+    },
+    formatYValueTooltip(value) {
+      if (this.sortBy === 'apy') {
+        return this.displayPoolAPY(value);
+      } else if (this.sortBy === 'volumeOverDepthRatio') {
+        return `${(value || 0.0).toFixed(2)}`;
+      }
+      return this.formatLabel(value);
     },
     formatLabel(value) {
       return numeral(value).format('($0,00.0a)').toUpperCase();

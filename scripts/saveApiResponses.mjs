@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { format, subDays, startOfDay } from 'date-fns';
+import { format, subDays, startOfDay, differenceInDays } from 'date-fns';
 import { thorchainDataFetcher } from '../lib/thorchainUrls.mjs';
 import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
@@ -114,7 +114,10 @@ function technicalAnalysis(
         const assetPriceUsd = parseFloat(interval.assetPriceUSD);
         const assetPrice = parseFloat(interval.assetPrice);
         const runePriceUsd = isNaN(assetPriceUsd) || isNaN(assetPrice) ? 0 : assetPriceUsd/assetPrice;
-        const runeAssetRatio = runePriceUsd ? (assetPriceUsd / runePriceUsd) : 0;
+        const runeAssetRatio = interval.assetPriceUsd
+          ? (interval.runePriceUsd) / (interval.assetPriceUsd)
+          : 0
+
         let priceSwing = 0.0;
         let impermanentLoss = 0.0;
         if (idx === 0) {
@@ -123,7 +126,7 @@ function technicalAnalysis(
           // use runeAssetRatio from first interval value for price swing
           const firstIntervalRuneAssetRatio = intervalsCalculations[firstIntervalTimestamp].runeAssetRatio
           priceSwing = firstIntervalRuneAssetRatio
-            ? (runeAssetRatio / firstIntervalRuneAssetRatio)
+            ? ((runeAssetRatio / firstIntervalRuneAssetRatio)-1)
             : 0;
           impermanentLoss = (
             (2 * Math.sqrt(1+priceSwing) / (2+priceSwing)) - 1
@@ -141,21 +144,32 @@ function technicalAnalysis(
             const poolPeriodEarnings = intervalEarnings.pools.find(pe => (pe.pool === poolId));
             if (poolPeriodEarnings) {
               periodRuneEarnings = runeE8toValue(poolPeriodEarnings.earnings);
-              periodUsdEarnings = periodRuneEarnings * runePriceUsd;
+              const intervalRuneDepth = runeE8toValue(interval.runeDepth);
+              // periodUsdEarnings = periodRuneEarnings * runePriceUsd;
+              // periodUsdEarnings = periodRuneEarnings;
               // https://www.investopedia.com/personal-finance/apr-apy-bank-hopes-cant-tell-difference/
               // Periodic Rate = (earnings - IL) / total Depth
-              periodicRate = interval.runeDepth
-                ? ((periodRuneEarnings - impermanentLoss) / (interval.runeDepth*2))
+              
+              periodicRate = intervalRuneDepth
+                // TODO: how to remove impermanent loss??!!
+                // ? (((periodRuneEarnings + (impermanentLoss))/(intervalRuneDepth*2)))
+                ? ((periodRuneEarnings/(intervalRuneDepth*2)))
                 : 0;
               // APY = ((1 + Periodic Rate)^Number of periods) – 1
               // NOTE: this numberOfPeriods only works for daily intervals
               //       need to fix this for 24h period in hoours and
               //       for 6M and 1Y period in weeks
-              let numberOfPeriods = 365 / intervals.length;
+              let numberOfPeriods = 365;
               if (periodKey === 'period24H') {
-                numberOfPeriods = 365*24;
+                numberOfPeriods = 365 * 24;
+              } else if (periodKey === 'allTimePeriod') {
+                numberOfPeriods = 365 / differenceInDays(new Date(parseInt(interval.startTime,10)*1000), new Date(parseInt(interval.endTime,10)*1000))
               }
-              periodAPY = ((1+periodicRate)**numberOfPeriods)-1;
+              // "APY= (1 + r )n – 1
+              //   r = return over the specified period
+              //   n = 365/days over which r is measured
+              // https://learn.robinhood.com/articles/5CLrCuXmQXIKWMye3uZcEM/what-is-annual-percentage-yield-apy/
+              periodAPY = ((1+(periodicRate/numberOfPeriods))**numberOfPeriods)-1;
             }
           }
         }
@@ -168,7 +182,7 @@ function technicalAnalysis(
           priceSwing,
           impermanentLoss,
           periodRuneEarnings,
-          periodUsdEarnings,
+          // periodUsdEarnings,
           periodicRate,
           periodAPY,
         };
@@ -176,6 +190,7 @@ function technicalAnalysis(
       let averageRunePriceUsd = 0;
       let averageAssetPriceUsd = 0;
       let averageAssetPrice = 0;
+      let averagePeriodAPY = 0;
       const intervalsCalculationsStartTimes = Object.keys(intervalsCalculations)
         .map(it => parseInt(it, 10))
         .sort();
@@ -183,13 +198,16 @@ function technicalAnalysis(
         averageRunePriceUsd += intervalsCalculations[startTimeKey].runePriceUsd;
         averageAssetPriceUsd += intervalsCalculations[startTimeKey].assetPriceUsd;
         averageAssetPrice += intervalsCalculations[startTimeKey].assetPrice;
+        averagePeriodAPY += intervalsCalculations[startTimeKey].periodAPY;
       });
       averageRunePriceUsd = averageRunePriceUsd / intervalsCalculationsStartTimes.length;
       averageAssetPriceUsd = averageAssetPriceUsd / intervalsCalculationsStartTimes.length;
       averageAssetPrice = averageAssetPrice / intervalsCalculationsStartTimes.length;
+      averagePeriodAPY = averagePeriodAPY / intervalsCalculationsStartTimes.length;
       technicalAnalysisCache[poolId][periodKey].averageRunePriceUsd = averageRunePriceUsd;
       technicalAnalysisCache[poolId][periodKey].averageAssetPriceUsd = averageAssetPriceUsd;
       technicalAnalysisCache[poolId][periodKey].averageAssetPrice = averageAssetPrice;
+      technicalAnalysisCache[poolId][periodKey].averagePeriodAPY = averagePeriodAPY;
       let poolPeriodTotalEarningsRune = 0.0;
       let poolPeriodAverageEarningsRune = 0.0;
       if (allPoolsHistoryEarnings[periodKey] && allPoolsHistoryEarnings[periodKey].meta?.pools) {
