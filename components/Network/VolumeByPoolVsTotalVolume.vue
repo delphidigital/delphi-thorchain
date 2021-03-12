@@ -91,8 +91,8 @@ export default {
           data,
         };
       }).sort((a, b) => (
-        parseInt(b.data[b.data.length-2]?.totalVolume || '0', 10) -
-        parseInt(a.data[b.data.length-2]?.totalVolume || '0', 10)
+        parseInt(b.data[b.data.length-1]?.totalVolume || '0', 10) -
+        parseInt(a.data[b.data.length-1]?.totalVolume || '0', 10)
       ));
       // calculate other pools payload
       const top3PoolsSortedByVolume = allPoolsSorted.slice(0, 3);
