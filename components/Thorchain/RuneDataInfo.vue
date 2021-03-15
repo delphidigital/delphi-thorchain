@@ -20,6 +20,12 @@
           scale="0.7"
         ></Icon>
       </a>
+      <a class="tweet__link" :href="tweetRunePredictionAnalysis" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="section__body">
       <div class="section__headinputs">
@@ -216,7 +222,11 @@ import ColumnChart from "./ColumnChart.vue";
 export default {
   components: { DatePicker, LineChart, ColumnChart },
   data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const poolPredictionAnalysisDeepLink = `${baseUrl}${tabBasePath}#pool-prediction-analysis`;
     return {
+      tweetRunePredictionAnalysis: `http://twitter.com/intent/tweet?text=${encodeURIComponent('RUNE prediction analysis')}&url=${encodeURIComponent(poolPredictionAnalysisDeepLink)}`,
       amountInvested: "100000.00",
       selectedPool: null,
       selectedRoiAvg: null,

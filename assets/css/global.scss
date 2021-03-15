@@ -75,7 +75,7 @@ $sidebar-margin-left: 100px !default;
 .customdatepkr-datepicker {
     width: 100%;
 }
-.deeplink-selector {
+.deeplink-selector, .tweet__link {
     color: white;
     height: 30px;
     background-color: $color-bg-tint;
@@ -87,5 +87,9 @@ $sidebar-margin-left: 100px !default;
     align-items: center; 
     &:active {
       color: white;
+    }
+    margin-right: 8px;
+    &:last-child {
+        margin-right: 0;
     }
 }

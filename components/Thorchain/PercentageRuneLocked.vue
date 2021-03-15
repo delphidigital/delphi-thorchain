@@ -10,6 +10,12 @@
           scale="0.7"
         ></Icon>
       </a>
+      <a class="tweet__link" :href="tweetPercentageRUNElocked" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="pure-g section__body section__body--pie-chart">
       <div class="pure-u-lg-1-2 pure-u-1">
@@ -35,6 +41,14 @@
 
 <script>
 export default {
+  data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const percentageRuneLockedDeepLink = `${baseUrl}${tabBasePath}#percentage-rune-locked`;
+    return {
+      tweetPercentageRUNElocked: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Percentage RUNE locked')}&url=${encodeURIComponent(percentageRuneLockedDeepLink)}`,
+    }
+  },
   computed: {
     runeLockedData() {
       const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];

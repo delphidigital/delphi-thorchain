@@ -63,6 +63,12 @@
                 scale="0.7"
               ></Icon>
             </a>
+            <a class="tweet__link" :href="tweetDeterministicRune" target="_blank">
+              <Icon
+                name="brands/twitter"
+                scale="0.7"
+              ></Icon>
+            </a>
           </div>
           <div class="section__body" style="padding-top: 34px;">
             <DeterministicRunePieChart
@@ -84,6 +90,12 @@
             <a class="deeplink-selector" href="#block-rewards-per-day">
               <Icon
                 name="link"
+                scale="0.7"
+              ></Icon>
+            </a>
+            <a class="tweet__link" :href="tweetBlockRewardsPerDay" target="_blank">
+              <Icon
+                name="brands/twitter"
                 scale="0.7"
               ></Icon>
             </a>
@@ -121,6 +133,12 @@
             <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
               <Icon name="link" scale="0.7"></Icon>
             </a>
+            <a class="tweet__link" :href="tweetVolumeByPoolVsTotalVolume" target="_blank">
+              <Icon
+                name="brands/twitter"
+                scale="0.7"
+              ></Icon>
+            </a>
           </div>
           <VolumeByPoolVsTotalVolume :currentTimeOption="currentTimeOption" />
         </div>
@@ -132,9 +150,9 @@
             <h2 class="section__title">
               Activity levels
             </h2>
-            <a class="deeplink-selector" href="#activity_levels">
+            <!-- <a class="deeplink-selector" href="#activity_levels">
               <Icon name="link" scale="0.7"></Icon>
-            </a>
+            </a> -->
           </div>
           <div class="section__body section__body--list">
             <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(swapVolume) }}</div>
@@ -212,9 +230,17 @@ export default {
     VolumeByPoolVsTotalVolume,
   },
   data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet/network'; // TODO: include mainnet too
+    const rewardsPerDayDeepLink = `${baseUrl}${tabBasePath}#block-rewards-per-day`;
+    const deterministicRuneDeepLink = `${baseUrl}${tabBasePath}#deterministic-rune`;
+    const volumeByPoolVsTotalDeepLink = `${baseUrl}${tabBasePath}#volumebypool_vs_total_volume`;
     return {
       currentTimeOption: '1W',
       timeOptions: ['1W', '1M', '3M', '6M', '1Y'],
+      tweetBlockRewardsPerDay: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Block Rewards Per Day')}&url=${encodeURIComponent(rewardsPerDayDeepLink)}`,
+      tweetDeterministicRune: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Deterministic RUNE')}&url=${encodeURIComponent(deterministicRuneDeepLink)}`,
+      tweetVolumeByPoolVsTotalVolume: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Volume by pool vs. Total volume')}&url=${encodeURIComponent(volumeByPoolVsTotalDeepLink)}`,
     };
   },
   async fetch() {

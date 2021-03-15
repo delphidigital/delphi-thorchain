@@ -23,6 +23,12 @@
           scale="0.7"
         ></Icon>
       </a>
+      <a class="tweet__link" :href="tweetTopPerformers" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
 
     <div class="section__body top-performers-section">
@@ -88,7 +94,11 @@ export default {
     RuneUSD,
   },
   data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const topPerformersDeepLink = `${baseUrl}${tabBasePath}#top-performers`;
     return {
+      tweetTopPerformers: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Top performers')}&url=${encodeURIComponent(topPerformersDeepLink)}`,
       timeOptions: ['1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
       currentTimeOption: '1W',
       sortBy: 'totalEarningsRune',

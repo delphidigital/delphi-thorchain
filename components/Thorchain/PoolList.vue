@@ -36,6 +36,12 @@
           scale="0.7"
         ></Icon>
       </a>
+      <a class="tweet__link" :href="tweetPoolList" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
 
     <div class="section__body pool-list-section">
@@ -152,7 +158,11 @@ export default {
     LineChart,
   },
   data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const poolListDeepLink = `${baseUrl}${tabBasePath}#pools-list`;
     return {
+      tweetPoolList: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Pool list')}&url=${encodeURIComponent(poolListDeepLink)}`,
       dummyRealRewards: Math.random(),
       timeOptions: ['24H', '1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
       currentTimeOption: '1W',

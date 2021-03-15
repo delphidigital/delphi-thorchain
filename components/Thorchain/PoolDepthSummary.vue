@@ -21,6 +21,12 @@
           scale="0.7"
         ></Icon>
       </a>
+      <a class="tweet__link" :href="tweetPoolDepthSummary" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="pure-g section__body section__body--pie-chart">
       <div class="pure-u-lg-1-2 pure-u-1">
@@ -89,7 +95,11 @@ export default {
     AreaChart,
   },
   data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const poolDepthAndVolumeLink = `${baseUrl}${tabBasePath}#pool-depth-volume`;
     return {
+      tweetPoolDepthSummary: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Pool depth and volume')}&url=${encodeURIComponent(poolDepthAndVolumeLink)}`,
       timeOptions: ['1M', '3M', '1Y'],
       currentTimeOption: '1M',
       yAxisLabelOptions: {
