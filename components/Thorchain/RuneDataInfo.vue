@@ -68,7 +68,7 @@
                 :key="item"
                 :value="item"
               >
-                {{ item }}
+                {{ displayPoolName(item) }}
               </option>
             </select>
           </div>
@@ -218,6 +218,7 @@ import DatePicker from "vue2-datepicker";
 import { calculatePLBreakdown, getPastSimulation, calculatePrediction } from '../../lib/runeDataInfoCalculateUserData.mjs';
 import LineChart from "./LineChart.vue";
 import ColumnChart from "./ColumnChart.vue";
+import { poolNameWithoutAddr } from '../../lib/utils';
 
 export default {
   components: { DatePicker, LineChart, ColumnChart },
@@ -231,7 +232,7 @@ export default {
       selectedPool: null,
       selectedRoiAvg: null,
       runeTargetPrice: this.$store.state.pools.pools.length
-        ? (this.$store.state.pools.pools[0].poolStats.period1H.assetPriceUSD / this.$store.state.pools.pools[0].poolStats.period1H.assetPrice)
+        ? (this.$store.state.pools.pools[0].poolStats.period1H.assetPriceUSD / this.$store.state.pools.pools[0].poolStats.period1H.assetPrice).toFixed(2)
         : '',
       assetTargetPrice: '',
       dateInvested: format(startOfMonth(new Date()), "yyyy-MM-dd"),
@@ -304,11 +305,16 @@ export default {
     },
   },
   methods: {
+    displayPoolName(name) {
+      return name ? poolNameWithoutAddr(name) : name;
+    },
     onChangePool(event) {
       if (event.target.value) {
         const pool = this.$store.state.pools.pools.find(p => p.poolId === event.target.value);
         if (pool) {
-          this.assetTargetPrice = pool.poolStats.period1H.assetPriceUSD;
+          this.assetTargetPrice = pool.poolStats.period1H.assetPriceUSD
+            ? parseFloat(pool.poolStats.period1H.assetPriceUSD).toFixed(2)
+            : pool.poolStats.period1H.assetPriceUSD;
         }
       }
     },
@@ -523,12 +529,12 @@ export default {
     background-color: transparent;
     font-family: Montserrat, sans-serif;
     font-size: 14px;
-    font-weight: 500;
-    color: rgb(190, 193, 226);
-    caret-color: rgb(190, 193, 226);
     line-height: 20px;
     height: 38px;
     width: 100%;
+    color: white;
+    caret-color: white;
+    font-weight: 600;
   }
   input:focus,
   input:hover {
@@ -591,12 +597,12 @@ export default {
   border: 0;
   border-radius: 16px;
   -webkit-appearance: none;
-  color: rgba(255, 255, 255, 0.8);
   text-shadow: 0 1px black;
   font-family: Montserrat, sans-serif;
   font-size: 14px;
-  font-weight: 500;
   background: transparent;
+  color: white;
+  font-weight: 600;
 }
 .dropdown-select:focus,
 .dropdown-select:hover {

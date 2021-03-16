@@ -77,7 +77,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="pool in pools"
+            v-for="pool in poolsSelected"
             :key="pool.poolId"
             :class="selectedPools.indexOf(pool.poolId) === -1 ? 'section__table__row' : `section__table__row selectedpool__color${selectedPools.indexOf(pool.poolId)}`"
           >
@@ -94,30 +94,129 @@
             </td>
             <td class="section__table__data pool-list-apy">
               <div>
-                <span :class="(sortBy == 'apy') ? 'column__highlight__colored' : ''">
+                <span
+                  :class="(sortBy == 'apy') ? 'column__highlight__colored' : ''"
+                  @click="changeColumn('apy')"
+                >
                   <Percentage :value="pool.averagePeriodAPY" />
                 </span>
               </div>
             </td>
             <td class="section__table__data">
-              <span :class="(sortBy == 'poolId' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''">
+              <span
+                :class="(sortBy == 'poolId' || sortBy == 'correllation' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('volumeAverageUsd')"
+              >
                 {{ formatLabel(pool.volumeAverageUsd) }}
               </span>
             </td>
             <td class="section__table__data">
-              <span :class="(sortBy == 'depthAverageUsd') ? 'column__highlight__colored' : ''">
-                {{ formatLabel(pool.depthAverageUsd) }}
+              <span
+                :class="(sortBy == 'depthAverageUsd') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('depthAverageUsd')"
+              >
+                {{ formatLabelDepth(pool.depthAverageUsd) }}
               </span>
             </td>
 
             <td class="section__table__data">
               <div v-if="!isNaN(pool.volumeOverDepthRatio)">
-                <span :class="(sortBy == 'volumeOverDepthRatio') ? 'column__highlight__colored' : ''">
+                <span
+                  :class="(sortBy == 'volumeOverDepthRatio') ? 'column__highlight__colored' : ''"
+                  @click="changeColumn('volumeOverDepthRatio')"
+                >
                 {{formatNumberDecimals(pool.volumeOverDepthRatio)}}
                 </span>
               </div>
               <div v-if="isNaN(pool.volumeOverDepthRatio)">
-                n/a
+                <span@click="changeColumn('volumeOverDepthRatio')">
+                  n/a
+                </span>
+              </div>
+            </td>
+
+            <td class="section__table__data">
+              <div>
+                <Percentage :value="pool.correllation" />
+              </div>
+            </td>
+          </tr>
+
+
+          <tr v-if="selectedPools.length > 0">
+            <td colspan="6">
+              <div class="section__linearvolume__chart">
+                <div class="section__chart-title">
+                  <h3 class="section__subtitle">
+                    {{ selectedPoolsChartTitle.title }}
+                  </h3>
+                </div>
+                <LineChart
+                  :data="selectedPoolsLinechartData"
+                  :format-label="formatYValueTooltip"
+                  :y-axis-label-options="yAxisLabelOptions"
+                />
+              </div>
+            </td>
+          </tr>
+
+
+          <tr
+            v-for="pool in poolsNotSelected"
+            :key="pool.poolId"
+            :class="selectedPools.indexOf(pool.poolId) === -1 ? 'section__table__row' : `section__table__row selectedpool__color${selectedPools.indexOf(pool.poolId)}`"
+          >
+            <td class="section__table__data section__table__data--highlight pool-list-pool">
+              <label class="container control control-checkbox">
+                {{ displayPoolName(pool.poolId) }}
+                <input type="checkbox"
+                  v-model="selectedPools"
+                  :value="pool.poolId"
+                  :disabled="selectedPools.length > 4 && selectedPools.indexOf(pool.poolId) === -1"
+                >
+                <div class="control_indicator"></div>
+              </label>
+            </td>
+            <td class="section__table__data pool-list-apy">
+              <div>
+                <span
+                  :class="(sortBy == 'apy') ? 'column__highlight__colored' : ''"
+                  @click="changeColumn('apy')"
+                >
+                  <Percentage :value="pool.averagePeriodAPY" />
+                </span>
+              </div>
+            </td>
+            <td class="section__table__data">
+              <span
+                :class="(sortBy == 'poolId' || sortBy == 'correllation' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('volumeAverageUsd')"
+              >
+                {{ formatLabel(pool.volumeAverageUsd) }}
+              </span>
+            </td>
+            <td class="section__table__data">
+              <span
+                :class="(sortBy == 'depthAverageUsd') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('depthAverageUsd')"
+              >
+                {{ formatLabelDepth(pool.depthAverageUsd) }}
+              </span>
+            </td>
+
+            <td class="section__table__data">
+              <div v-if="!isNaN(pool.volumeOverDepthRatio)">
+                <span
+                  :class="(sortBy == 'volumeOverDepthRatio') ? 'column__highlight__colored' : ''"
+                  @click="changeColumn('volumeOverDepthRatio')"
+                >
+                {{formatNumberDecimals(pool.volumeOverDepthRatio)}}
+                </span>
+              </div>
+              <div v-if="isNaN(pool.volumeOverDepthRatio)">
+                <span@click="changeColumn('volumeOverDepthRatio')">
+                  n/a
+                </span>
               </div>
             </td>
 
@@ -129,18 +228,6 @@
           </tr>
         </tbody>
       </table>
-      <div v-if="selectedPools.length > 0" class="section__linearvolume__chart">
-        <div class="section__chart-title">
-          <h3 class="section__subtitle">
-            {{ selectedPoolsChartTitle.title }}
-          </h3>
-        </div>
-        <LineChart
-          :data="selectedPoolsLinechartData"
-          :format-label="formatYValueTooltip"
-          :y-axis-label-options="yAxisLabelOptions"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -151,7 +238,7 @@ import sortBy from 'sort-by';
 import Percentage from '../Common/Percentage.vue';
 import LineChart from './LineChart.vue';
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
-
+import { poolNameWithoutAddr } from '../../lib/utils';
 export default {
   components: {
     Percentage,
@@ -238,6 +325,12 @@ export default {
       });
       return filteredPools;
     },
+    poolsSelected() {
+      return this.pools.filter(p => this.selectedPools.includes(p.poolId));
+    },
+    poolsNotSelected() {
+      return this.pools.filter(p => !this.selectedPools.includes(p.poolId));
+    },
     selectedPoolsChartTitle() {
       if (this.sortBy === 'apy') {
         return { title: 'APY of selected pools' };
@@ -252,12 +345,13 @@ export default {
       const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
       const period = periodsHistoryMap[this.currentTimeOption];
       const data = this.selectedPools.map((sp, colorIndex) => {
+        const pname = this.displayPoolName(sp);
         if (this.sortBy === 'apy') {
           // _this2.$store.state.pools.technicalAnalysis["BTC.BTC"].period1W.intervals["1614902400"].periodAPY
           const poolTA = this.$store.state.pools.technicalAnalysis;
           const periodTA = poolTA[sp][period];
           const ret = {
-            name: sp,
+            name: pname,
             data: Object.keys(periodTA.intervals)
               .sort((a,b) => (parseInt(a) - parseInt(b)))
               .map(intervalKey => {
@@ -273,7 +367,7 @@ export default {
           const poolTA = this.$store.state.pools.poolHistoryDepths
           const periodDepths = poolTA[sp][period];
           return {
-            name: sp,
+            name: pname,
             data: periodDepths.intervals.map(pd => {
               return {
                 x: (parseInt(pd.startTime, 10) * 1000),
@@ -288,7 +382,7 @@ export default {
           const periodTA = poolTA[sp][period];
           const periodDepths = poolHD[sp][period];
           const ret = {
-            name: sp,
+            name: pname,
             data: periodDepths.intervals.map(pd => {
               const totalVolume = periodTA.intervalSwaps[pd.startTime]?.totalVolumeUsd || 0;
               const assetDepth = (parseInt(pd.assetDepth, 10) / runeDivider) * pd.assetPriceUSD;
@@ -305,7 +399,7 @@ export default {
           const poolTA = this.$store.state.pools.technicalAnalysis
           const periodTA = poolTA[sp][period];
           return {
-            name: sp,
+            name: pname,
             data: Object.keys(periodTA.intervalSwaps).map(timestamp => {
               return {
                 x: (parseInt(periodTA.intervalSwaps[timestamp].startTime)*1000),
@@ -324,10 +418,7 @@ export default {
       return `${((value || 0.0)*100).toFixed(2)}%`;
     },
     displayPoolName(poolId) {
-      if (poolId.length > 16) {
-        return `${poolId.slice(0, 16)}...`;
-      }
-      return poolId;
+      return poolId ? poolNameWithoutAddr(poolId) : poolId;
     },
     focusSearchInput() {
       this.$refs.searchinputref.focus()
@@ -340,8 +431,12 @@ export default {
       }
       return this.formatLabel(value);
     },
+    formatLabelDepth(value) {
+      const thousandsConvert = value / 1000;
+      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+    },
     formatLabel(value) {
-      return numeral(value).format('($0,00.0a)').toUpperCase();
+      return numeral(value).format('($0,00.00a)').toUpperCase();
     },
     formatNumberDecimals(value){
       return value.toFixed(2);
@@ -349,6 +444,11 @@ export default {
     togglePeriod(period) {
       if (this.currentTimeOption !== period) {
         this.currentTimeOption = period;
+      }
+    },
+    changeColumn(fieldName) {
+      if (fieldName !== this.sortBy) {
+        this.sortBy = fieldName;
       }
     },
     toggleSort(fieldName) {

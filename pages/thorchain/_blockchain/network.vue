@@ -276,9 +276,8 @@ export default {
       return parseInt(this.$store.state.networkHealth.stats.runeDepth || '0', 10) / runeDivider * price;
     },
     liquidityWithdraw() {
-      // TODO: FIX THIS
-      // withdrawVolume should return a value that requires runeDivider but the api has a bug
-      return parseInt(this.$store.state.networkHealth?.stats?.withdrawVolume || '0', 10);
+      const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      return parseInt(this.$store.state.networkHealth?.stats?.withdrawVolume || '0', 10) / runeDivider * price;
     },
     addLiquidityVolume() {
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;

@@ -72,7 +72,7 @@
             </td>
 
             <td class="section__table__data">
-              {{ formatLabel(pool.totalDepthUsd) }}
+              {{ formatLabelDepth(pool.totalDepthUsd) }}
             </td>
           </tr>
         </tbody>
@@ -87,6 +87,7 @@ import sortBy from 'sort-by';
 import Percentage from '../Common/Percentage.vue';
 import RuneUSD from '../Common/RuneUSD.vue';
 import { periodsHistoryMap } from '../../store/pools';
+import { poolNameWithoutAddr } from '../../lib/utils';
 
 export default {
   components: {
@@ -147,13 +148,11 @@ export default {
   },
   methods: {
     displayPoolName(poolId) {
-      if (poolId.length > 16) {
-        return `${poolId.slice(0, 16)}...`;
-      }
-      return poolId;
+      return poolId ? poolNameWithoutAddr(poolId) : poolId;
     },
-    formatLabel(value) {
-      return numeral(value).format('($0,00.0a)').toUpperCase();
+    formatLabelDepth(value) {
+      const thousandsConvert = value / 1000;
+      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
     },
     formatNumberDecimals(value){
       return value.toFixed(2);

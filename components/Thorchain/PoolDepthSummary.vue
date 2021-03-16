@@ -79,6 +79,7 @@ import PoolDepthVolumePieChart from './PoolDepthVolumePieChart.vue';
 import PoolDepthVolumeTable from './PoolDepthVolumeTable.vue';
 import AreaChart from './AreaChart.vue';
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
+import { poolNameWithoutAddr } from '../../lib/utils';
 
 const colors = [
   '#4346D3',
@@ -121,7 +122,7 @@ export default {
         const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
         return {
           ...poolPeriodTA,
-          poolId,
+          poolId: poolNameWithoutAddr(poolId),
           color: colors[index % (colors.length)],
         };
       }).sort((a, b) => b.totalDepthUsd - a.totalDepthUsd);

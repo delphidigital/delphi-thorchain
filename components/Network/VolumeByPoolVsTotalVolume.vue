@@ -19,6 +19,8 @@ import { format } from "date-fns";
 import numeral from "numeral";
 import ColumnChart from "../Thorchain/ColumnChart";
 import { periodsHistoryMap } from '../../store/pools';
+import { poolNameWithoutAddr } from '../../lib/utils';
+
 export default {
   components: { ColumnChart },
   props: {
@@ -71,7 +73,7 @@ export default {
   },
   methods: {
     formatLabel(value) {
-      return numeral(value).format("$0,0.000a").toUpperCase();
+      return numeral(value).format("$0,0.0a").toUpperCase();
     },
     getChartData(currentTimeOption) {
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
@@ -140,13 +142,14 @@ export default {
         .sort((a,b) => a-b)
         .map(p => format(new Date(parseInt(p, 10)*1000), 'dd MMM yyyy'));
       const chartData = [...top3PoolsSortedByVolume, other].map((pool, poolIdx) => {
+        const pname = poolNameWithoutAddr(pool.poolId);
         return {
         color: colors[poolIdx],
-        name: pool.poolId,
+        name: pname,
         data: pool.data.map((pd, dateIndex) => ({
           y: (pd.totalVolume / 10**8) * price,
           x: dateIndex,
-          name: pool.poolId,
+          name: pname,
           color: colors[poolIdx],
         }))
         };
