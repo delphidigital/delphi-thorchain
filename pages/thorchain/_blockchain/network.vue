@@ -6,198 +6,231 @@
       </h1>
       <BlockchainToggle />
     </div>
-
-    <div class="pure-g">
-      <div class="pure-u-1-2 pure-u-md-1-4 section--split-left">
-        <div class="section network__header__values">
-          <h2 class="networksection__title">
-            {{ runePriceUSD }}
-          </h2>
-          <div class="networksection__subtitle">
-            Price RUNE
-          </div>
-        </div>
-      </div>
-      <div class="pure-u-1-2 pure-u-md-1-4 section--split-left section--split-right">
-        <div class="section network__header__values">
-          <h2 class="networksection__title">
-            {{ formatUsd(marketCapitalization) }}
-          </h2>
-          <div class="networksection__subtitle">
-            Market Cap
-          </div>
-        </div>
-      </div>
-      <div class="pure-u-1-2 pure-u-md-1-4 section--split-left section--split-right">
-        <div class="section network__header__values">
-          <h2 class="networksection__title">
-            {{ formatUsd(volume24h) }}
-          </h2>
-          <div class="networksection__subtitle">
-            24h Volume
-          </div>
-        </div>
-      </div>
-      <div class="pure-u-1-2 pure-u-md-1-4 section--split-right">
-        <div class="section network__header__values">
-          <h2 class="networksection__title">
-            {{ formatUsd(totalValueLockedUsd) }}
-          </h2>
-          <div class="networksection__subtitle">
-            Total Value Locked
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="display: inline-flex;overflow: overlay;">
-        <div class="section" style="flex: 1;">
-          <div class="section__header" id="deterministic-rune">
-            <h2 class="section__title">
-              Deterministic RUNE
-            </h2>
-            <a class="deeplink-selector" href="#deterministic-rune">
-              <Icon
-                name="link"
-                scale="0.7"
-              ></Icon>
-            </a>
-            <a class="tweet__link" :href="tweetDeterministicRune" target="_blank">
-              <Icon
-                name="brands/twitter"
-                scale="0.7"
-              ></Icon>
-            </a>
-          </div>
-          <div class="section__body" style="padding-top: 34px;">
-            <DeterministicRunePieChart
-              :chart-data="deterministicRuneData"
-              :deterministic-rune-price="deterministicRunePrice"
-              :speculative-multiplier="speculativeMultiplier"
-            />
-          </div>
-
-        </div>
-      </div>
-
-      <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
-        <div class="section" style="flex: 1;">
-          <div class="section__header" id="block-rewards-per-day">
-            <h2 class="section__title">
-              Block Rewards per Day
-            </h2>
-            <a class="deeplink-selector" href="#block-rewards-per-day">
-              <Icon
-                name="link"
-                scale="0.7"
-              ></Icon>
-            </a>
-            <a class="tweet__link" :href="tweetBlockRewardsPerDay" target="_blank">
-              <Icon
-                name="brands/twitter"
-                scale="0.7"
-              ></Icon>
-            </a>
-          </div>
-          <BlockRewardsPerDayColumnChart />
-          <hr class="section__divider" />
-          <div class="section__footer">
-            <div class="section_footer_info">
-              <span>Bond Reward / Node:</span>
-              <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pure-g">
-      <div class="pure-u-1 pure-u-md-2-3 section--split-left" style="display: inline-flex;">
-        <div class="section" style="flex: 1;">
-          <div class="section__header" id="volumebypool_vs_total_volume">
-            <h2 class="section__title">
-              Volume by pool vs. Total volume
-            </h2>
-            <div class="volume-by-pool-time-selector">
-              <button
-                v-for="option in timeOptions"
-                :key="option"
-                class="volume-by-pool-time-option"
-                :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
-                @click="togglePeriod(option)"
-              >
-                {{ option }}
-              </button>
-            </div>
-            <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
-              <Icon name="link" scale="0.7"></Icon>
-            </a>
-            <a class="tweet__link" :href="tweetVolumeByPoolVsTotalVolume" target="_blank">
-              <Icon
-                name="brands/twitter"
-                scale="0.7"
-              ></Icon>
-            </a>
-          </div>
-          <VolumeByPoolVsTotalVolume :currentTimeOption="currentTimeOption" />
-        </div>
-      </div>
-
-      <div class="pure-u-1 pure-u-md-1-3 section--split-right" style="display: inline-flex;">
-        <div class="section" style="flex: 1;">
-          <div class="section__header" id="activity_levels">
-            <h2 class="section__title">
-              Activity levels
-            </h2>
-            <!-- <a class="deeplink-selector" href="#activity_levels">
-              <Icon name="link" scale="0.7"></Icon>
-            </a> -->
-          </div>
-          <div class="section__body section__body--list">
-            <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(swapVolume) }}</div>
-            <div class="body__listitem"><span>Total Depth:</span> {{ formatUsd(totalDepth) }}</div>
-            <div class="body__listitem"><span>Total Earnings:</span> {{ formatUsd(totalEarnings) }}</div>
-            <div class="body__listitem"><span># of Swaps:</span> {{ swapCount }}</div>
-            <div class="body__listitem"><span>Daily Users:</span> {{ dailyActiveUsers }}</div>
-            <div class="body__listitem"><span># of liquidity providers:</span> {{ addLiquidityCount }}</div>
-            <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(addLiquidityVolume) }}</div>
-            <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(liquidityWithdraw) }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div v-if="!this.$store.state.thorchain.loading">
       <div class="pure-g">
-        <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-left">
-          <NodeStatus />
-        </div>
-
-        <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-right network-top-right">
-          <div class="pure-g">
-            <div class="pure-u-1 pure-u-md-5-8 section--split-left">
-              <NetworkSecurity />
-            </div>
-            <div class="pure-u-1 pure-u-md-3-8 section--split-right">
-              <NetworkLatestBlocks />
+        <div class="pure-u-1-2 pure-u-md-1-4 section--split-left">
+          <div class="section network__header__values">
+            <h2 class="networksection__title">
+              {{ runePriceUSD }}
+            </h2>
+            <div class="networksection__subtitle">
+              Price RUNE
             </div>
           </div>
-
-          <NetworkSolvency />
+        </div>
+        <div class="pure-u-1-2 pure-u-md-1-4 section--split-left section--split-right">
+          <div class="section network__header__values">
+            <h2 class="networksection__title">
+              {{ formatUsd(marketCapitalization) }}
+            </h2>
+            <div class="networksection__subtitle">
+              Market Cap
+            </div>
+          </div>
+        </div>
+        <div class="pure-u-1-2 pure-u-md-1-4 section--split-left section--split-right">
+          <div class="section network__header__values">
+            <h2 class="networksection__title">
+              {{ formatUsd(volume24h) }}
+            </h2>
+            <div class="networksection__subtitle">
+              24h Volume
+            </div>
+          </div>
+        </div>
+        <div class="pure-u-1-2 pure-u-md-1-4 section--split-right">
+          <div class="section network__header__values">
+            <h2 class="networksection__title">
+              {{ formatUsd(totalValueLockedUsd) }}
+            </h2>
+            <div class="networksection__subtitle">
+              Total Value Locked
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="pure-g">
-        <div class="pure-u-1 pure-u-md-1-2 section--split-left">
-          <ChurnInfo />
+        <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="display: inline-flex;overflow: overlay;">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="deterministic-rune">
+              <h2 class="section__title">
+                Deterministic RUNE
+              </h2>
+              <a class="deeplink-selector" href="#deterministic-rune">
+                <Icon
+                  name="link"
+                  scale="0.7"
+                ></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetDeterministicRune" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <div class="section__body" style="padding-top: 34px;">
+              <DeterministicRunePieChart
+                :chart-data="deterministicRuneData"
+                :deterministic-rune-price="deterministicRunePrice"
+                :speculative-multiplier="speculativeMultiplier"
+              />
+            </div>
+
+          </div>
         </div>
-        <div class="pure-u-1 pure-u-md-1-2 section--split-right">
-          <NodesByLocation />
+
+        <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="block-rewards-per-day">
+              <h2 class="section__title">
+                Block Rewards per Day
+              </h2>
+              <a class="deeplink-selector" href="#block-rewards-per-day">
+                <Icon
+                  name="link"
+                  scale="0.7"
+                ></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetBlockRewardsPerDay" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <BlockRewardsPerDayColumnChart />
+            <hr class="section__divider" />
+            <div class="section__footer">
+              <div class="section_footer_info">
+                <span>Bond Reward / Node:</span>
+                <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <NodeDetailList />
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-md-2-3 section--split-left" style="display: inline-flex;">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="volumebypool_vs_total_volume">
+              <h2 class="section__title">
+                Volume by pool vs. Total volume
+              </h2>
+              <div class="volume-by-pool-time-selector">
+                <button
+                  v-for="option in timeOptions"
+                  :key="option"
+                  class="volume-by-pool-time-option"
+                  :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
+                  @click="togglePeriod(option)"
+                >
+                  {{ option }}
+                </button>
+              </div>
+              <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
+                <Icon name="link" scale="0.7"></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetVolumeByPoolVsTotalVolume" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <VolumeByPoolVsTotalVolume :currentTimeOption="currentTimeOption" />
+          </div>
+        </div>
+
+        <div class="pure-u-1 pure-u-md-1-3 section--split-right" style="display: inline-flex;">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="activity_levels">
+              <h2 class="section__title">
+                Activity levels
+              </h2>
+              <a class="deeplink-selector" href="#activity_levels">
+                <Icon name="link" scale="0.7"></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetActivityLevels" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <div class="section__body section__body--list">
+              <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(swapVolume) }}</div>
+              <div class="body__listitem"><span>Total Depth:</span> {{ formatUsd(totalDepth) }}</div>
+              <div class="body__listitem"><span>Total Earnings:</span> {{ formatUsd(totalEarnings) }}</div>
+              <div class="body__listitem"><span># of Swaps:</span> {{ swapCount }}</div>
+              <div class="body__listitem"><span>Daily Users:</span> {{ dailyActiveUsers }}</div>
+              <div class="body__listitem"><span># of liquidity providers:</span> {{ addLiquidityCount }}</div>
+              <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(addLiquidityVolume) }}</div>
+              <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(liquidityWithdraw) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pure-g">
+        <div class="pure-u-1">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="rune_location">
+              <h2 class="section__title">
+                Location of RUNE
+              </h2>
+              <a class="deeplink-selector" href="#rune_location">
+                <Icon name="link" scale="0.7"></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetRuneLocation" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <div class="section__body">
+              <div class="location-rune-detail">
+                <div class="perc-rune-locked">
+                  <h3>25%</h3>
+                  <div>% of RUNE locked</div>
+                </div>
+                <div class="cirq-supply-rune">
+                  <div class="cirq-supply-runetitle">Circulating supply</div>
+                  <div>TODO</div>
+                </div>
+              </div>
+              <LocationOfRune />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pure-g">
+        <div class="pure-u-1">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="thorchain_dev_activity">
+              <h2 class="section__title">
+                Thorchain Developer Activity
+              </h2>
+              <a class="deeplink-selector" href="#thorchain_dev_activity">
+                <Icon name="link" scale="0.7"></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetThorchainDevActivity" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <div class="section__body">
+              TODO
+            </div>
+          </div>
+        </div>
+      </div>
 
       <Footer />
     </div>
@@ -210,24 +243,20 @@
 <script>
 import numeral from 'numeral';
 import frontendFetcher from '../../../lib/frontendFetcher.mjs';
-import NodesByLocation from '../../../components/Network/NodesByLocation.vue';
-import ChurnInfo from '../../../components/Network/ChurnInfo.vue';
-import NodeDetailList from '../../../components/Network/NodeDetailList.vue';
 import DeterministicRunePieChart from '../../../components/Network/DeterministicRunePieChart.vue';
 import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewardsPerDayColumnChart.vue';
 import VolumeByPoolVsTotalVolume from '../../../components/Network/VolumeByPoolVsTotalVolume.vue';
+import LocationOfRune from '../../../components/Network/LocationOfRune.vue';
 
 const runeDivider = 10 ** 8;
 
 export default {
   // load data here
   components: {
-    NodesByLocation,
-    NodeDetailList,
     DeterministicRunePieChart,
     BlockRewardsPerDayColumnChart,
-    ChurnInfo,
     VolumeByPoolVsTotalVolume,
+    LocationOfRune,
   },
   data() {
     const baseUrl = process.env.APP_URL;
@@ -235,12 +264,18 @@ export default {
     const rewardsPerDayDeepLink = `${baseUrl}${tabBasePath}#block-rewards-per-day`;
     const deterministicRuneDeepLink = `${baseUrl}${tabBasePath}#deterministic-rune`;
     const volumeByPoolVsTotalDeepLink = `${baseUrl}${tabBasePath}#volumebypool_vs_total_volume`;
+    const activityLevelsDeepLink = `${baseUrl}${tabBasePath}#activity_levels`;
+    const runeLocationDeepLink = `${baseUrl}${tabBasePath}#rune_location`;
+    const thorchainDevActivityDeepLink = `${baseUrl}${tabBasePath}#thorchain_dev_activity`;
     return {
       currentTimeOption: '1W',
       timeOptions: ['1W', '1M', '3M', '6M', '1Y'],
       tweetBlockRewardsPerDay: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Block Rewards Per Day')}&url=${encodeURIComponent(rewardsPerDayDeepLink)}`,
       tweetDeterministicRune: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Deterministic RUNE')}&url=${encodeURIComponent(deterministicRuneDeepLink)}`,
       tweetVolumeByPoolVsTotalVolume: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Volume by pool vs. Total volume')}&url=${encodeURIComponent(volumeByPoolVsTotalDeepLink)}`,
+      tweetActivityLevels: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Activity levels')}&url=${encodeURIComponent(activityLevelsDeepLink)}`,
+      tweetRuneLocation: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Location of RUNE')}&url=${encodeURIComponent(runeLocationDeepLink)}`,
+      tweetThorchainDevActivity: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Thorchain Developer Activity')}&url=${encodeURIComponent(thorchainDevActivityDeepLink)}`,
     };
   },
   async fetch() {
@@ -383,10 +418,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.network-top-right {
-  display: flex;
-  flex-direction: column;
-}
 .network__header__values {
   padding: 25px;
   text-align: center;
@@ -473,4 +504,45 @@ export default {
   color: #fff;
 }
 
+.location-rune-detail {
+  display: flex;
+  margin: 22px;
+  > div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    border: 1px solid #3f4456;
+    padding: 14px 20px;
+    border-radius: 8px;
+
+    &:first-child {
+      margin-right: 12px;
+    }
+    &:last-child {
+      margin-left: 12px;
+    }
+  }
+  .perc-rune-locked {
+    align-items: center;
+    justify-content: center;
+    h3 {
+      margin: 8px;
+      font-size: 22px;
+      color: white;
+    }
+    div {
+      font-size: 14px;
+      color: #a5a8b1;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+  }
+  .cirq-supply-rune {
+    .cirq-supply-runetitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+    }
+  }
+}
 </style>

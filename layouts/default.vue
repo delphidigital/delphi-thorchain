@@ -21,7 +21,15 @@
               :to="{name: 'thorchain-blockchain-network',
                     params: { blockchain: currentBlockchain }}"
             >
-              Network & Nodes
+              Network
+            </nuxt-link>
+            <nuxt-link
+              class="header__link"
+              exact-active-class="header__link--active"
+              :to="{name: 'thorchain-blockchain-nodes',
+                    params: { blockchain: currentBlockchain }}"
+            >
+              Nodes
             </nuxt-link>
           </nav>
         </div>
@@ -373,6 +381,15 @@ a {
   font-size: 17px;
   font-weight: 600;
   flex: 1;
+}
+
+.section__header {
+  @media screen and (max-width: 500px) {
+    overflow: auto;
+    h2 {
+      font-size: 14px !important;
+    }
+  }
 }
 
 .section__title__note {

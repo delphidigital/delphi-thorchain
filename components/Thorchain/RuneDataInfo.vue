@@ -323,13 +323,17 @@ export default {
           overflow: 'justify',
           borderRadius: 4,
           verticalAlign: y > 0 ? 'top' : 'bottom',
-          y: y > 0 ? -30 : 30,
+          y: y > 0 ? -35 : 35,
           className: 'tooltip__body',
           useHTML: true,
           shadow: true,
           backgroundColor: '#30354b',
           color: fontColor,
           align: 'center',
+          padding: 8,
+          style: {
+            padding: '8px',
+          },
           formatter: () => this.formatLabel(y),
         },
       }
