@@ -49,6 +49,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    customTooltipOptions: {
+      type: Object,
+      default: () => ({}),
+    },
     customPlotOptions: {
       type: Object,
       default: () => ({}),
@@ -98,6 +102,27 @@ export default {
           height: 330,
           margin: [5, 0, 75, 32],
           type: 'column',
+          // events: {
+          //   load: function()  {
+          //     // change pointer reset prototype method behavior
+          //     this.pointer.reset = () => {
+          //       this.series.forEach((serie, i) => {
+          //         serie.data.forEach(sd => {
+          //           sd.series.setState('hover');
+          //           this.tooltip.refresh(sd);
+          //         });
+          //       });
+          //       return undefined; // this will stop the pointer to hide tooltip when cursor exit the chart
+          //     },
+          //     // hover under the first serie
+          //     this.series.forEach((serie, i) => {
+          //         serie.data.forEach(sd => {
+          //           sd.series.setState('hover');
+          //           this.tooltip.refresh(sd);
+          //         });
+          //     });
+          //   }
+          // },
           ...this.customChartOptions,
         },
         title: false,

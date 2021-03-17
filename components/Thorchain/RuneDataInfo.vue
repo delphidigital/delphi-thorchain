@@ -193,6 +193,8 @@
           :chart-data="getProfitLossData"
           :format-label="formatLabel"
           :x-axis-categories="xAxisProfitColumCategories"
+          :custom-plot-options="customPlotOptionsColumn"
+          :custom-tooltip-options="customTooltipOptionsColumn"
           class="runedatainfo-chart"
         />
       </div>
@@ -201,6 +203,8 @@
           :chart-data="getPredictFutureData"
           :format-label="formatLabel"
           :x-axis-categories="xAxisPredictColumCategories"
+          :custom-plot-options="customPlotOptionsColumn"
+          :custom-tooltip-options="customTooltipOptionsColumn"
           class="runedatainfo-chart"
         />
       </div>
@@ -264,6 +268,8 @@ export default {
       pastSimulationData: [],
       predictionData: null,
       profitLossBreakdown: null,
+      customPlotOptionsColumn: { series: { marker: { enabled: false, }, dataLabels: { enabled: true } } },
+      customTooltipOptionsColumn: { enabled: false },
     };
   },
   computed: {
@@ -281,12 +287,12 @@ export default {
       }
       return [{
         data: [
-          { y: this.profitLossBreakdown.runeMovement.value, color: '#19ceb8' },
-          { y: this.profitLossBreakdown.assetMovement.value, color: '#2d99fe' },
-          { y: this.profitLossBreakdown.fees.value, color: '#4346D3' },
-          { y: this.profitLossBreakdown.impermLoss.value, color: '#f7517f' },
-          { y: this.profitLossBreakdown.total.value, color: '#c4c634' },
-        ]
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.runeMovement.value, '#19ceb8'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.assetMovement.value, '#2d99fe'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.fees.value, '#4346D3'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.impermLoss.value, '#f7517f'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.total.value, '#c4c634', true),
+        ],
       }];
     },
     getPredictFutureData() {
@@ -296,15 +302,38 @@ export default {
       const pd = this.predictionData.prediction;
       return [{
         data: [
-          { y: pd.keepProvidingLiquidity.change, color: '#19ceb8' },
-          { y: pd.withdrawAndHoldRune.change, color: '#2d99fe' },
-          { y: pd.withdrawAndHoldAsset.change, color: '#4346D3' },
-          { y: pd.withdrawAndHoldBoth.change, color: '#f7517f' },
+          this.getUtteranceDataWithTooltip(pd.keepProvidingLiquidity.change, '#19ceb8'),
+          this.getUtteranceDataWithTooltip(pd.withdrawAndHoldRune.change, '#2d99fe'),
+          this.getUtteranceDataWithTooltip(pd.withdrawAndHoldAsset.change, '#4346D3'),
+          this.getUtteranceDataWithTooltip(pd.withdrawAndHoldBoth.change, '#f7517f'),
         ]
       }];
     },
   },
   methods: {
+    getUtteranceDataWithTooltip(y, color, highlightValue) {
+      let fontColor = '#ffffff';
+      if (highlightValue) {
+        fontColor = y > 0 ? '#55CC55' : '#FF5555';
+      }
+      return {
+        color,
+        y,
+        dataLabels: {
+          overflow: 'justify',
+          borderRadius: 4,
+          verticalAlign: y > 0 ? 'top' : 'bottom',
+          y: y > 0 ? -30 : 30,
+          className: 'tooltip__body',
+          useHTML: true,
+          shadow: true,
+          backgroundColor: '#30354b',
+          color: fontColor,
+          align: 'center',
+          formatter: () => this.formatLabel(y),
+        },
+      }
+    },
     displayPoolName(name) {
       return name ? poolNameWithoutAddr(name) : name;
     },
