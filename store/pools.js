@@ -11,14 +11,16 @@ export const periodsHistoryMap = {
   '1Y': 'period1Y',
 };
 // period1H, period24H, period7D, period30D, period90D, period365D, periodALL
-// const periodToStatsMap = {
-//   '24H': 'period24H',
-//   '1W': 'period7D',
-//   '1M': 'period30D',
-//   '3M': 'period90D',
-//   // '6M': 'period180D', // TODO
-//   '1Y': 'period365D',
-// };
+export const periodToStatsMap = {
+  '1H': 'period1H',
+  '24H': 'period24H',
+  '1W': 'period7D',
+  '1M': 'period30D',
+  '3M': 'period90D',
+  // '6M': 'period180D', // TODO
+  '1Y': 'period365D',
+  ALL: 'periodALL',
+};
 
 export const runeE8toValue = runeString => (
   runeString

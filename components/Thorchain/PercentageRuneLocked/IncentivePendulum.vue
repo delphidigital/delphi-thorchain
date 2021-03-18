@@ -98,6 +98,10 @@
           </div>
         </div>
       </div>
+      <div class="incentive-tooltip-roi">
+        <div>ROI: {{ apy.bondingAPY }}% APY</div>
+        <div>ROI: {{ apy.liquidityAPY }}% APY</div>
+      </div>
     </div>
   </div>
 </template>
@@ -109,6 +113,12 @@ export default {
   computed: {
     poolShareFactor() {
       return this.$store.state.networkHealth.poolShareFactor;
+    },
+    apy() {
+      return {
+        bondingAPY: parseFloat(this.$store.state.networkHealth.network.bondingAPY).toFixed(2),
+        liquidityAPY: parseFloat(this.$store.state.networkHealth.network.liquidityAPY).toFixed(2),
+      };
     },
     efficient() {
       return 0.66;
@@ -233,6 +243,23 @@ export default {
 .incentive-tooltip-data {
   display: flex;
   align-items: center;
+}
+
+.incentive-tooltip-roi {
+  display: flex;
+  flex-direction: row;
+  margin-top: -14px;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.7;
+
+  > div {
+    flex: 1;
+
+    &:last-child {
+      text-align: right;
+    }
+  }
 }
 
 .incentive-mark {

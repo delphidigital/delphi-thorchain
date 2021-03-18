@@ -152,8 +152,8 @@ function technicalAnalysis(
               
               periodicRate = intervalRuneDepth
                 // TODO: how to remove impermanent loss??!!
-                // ? (((periodRuneEarnings + (impermanentLoss))/(intervalRuneDepth*2)))
-                ? ((periodRuneEarnings/(intervalRuneDepth*2)))
+                ? (((periodRuneEarnings + (periodRuneEarnings * impermanentLoss))/(intervalRuneDepth*2)))
+                // ? ((periodRuneEarnings/(intervalRuneDepth*2)))
                 : 0;
               // APY = ((1 + Periodic Rate)^Number of periods) – 1
               // NOTE: this numberOfPeriods only works for daily intervals
@@ -169,7 +169,7 @@ function technicalAnalysis(
               //   r = return over the specified period
               //   n = 365/days over which r is measured
               // https://learn.robinhood.com/articles/5CLrCuXmQXIKWMye3uZcEM/what-is-annual-percentage-yield-apy/
-              periodAPY = ((1+(periodicRate/numberOfPeriods))**numberOfPeriods)-1;
+              periodAPY = (((1+(periodicRate/numberOfPeriods))**numberOfPeriods)-1) * 100;
             }
           }
         }
@@ -180,7 +180,7 @@ function technicalAnalysis(
           runeAssetRatio,
           startTime: interval.startTime,
           priceSwing,
-          impermanentLoss,
+          impermanentLoss: impermanentLoss * 100,
           periodRuneEarnings,
           // periodUsdEarnings,
           periodicRate,

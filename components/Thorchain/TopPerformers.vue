@@ -86,7 +86,7 @@ import numeral from 'numeral';
 import sortBy from 'sort-by';
 import Percentage from '../Common/Percentage.vue';
 import RuneUSD from '../Common/RuneUSD.vue';
-import { periodsHistoryMap } from '../../store/pools';
+import { periodsHistoryMap, periodToStatsMap } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
 
 export default {
@@ -133,6 +133,9 @@ export default {
       const unsortedPools = Object.keys(this.$store.state.pools.technicalAnalysis).map((poolId) => {
         const period = periodsHistoryMap[this.currentTimeOption];
         const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
+        const poolStats = this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats;
+        const poolPeriodStats = poolStats[periodToStatsMap[this.currentTimeOption]];
+        // const poolsOverviewPeriod = this.$store.state.pools.poolsOverview[poolId][period];
         const periodIntervals = Object.keys(poolPeriodTA.intervals).map(i => parseInt(i, 10)).sort();
         // the impermanent loss of the entire period is the last interval IL
         const lastInterval = periodIntervals[periodIntervals.length-1];
@@ -140,6 +143,7 @@ export default {
           ...poolPeriodTA,
           poolId,
           impermanentLoss: poolPeriodTA.intervals[lastInterval].impermanentLoss,
+          apy: parseFloat(poolPeriodStats.poolAPY)
         };
       });
       const descChar = this.sortDescending ? '-' : '';
