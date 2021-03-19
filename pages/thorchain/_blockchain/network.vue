@@ -225,8 +225,38 @@
                 ></Icon>
               </a>
             </div>
-            <div class="section__body">
-              TODO
+            <div class="section__body dev-activity-section">
+              <div class="dev-activity-detail">
+                <div class="dev-detail-numberdevs">
+                  <h3>16</h3>
+                  <div># of active developers</div>
+                </div>
+                <div class="dev-detail-devretention">
+                  <h3>25%</h3>
+                  <div>Developer retention</div>
+                </div>
+              </div>
+              <div class="dev-activity-chart">
+                <div class="dev-activity-chartwrapper">
+                  <div class="dev-activity-header">
+                    <div class="dev-activity-header-title">Gitlab commits over time</div>
+                    <div class="volume-by-pool-time-selector">
+                      <button
+                        v-for="option in timeOptions"
+                        :key="option"
+                        class="volume-by-pool-time-option"
+                        :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
+                        @click="togglePeriod(option)"
+                      >
+                        {{ option }}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="dev-activity-gitlabchart">
+                    <GitlabCommitsChart />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -247,6 +277,7 @@ import DeterministicRunePieChart from '../../../components/Network/Deterministic
 import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewardsPerDayColumnChart.vue';
 import VolumeByPoolVsTotalVolume from '../../../components/Network/VolumeByPoolVsTotalVolume.vue';
 import LocationOfRune from '../../../components/Network/LocationOfRune.vue';
+import GitlabCommitsChart from '../../../components/Network/GitlabCommitsChart.vue';
 
 const runeDivider = 10 ** 8;
 
@@ -257,6 +288,7 @@ export default {
     BlockRewardsPerDayColumnChart,
     VolumeByPoolVsTotalVolume,
     LocationOfRune,
+    GitlabCommitsChart,
   },
   data() {
     const baseUrl = process.env.APP_URL;
@@ -543,6 +575,71 @@ export default {
       font-weight: 700;
       color: white;
     }
+  }
+}
+.dev-activity-section {
+  display: flex;
+  flex-direction: row;
+  .dev-activity-detail {
+      display: flex;
+      margin: 22px;
+      flex-direction: column;
+      max-width: 270px;
+      min-width: 250px;
+
+    .dev-detail-numberdevs, .dev-detail-devretention {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      background-color: #262f4a;
+      padding: 32px 28px;
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      h3 {
+        margin: 8px;
+        font-size: 22px;
+        color: white;
+      }
+      div {
+        font-size: 14px;
+        color: #a5a8b1;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+    }
+  }
+  .dev-activity-chart {
+    display: flex;
+    flex: 1;
+    .dev-activity-chartwrapper {
+      margin: 28px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      border: 1px solid #3f4456;
+      padding: 14px 0px;
+      border-radius: 8px;
+      .dev-activity-header {
+        flex-direction: row;
+        display: flex;
+        margin: 0;
+        padding: 0 20px 10px 20px;
+        border-bottom: 1px solid #3f4456;
+        > .dev-activity-header-title {
+          display: flex;
+          flex: 1;
+          font-size: 14px;
+          font-weight: 700;
+          color: white;
+        }
+      }
+      .dev-activity-gitlabchart {
+        margin: 20px;
+      }
+    }
+    
   }
 }
 </style>
