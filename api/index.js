@@ -16,6 +16,7 @@ async function loadCached(id) {
 }
 
 thorchain.all('/overview', async (req, res) => {
+  const queue = await loadCached(`${req.blockchain}::queue`) || {};
   const pools = await loadCached(`${req.blockchain}::pools`) || [];
   const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
   const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
@@ -45,6 +46,7 @@ thorchain.all('/overview', async (req, res) => {
 
   const allPoolsHistoryEarnings = await loadCached(`${req.blockchain}::allPoolsHistoryEarnings`);
   res.json({
+    queue,
     stats,
     pools,
     nodes,

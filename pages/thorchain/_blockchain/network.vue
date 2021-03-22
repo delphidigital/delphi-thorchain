@@ -8,7 +8,7 @@
     </div>
     <div v-if="!this.$store.state.thorchain.loading">
       <div class="pure-g">
-        <div class="pure-u-1-2 pure-u-md-1-4 section--split-left">
+        <div class="pure-u-1-2 pure-u-md-1-5 section--split-left">
           <div class="section network__header__values">
             <h2 class="networksection__title">
               {{ runePriceUSD }}
@@ -18,7 +18,7 @@
             </div>
           </div>
         </div>
-        <div class="pure-u-1-2 pure-u-md-1-4 section--split-left section--split-right">
+        <div class="pure-u-1-2 pure-u-md-1-5 section--split-left section--split-right">
           <div class="section network__header__values">
             <h2 class="networksection__title">
               {{ formatUsd(marketCapitalization) }}
@@ -28,7 +28,7 @@
             </div>
           </div>
         </div>
-        <div class="pure-u-1-2 pure-u-md-1-4 section--split-left section--split-right">
+        <div class="pure-u-1-2 pure-u-md-1-5 section--split-left section--split-right">
           <div class="section network__header__values">
             <h2 class="networksection__title">
               {{ formatUsd(volume24h) }}
@@ -38,7 +38,7 @@
             </div>
           </div>
         </div>
-        <div class="pure-u-1-2 pure-u-md-1-4 section--split-right">
+        <div class="pure-u-1-2 pure-u-md-1-5 section--split-right">
           <div class="section network__header__values">
             <h2 class="networksection__title">
               {{ formatUsd(totalValueLockedUsd) }}
@@ -48,65 +48,13 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="pure-g">
-        <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="display: inline-flex;overflow: overlay;">
-          <div class="section" style="flex: 1;">
-            <div class="section__header" id="deterministic-rune">
-              <h2 class="section__title">
-                Deterministic RUNE
-              </h2>
-              <a class="deeplink-selector" href="#deterministic-rune">
-                <Icon
-                  name="link"
-                  scale="0.7"
-                ></Icon>
-              </a>
-              <a class="tweet__link" :href="tweetDeterministicRune" target="_blank">
-                <Icon
-                  name="brands/twitter"
-                  scale="0.7"
-                ></Icon>
-              </a>
-            </div>
-            <div class="section__body" style="padding-top: 34px;">
-              <DeterministicRunePieChart
-                :chart-data="deterministicRuneData"
-                :deterministic-rune-price="deterministicRunePrice"
-                :speculative-multiplier="speculativeMultiplier"
-              />
-            </div>
-
-          </div>
-        </div>
-
-        <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
-          <div class="section" style="flex: 1;">
-            <div class="section__header" id="block-rewards-per-day">
-              <h2 class="section__title">
-                Block Rewards per Day
-              </h2>
-              <a class="deeplink-selector" href="#block-rewards-per-day">
-                <Icon
-                  name="link"
-                  scale="0.7"
-                ></Icon>
-              </a>
-              <a class="tweet__link" :href="tweetBlockRewardsPerDay" target="_blank">
-                <Icon
-                  name="brands/twitter"
-                  scale="0.7"
-                ></Icon>
-              </a>
-            </div>
-            <BlockRewardsPerDayColumnChart />
-            <hr class="section__divider" />
-            <div class="section__footer">
-              <div class="section_footer_info">
-                <span>Bond Reward / Node:</span>
-                <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
-              </div>
+        <div class="pure-u-1-2 pure-u-md-1-5 section--split-right">
+          <div class="section network__header__values">
+            <h2 class="networksection__title" :style="`color: ${queueStatus[1]}`">
+              {{ queueStatus[0] }}
+            </h2>
+            <div class="networksection__subtitle">
+              Thorchain Queue Status
             </div>
           </div>
         </div>
@@ -169,6 +117,69 @@
               <div class="body__listitem"><span># of liquidity providers:</span> {{ addLiquidityCount }}</div>
               <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(addLiquidityVolume) }}</div>
               <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(liquidityWithdraw) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pure-g">
+        <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="overflow: overlay;">
+          
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="deterministic-rune">
+              <h2 class="section__title">
+                Deterministic RUNE
+              </h2>
+              <a class="deeplink-selector" href="#deterministic-rune">
+                <Icon
+                  name="link"
+                  scale="0.7"
+                ></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetDeterministicRune" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <div class="section__body" style="padding-top: 16px;padding-bottom: 16px;">
+              <DeterministicRunePieChart
+                :chart-data="deterministicRuneData"
+                :deterministic-rune-price="deterministicRunePrice"
+                :speculative-multiplier="speculativeMultiplier"
+              />
+            </div>
+          </div>
+          <NetworkSolvency />
+        </div>
+
+        <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
+          <div class="section" style="flex: 1;">
+            <div class="section__header" id="block-rewards-per-day">
+              <h2 class="section__title">
+                Block Rewards per Day
+              </h2>
+              <a class="deeplink-selector" href="#block-rewards-per-day">
+                <Icon
+                  name="link"
+                  scale="0.7"
+                ></Icon>
+              </a>
+              <a class="tweet__link" :href="tweetBlockRewardsPerDay" target="_blank">
+                <Icon
+                  name="brands/twitter"
+                  scale="0.7"
+                ></Icon>
+              </a>
+            </div>
+            <BlockRewardsPerDayColumnChart />
+            <hr class="section__divider" />
+            <div class="section__footer" style="display: flex;flex: 1;margin-top:0;">
+              <div class="section_footer_info">
+                <span>Bond Reward / Node:</span>
+                <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
+              </div>
             </div>
           </div>
         </div>
@@ -330,6 +341,17 @@ export default {
     window.removeEventListener('blur', this.pollDataDeactivate);
   },
   computed: {
+    queueStatus() {
+      const queue = this.$store.state.networkHealth && this.$store.state.networkHealth.queue || {};
+      const totalInQueue = parseInt(queue.swap || "0", 10) + parseInt(queue.outbound || "0", 10);
+      let status = ["Normal", "#19ceb8"];
+      if (totalInQueue > 500) {
+        status = ["Busy", "#ceb819"];
+      } else if (totalInQueue > 100) {
+        status = ["Congested", "#ee4839"];
+      }
+      return status;
+    },
     totalEarnings() {
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
       return parseInt(this.$store.state.pools.allPoolsHistoryEarnings.allTimePeriod.meta.earnings || '0', 10) / runeDivider * price;
@@ -451,17 +473,17 @@ export default {
 
 <style lang="scss" scoped>
 .network__header__values {
-  padding: 25px;
+  padding: 29px 24px;
   text-align: center;
   .networksection__title {
     text-align: center;
     display: block;
-    font-weight: 800;
-    font-size: 23px;
+    font-weight: 600;
+    font-size: 21px;
   }
   .networksection__subtitle {
     margin-top: 8px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     opacity: 0.75;
   }
@@ -487,6 +509,7 @@ export default {
 }
 .section_footer_info {
   display: flex;
+  flex: 1;
   flex-direction: row;
   font-size: 15px;
   font-weight: 500;

@@ -2,7 +2,7 @@
   <div class="by-pool">
     <div class="by-pool-header">
       <h3>By Pool</h3>
-      <div class="by-pool-key">
+      <!-- <div class="by-pool-key">
         <p>
           <span class="app__marker--long marker--green" />stored - actual assets in vault address
         </p>
@@ -11,7 +11,7 @@
             class="app__marker--long marker--red"
           />recorded - assets expected to be stored in vault
         </p>
-      </div>
+      </div> -->
     </div>
     <NetworkSolvencyByPoolChart />
   </div>
@@ -21,7 +21,7 @@
 .by-pool {
   padding: 15px 0px 20px 0px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   width: 100%;
   position: relative;
@@ -72,10 +72,13 @@
 
 h3 {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   color: $color-text-secondary;
   margin-bottom: 15px;
   margin-left: 25px;
+  margin-right: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .marker--red {

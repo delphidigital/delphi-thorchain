@@ -4,7 +4,7 @@
       <AppHighchart
         v-if="chartData.length > 0"
         :chart-options="chartOptions"
-        :placeholder-height="185"
+        :placeholder-height="100"
       />
     </client-only>
   </div>
@@ -37,8 +37,8 @@ export default {
         chart: {
           type: 'column',
           backgroundColor: 'transparent',
-          height: 185,
-          margin: [0, 0, 25, 0],
+          height: 100,
+          margin: [0, 0, 35, 0],
         },
         title: false,
         labels: false,
@@ -114,9 +114,9 @@ export default {
 
 <style lang="scss" scoped>
 .bar-chart-container {
-  width: 100%;
-  height: 200px;
+  height: 100px;
   padding-top: 15px;
+  width: 80%;
 }
 
 </style>

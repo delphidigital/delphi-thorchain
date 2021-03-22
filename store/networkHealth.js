@@ -9,6 +9,7 @@ export const state = () => ({
   lastBinanceChainBlock: null,
   network: null,
   stats: null,
+  queue: null,
 });
 
 export const mutations = {
@@ -30,5 +31,8 @@ export const mutations = {
   },
   setStats(state, payload) {
     state.stats = payload;
+  },
+  setQueue(state, payload) {
+    state.queue = payload;
   },
 };

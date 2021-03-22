@@ -1,9 +1,18 @@
 <template>
   <div class="section solvency">
-    <div class="section__header">
+    <div class="section__header" id="network-solvency">
       <h2 class="section__title">
         Solvency
       </h2>
+      <a class="deeplink-selector" href="#network-solvency">
+        <Icon name="link" scale="0.7"></Icon>
+      </a>
+      <a class="tweet__link" :href="tweetDeepLink" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
     </div>
     <div class="section__body">
       <div class="solvency-body">
@@ -17,7 +26,18 @@
     </div>
   </div>
 </template>
-
+<script>
+export default {
+  data() {
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet/network'; // TODO: include mainnet too
+    const networkSolvencyDeepLink = `${baseUrl}${tabBasePath}#network-solvency`;
+    return {
+      tweetDeepLink: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Network Solvency')}&url=${encodeURIComponent(networkSolvencyDeepLink)}`,
+    };
+  },
+}
+</script>
 <style lang="scss" scoped>
 .solvency {
   flex-grow: 1;
@@ -27,7 +47,7 @@
 
 .solvency-body {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-grow: 1;
 
   @media screen and (max-width: 600px) {
@@ -36,11 +56,7 @@
 }
 
 .overall-container {
-  border-right: 1px solid $color-border;
-
-  @media screen and (max-width: 600px) {
-    border-right: none;
-  }
+  border-bottom: 1px solid $color-border;
 }
 
 .by-pool-container {

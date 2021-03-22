@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       customChartOptions: {
-        height: 330,
+        height: 420,
         width: 470,
       },
       xAxisColumCategories: [

@@ -264,6 +264,7 @@ async function updateBlockchainData(blockchain) {
 
   // FETCH DATA
   // Thorchain
+  const queue = await api.loadQueue();
   const poolList = await api.loadPools();
   // NOTE: v1 returned status: 'Enabled'
   //       v2 thorchain is returning status: Available
@@ -343,6 +344,7 @@ async function updateBlockchainData(blockchain) {
   );
 
   // SET DATA
+  await set('queue', queue);
   await set('pools', poolList);
   Object.keys(poolStats).forEach(async (poolId) => {
     await set(`pools-${poolId}`, poolStats[poolId]);

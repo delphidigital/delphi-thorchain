@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 70px;">
+  <div style="height: 60px;">
     <client-only>
       <highchart :options="chartOptions" />
     </client-only>
@@ -22,8 +22,8 @@ export default {
       return {
         chart: {
           type: 'pie',
-          height: 70,
-          width: 70,
+          height: 60,
+          width: 60,
           backgroundColor: 'transparent',
           margin: [0, 0, 0, 0],
           spacingTop: 0,

@@ -42,15 +42,18 @@ export default {
 .overall {
   padding: 15px 25px 20px 25px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
 }
 
 h3 {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   color: $color-text-secondary;
   margin-bottom: 15px;
+  display: flex;
+  flex: 1;
+  align-items: center;
 }
 
 h4 {
@@ -61,9 +64,8 @@ h4 {
 
 .solvencies {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
-  flex-grow: 1;
 }
 
 .solvency {
@@ -73,6 +75,10 @@ h4 {
   display: flex;
   width: 190px;
   justify-content: space-between;
+  margin-right: 20px;
+  &:last-child {
+    margin-right: 0;
+  }
 
   @media screen and (max-width: 600px) {
     width: 100%;
