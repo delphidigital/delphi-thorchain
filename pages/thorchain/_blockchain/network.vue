@@ -209,8 +209,9 @@
                   <div>% of RUNE locked</div>
                 </div>
                 <div class="cirq-supply-rune">
-                  <div class="cirq-supply-runetitle">Circulating supply</div>
-                  <div>TODO</div>
+                  <CirculatingSupply />
+                  <!-- <div class="cirq-supply-runetitle">Circulating supply</div>
+                  <div>TODO</div> -->
                 </div>
               </div>
               <LocationOfRune />
@@ -289,7 +290,7 @@ import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewa
 import VolumeByPoolVsTotalVolume from '../../../components/Network/VolumeByPoolVsTotalVolume.vue';
 import LocationOfRune from '../../../components/Network/LocationOfRune.vue';
 import GitlabCommitsChart from '../../../components/Network/GitlabCommitsChart.vue';
-
+import { CirculatingSupply } from '../../../components/Network/CirculatingSupply.vue';
 const runeDivider = 10 ** 8;
 
 export default {
@@ -300,6 +301,7 @@ export default {
     VolumeByPoolVsTotalVolume,
     LocationOfRune,
     GitlabCommitsChart,
+    CirculatingSupply
   },
   data() {
     const baseUrl = process.env.APP_URL;

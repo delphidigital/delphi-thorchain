@@ -5,6 +5,7 @@ export const state = () => ({
   circulatingSupply: null,
   priceUSD: null,
   totalValueLockedUSD: null,
+  coingeckoMarketData: null,
 });
 
 export const mutations = {
@@ -15,6 +16,7 @@ export const mutations = {
       state.totalValueLockedUSD = marketData.totalValueLockedUSD;
       state.circulatingSupply = circulatingSupply;
       state.priceUSD = priceUSD;
+      state.coingeckoMarketData = marketData.coingeckoMarketData;
     }
   },
 };

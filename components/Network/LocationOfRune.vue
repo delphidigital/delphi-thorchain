@@ -33,6 +33,35 @@ export default {
   },
   computed: {
     chartOptions() {
+      const coingeckoMarketData = this.$store.state.runeMarketData.coingeckoMarketData;
+      const pooledPlusBonded = this.$store.state.runeMarketData.circulatingSupply;
+      const net = this.$store.state.networkHealth.network;
+      const bm = net.bondMetrics;
+      // TODO: use actual testnet circulating supply for now uses the highest value between
+      //       coingecko circulating supply or the sum of pooled+bonded
+      // const totalSupply = coingeckoMarketData.total_supply;
+      // const circulatingSupply = pooledPlusBonded > coingeckoMarketData.circulating_supply
+      //   ? pooledPlusBonded
+      //   : coingeckoMarketData.circulating_supply;
+      const circulatingSupply = pooledPlusBonded;
+      const totalSupply = circulatingSupply;
+
+      const supActiveBonded = bm.totalActiveBond && bm.totalActiveBond !== "0"
+        ? (parseInt(bm.totalActiveBond, 10) / 10**8)
+        : 0;
+      const supSandbyBonded = bm.totalStandbyBond && bm.totalStandbyBond !== "0"
+        ? (parseInt(bm.totalStandbyBond, 10) / 10**8)
+        : 0;
+      const totalBonded = supActiveBonded + supSandbyBonded;
+      const supPooled = net.totalPooledRune && net.totalPooledRune !== "0"
+        ? (parseInt(net.totalPooledRune, 10) / 10**8)
+        : 0;
+      const supUnlocked = circulatingSupply - (totalBonded + supPooled);
+      const supUnreleased = totalSupply - circulatingSupply;
+      const supReserve = net.totalReserve && net.totalReserve !== "0"
+        ? (parseInt(net.totalReserve, 10) / 10**8)
+        : 0;
+
       return {
         chart: {
           backgroundColor: 'transparent',
@@ -51,37 +80,39 @@ export default {
             type: 'treemap',
             alternateStartingDirection: true,
             layoutAlgorithm: 'squarified',
-            data: [{
+            data: [
+              {
                 name: 'Unlocked',
-                value: 30,
+                value: supUnlocked,
                 color: '#3f4456',
                 sortIndex: 0,
-                }, {
-                name: 'Active Bonded',
-                value: 10,
-                color: '#2d99fe',
-                sortIndex: 1,
-                }, {
+              }, {
+                name: 'Unreleased supply',
+                value: supUnreleased,
+                color: '#4346d3',
+                sortIndex: 2,
+              }, {
+                name: 'Reserve',
+                value: supReserve,
+                color: '#19ceb8',
+                sortIndex: 3,
+              }, {
                 name: 'Standby Bonded',
-                value: 2,
+                value: supSandbyBonded,
                 color: '#5e2bbc',
                 sortIndex: 1,
-                }, {
+              }, {
                 name: 'Pooled',
-                value: 3,
+                value: supPooled,
                 color: '#f8c950',
                 sortIndex: 1,
-                }, {
-                name: 'Reserve',
-                value: 1,
-                color: '#19ceb8',
-                sortIndex: 2,
-                }, {
-                name: 'Unreleased supply',
-                value: 50,
-                color: '#4346d3',
-                sortIndex: 3,
-            }]
+              }, {
+                name: 'Active Bonded',
+                value: supActiveBonded,
+                color: '#2d99fe',
+                sortIndex: 1,
+              },
+            ]
         }],
       };
     },

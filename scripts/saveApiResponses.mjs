@@ -19,7 +19,11 @@ async function redisSet(key, data) {
 }
 async function getRuneMarketData() {
   const response = await axios.get('https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
-  return response.data.market_data;
+  return {
+    total_supply: response.data.market_data.total_supply,
+    max_supply: response.data.market_data.max_supply,
+    circulating_supply: response.data.market_data.circulating_supply,
+  };
 }
 
 // History depth and swaps contain this keys: 
@@ -333,12 +337,10 @@ async function updateBlockchainData(blockchain) {
   ), 0);
 
   const totalValueLockedUSD = (((runeDepth * 2) + totalBonded) /  (10 ** 8));
-  let circulating = ((totalBonded + runeDepth) / (10 ** 8)).toFixed(2);
+  // TODO: Replace circulating calc (which is incomplete) with the circ supply endpoint when ready
+  const circulating = ((totalBonded + runeDepth) / (10 ** 8));
   const priceUsd = stats.runePriceUSD;
-  if (blockchain === 'chaosnet') {
-    const runeMarketData = await getRuneMarketData();
-    circulating = runeMarketData.circulating_supply;
-  }
+  const coingeckoMarketData = await getRuneMarketData();
   const ta = technicalAnalysis(
     poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
   );
@@ -378,7 +380,7 @@ async function updateBlockchainData(blockchain) {
   await set('network', network);
   await set('constants', constants);
   await set('version', versionRequest);
-  await set('marketData', { priceUsd: priceUsd.toString(), circulating, totalValueLockedUSD });
+  await set('marketData', { priceUsd: priceUsd.toString(), circulating, totalValueLockedUSD, coingeckoMarketData });
   await set('runevaultBalance', runevaultBalance);
   await set('binanceAccounts', binanceAccounts);
 
