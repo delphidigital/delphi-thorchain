@@ -16,7 +16,7 @@ export default {
   },
   computed: {
     styling() {
-      return 'font-family: Montserrat; font-size: 12px; font-weight: 600;';
+      return 'font-family: Montserrat; font-size: 11px; font-weight: 600;';
     },
     chartOptions() {
       return {
@@ -39,8 +39,8 @@ export default {
             `,
           style: { color: '#fff' },
           useHtml: true,
-          verticalAlign: 'middle',
           floating: true,
+          y: 20
         },
         tooltip: {
           enabled: false,

@@ -1,10 +1,10 @@
 <template>
-  <div class="incentive-pendulum">
+  <div class="cirq-supply">
     <h3 class="section__subtitle">
       Circulating Supply
     </h3>
-    <div class="incentive-pendulum-container">
-      <div class="incentive-pendulum-bar-container">
+    <div class="cirq-supply-container">
+      <div class="cirq-supply-bar-container">
         <svg viewBox="0 0 525 50">
           <line
             x1="10"
@@ -25,39 +25,94 @@
             style="stroke-linecap: round;"
           />
         </svg>
+        <div class="cirq-supply-bar-tooltip app-tooltip">
+          <div class="app-tooltip__body">
+            <p class="app-tooltip__text" style="font-weight: bold; font-size: 12px;">
+              {{customFormatUSDValue(circulatingSupply)}}
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="incentive-tooltip-roi">
+      <div class="cirq-supply-max">
         <div>0</div>
-        <div>500.000.000</div>
+        <div>{{customFormatUSDValue(maxSupply)}}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import numeral from 'numeral';
+
+export default {
+  computed: {
+    circulatingSupply() {
+      return 230000000;
+    },
+    maxSupply() {
+      return 500000000;
+    },
+  },
+  methods:{
+    customFormatUSDValue(value) {
+      const thousandsConvert = value / 1000;
+      return `${numeral(thousandsConvert).format('(0,0)').replace(',','.')}K`;
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 
 
-.incentive-pendulum {
-  padding: 20px 25px;
+.cirq-supply > .section__subtitle{
+    margin-bottom: 14px;
+    margin-top: 6px;
 }
 
-.incentive-pendulum-container {
+.cirq-supply-container {
   width: 100%;
   margin: 0 auto;
-  height: 130px;
+  /* height: 130px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.incentive-pendulum-bar-container {
+.cirq-supply-bar-container {
   position: relative;
+  &:hover {
+    .cirq-supply-bar-tooltip {
+      display: block;
+    }
+  }
 }
 
-.incentive-tooltip-roi {
+.cirq-supply-bar-tooltip {
+  display: none;
+  position: absolute;
+  top: -50px;
+  right: calc(50% - 130px);
+  background-color: $color-bg-popup;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  width: 260px;
+}
+
+.cirq-supply-bar-tooltip:before {
+  content: "";
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid $color-bg-popup;
+  bottom: -6px;
+  left: calc(50% - 6px);
+}
+
+.cirq-supply-max {
   display: flex;
   flex-direction: row;
   margin-top: -14px;

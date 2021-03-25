@@ -6,9 +6,9 @@
 
 <script>
 // import numeral from 'numeral';
-import Treemap from 'highcharts/modules/treemap'
-import Highcharts from 'highcharts';
-import AppHighchart from '../Common/AppHighchart.vue';
+import Treemap from "highcharts/modules/treemap";
+import Highcharts from "highcharts";
+import AppHighchart from "../Common/AppHighchart.vue";
 
 export default {
   components: {
@@ -28,13 +28,15 @@ export default {
     //   default: () => 0,
     // },
   },
-  beforeMount(){
+  beforeMount() {
     Treemap(Highcharts);
   },
   computed: {
     chartOptions() {
-      const coingeckoMarketData = this.$store.state.runeMarketData.coingeckoMarketData;
-      const pooledPlusBonded = this.$store.state.runeMarketData.circulatingSupply;
+      const coingeckoMarketData = this.$store.state.runeMarketData
+        .coingeckoMarketData;
+      const pooledPlusBonded = this.$store.state.runeMarketData
+        .circulatingSupply;
       const net = this.$store.state.networkHealth.network;
       const bm = net.bondMetrics;
       // TODO: use actual testnet circulating supply for now uses the highest value between
@@ -46,40 +48,57 @@ export default {
       const circulatingSupply = pooledPlusBonded;
       const totalSupply = circulatingSupply;
 
-      const supActiveBonded = bm.totalActiveBond && bm.totalActiveBond !== "0"
-        ? (parseInt(bm.totalActiveBond, 10) / 10**8)
-        : 0;
-      const supSandbyBonded = bm.totalStandbyBond && bm.totalStandbyBond !== "0"
-        ? (parseInt(bm.totalStandbyBond, 10) / 10**8)
-        : 0;
+      const supActiveBonded =
+        bm.totalActiveBond && bm.totalActiveBond !== "0"
+          ? parseInt(bm.totalActiveBond, 10) / 10 ** 8
+          : 0;
+      const supSandbyBonded =
+        bm.totalStandbyBond && bm.totalStandbyBond !== "0"
+          ? parseInt(bm.totalStandbyBond, 10) / 10 ** 8
+          : 0;
       const totalBonded = supActiveBonded + supSandbyBonded;
-      const supPooled = net.totalPooledRune && net.totalPooledRune !== "0"
-        ? (parseInt(net.totalPooledRune, 10) / 10**8)
-        : 0;
+      const supPooled =
+        net.totalPooledRune && net.totalPooledRune !== "0"
+          ? parseInt(net.totalPooledRune, 10) / 10 ** 8
+          : 0;
       const supUnlocked = circulatingSupply - (totalBonded + supPooled);
       const supUnreleased = totalSupply - circulatingSupply;
-      const supReserve = net.totalReserve && net.totalReserve !== "0"
-        ? (parseInt(net.totalReserve, 10) / 10**8)
-        : 0;
+      const supReserve =
+        net.totalReserve && net.totalReserve !== "0"
+          ? parseInt(net.totalReserve, 10) / 10 ** 8
+          : 0;
 
       return {
         chart: {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           height: 320,
           margin: [0, 0, 0, 0],
         },
         title: {
-            text: '',
+          text: "",
         },
         tooltip: {
           enabled: false,
         },
         labels: false,
         credits: false,
-        series: [{
-            type: 'treemap',
-            alternateStartingDirection: true,
-            layoutAlgorithm: 'squarified',
+        levels: [
+          {
+            level: 1,
+            dataLabels: {
+              enabled: true,
+            },
+            borderWidth: 3,
+          },
+        ],
+        series: [
+          {
+            type: "treemap",
+            // layoutStartingDirection: '',
+            // alternateStartingDirection: true,
+            layoutAlgorithm: "strip",
+            // allowDrillToNode: true,
+            // levelIsConstant: true,
             data: [
               {
                 name: 'Unlocked',
@@ -113,7 +132,8 @@ export default {
                 sortIndex: 1,
               },
             ]
-        }],
+          },
+        ],
       };
     },
   },
