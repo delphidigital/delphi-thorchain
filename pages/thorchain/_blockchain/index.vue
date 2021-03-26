@@ -12,7 +12,7 @@
         <div class="pure-u-1 pure-u-md-1-2 section--split-left">
           <PoolDepthSummary />
         </div>
-        <div class="pure-u-1 pure-u-md-1-2 section--split-right">
+        <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display:flex;">
           <PercentageRuneLocked />
         </div>
       </div>

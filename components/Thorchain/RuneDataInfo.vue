@@ -192,6 +192,7 @@
         <ColumnChart
           :chart-data="getProfitLossData"
           :format-label="formatLabel"
+          :format-label-axis="formatLabelAxis"
           :x-axis-categories="xAxisProfitColumCategories"
           :custom-plot-options="customPlotOptionsColumn"
           :custom-tooltip-options="customTooltipOptionsColumn"
@@ -202,6 +203,7 @@
         <ColumnChart
           :chart-data="getPredictFutureData"
           :format-label="formatLabel"
+          :format-label-axis="formatLabelAxis"
           :x-axis-categories="xAxisPredictColumCategories"
           :custom-plot-options="customPlotOptionsColumn"
           :custom-tooltip-options="customTooltipOptionsColumn"
@@ -287,11 +289,12 @@ export default {
       }
       return [{
         data: [
-          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.runeMovement.value, '#19ceb8'),
-          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.assetMovement.value, '#2d99fe'),
-          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.fees.value, '#4346D3'),
-          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.impermLoss.value, '#f7517f'),
-          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.total.value, '#c4c634', true),
+
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.runeMovement.value, '#2d99fe'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.assetMovement.value, '#4346d3'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.fees.value, '#5e2bbc'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.impermLoss.value, '#f8c950'),
+          this.getUtteranceDataWithTooltip(this.profitLossBreakdown.total.value, '#19ceb8', true),
         ],
       }];
     },
@@ -314,7 +317,7 @@ export default {
     getUtteranceDataWithTooltip(y, color, highlightValue) {
       let fontColor = '#ffffff';
       if (highlightValue) {
-        fontColor = y > 0 ? '#55CC55' : '#FF5555';
+        fontColor = y > 0 ? '#19ceb8' : '#FF5555';
       }
       return {
         color,
@@ -323,16 +326,16 @@ export default {
           overflow: 'justify',
           borderRadius: 4,
           verticalAlign: y > 0 ? 'top' : 'bottom',
-          y: y > 0 ? -35 : 35,
+          y: y > 0 ? -65 : 65,
           className: 'tooltip__body',
           useHTML: true,
           shadow: true,
           backgroundColor: '#30354b',
           color: fontColor,
           align: 'center',
-          padding: 8,
+          padding: 12,
           style: {
-            padding: '8px',
+            padding: '8px 12px', fontSize: '13px'
           },
           formatter: () => this.formatLabel(y),
         },
@@ -464,6 +467,9 @@ export default {
     formatLabel(value) {
       return numeral(value).format("$0,0.0a").toUpperCase();
     },
+    formatLabelAxis(value) {
+      return numeral(value).format("$0,0a").toUpperCase();
+    },
   },
 };
 </script>
@@ -507,6 +513,7 @@ export default {
     flex: none;
     margin-right: 28px;
     border-bottom: 2px solid transparent;
+    color: #8f929e;
     cursor: pointer;
   }
   > .section__title--empty {
@@ -514,6 +521,7 @@ export default {
     margin: 0;
   }
   > .plot--active {
+    color: white;
     border-bottom: 2px solid white;
   }
 }

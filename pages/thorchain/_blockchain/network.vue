@@ -205,13 +205,13 @@
             <div class="section__body">
               <div class="location-rune-detail">
                 <div class="perc-rune-locked">
-                  <h3>25%</h3>
+                  <h3>
+                    {{percentageOfRuneLocked}} %
+                  </h3>
                   <div>% of RUNE locked</div>
                 </div>
                 <div class="cirq-supply-rune">
                   <CirculatingSupply />
-                  <!-- <div class="cirq-supply-runetitle">Circulating supply</div>
-                  <div>TODO</div> -->
                 </div>
               </div>
               <LocationOfRune />
@@ -220,6 +220,7 @@
         </div>
       </div>
 
+      <!-- TODO: ENABLE Thorchain Developer Activity when ready
       <div class="pure-g">
         <div class="pure-u-1">
           <div class="section" style="flex: 1;">
@@ -273,7 +274,7 @@
           </div>
         </div>
       </div>
-
+      -->
       <Footer />
     </div>
     <div v-else>
@@ -290,7 +291,7 @@ import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewa
 import VolumeByPoolVsTotalVolume from '../../../components/Network/VolumeByPoolVsTotalVolume.vue';
 import LocationOfRune from '../../../components/Network/LocationOfRune.vue';
 import GitlabCommitsChart from '../../../components/Network/GitlabCommitsChart.vue';
-import { CirculatingSupply } from '../../../components/Network/CirculatingSupply.vue';
+import CirculatingSupply from '../../../components/Network/CirculatingSupply.vue';
 const runeDivider = 10 ** 8;
 
 export default {
@@ -343,6 +344,28 @@ export default {
     window.removeEventListener('blur', this.pollDataDeactivate);
   },
   computed: {
+    percentageOfRuneLocked() {
+      // TODO: use total supply api when available
+      const coingecko = this.$store.state.runeMarketData.coingeckoMarketData;
+      // const pooledPlusBonded = this.$store.state.runeMarketData.circulatingSupply;
+      // // rune locked is all rune in pools + bonded + in reserve
+      // const cirqSupply = (
+      //   this.$store.state.runeMarketData && this.$store.state.runeMarketData.circulatingSupply || 0
+      // );
+      // const totalSupply = coingeckoMarketData.total_supply;
+      // const circulatingSupply = ;
+        // ? pooledPlusBonded
+        // : coingecko.circulating_supply;
+      const supplyLocked = (
+        (this.$store.state.networkHealth.network.bondMetrics.totalActiveBond/10**8) +
+        (this.$store.state.networkHealth.network.totalPooledRune/10**8) + 
+        (this.$store.state.networkHealth.network.totalReserve/10**8)
+      );
+      const percentOfSupplyLocked = (
+        (supplyLocked * 100) / coingecko.circulating_supply
+      );
+      return percentOfSupplyLocked.toFixed(2);
+    },
     queueStatus() {
       const queue = this.$store.state.networkHealth && this.$store.state.networkHealth.queue || {};
       const totalInQueue = parseInt(queue.swap || "0", 10) + parseInt(queue.outbound || "0", 10);
@@ -410,17 +433,22 @@ export default {
       return price && detPrice ? (price / detPrice) : 0;
     },
     deterministicRuneData() {
+      // TODO: Review this again
+      // When deterministic price is the same as the current price the circle should be filled with the deterministic multiplier.
+      // When deterministic price is 1/2 of the current price it should fill half.
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
       return [
         {
           name: "Actual price",
           y: price,
           color: "#5529a9",
+          label: price,
         },
         {
           name: "Deterministic price",
           y: this.deterministicRunePrice,
           color: "#2d99fe",
+          label: this.deterministicRunePrice,
         },
       ];
     },

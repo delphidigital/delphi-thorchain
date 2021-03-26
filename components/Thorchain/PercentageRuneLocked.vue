@@ -1,5 +1,5 @@
 <template>
-  <div class="section">
+  <div class="section section--flex">
     <div class="section__header" id="percentage-rune-locked">
       <h2 class="section__title">
         Percentage RUNE locked
@@ -117,4 +117,13 @@ export default {
 </script>
 
 <style>
+.section--flex {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.section__body--pie-chart {
+  flex: 1;
+  align-content: center;
+}
 </style>

@@ -1,15 +1,12 @@
 <template>
   <div class="incentive-pendulum">
-    <h3 class="section__subtitle">
-      Incentive Pendulum
-    </h3>
     <div class="incentive-pendulum-container">
       <div class="incentive-pendulum-header">
         <p class="incentive-label">
           Nodes
         </p>
         <p class="incentive-label">
-          Stakers
+          Liquidity Providers
         </p>
       </div>
       <div class="incentive-pendulum-bar-container">
@@ -121,7 +118,7 @@ export default {
       };
     },
     efficient() {
-      return 0.66;
+      return 0.5;
     },
   },
   methods: {
@@ -178,8 +175,8 @@ export default {
 
 .incentive-label {
   font-size: 14px;
-  color: $color-text-secondary;
-  font-weight: 400;
+  color: white;
+  font-weight: 600;
 }
 
 .status-value {
@@ -189,7 +186,7 @@ export default {
   span {
     font-size: 14px;
     font-weight: 400;
-    diplay: inline-block;
+    display: inline-block;
     margin-left: 5px;
     text-transform: capitalize;
   }
@@ -250,7 +247,7 @@ export default {
   flex-direction: row;
   margin-top: -14px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   opacity: 0.7;
 
   > div {

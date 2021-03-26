@@ -41,6 +41,10 @@ export default {
       type: Function,
       default: v => v,
     },
+    formatLabelAxis: {
+      type: Function,
+      default: v => v,
+    },
     xAxisOptions: {
       type: Object,
       default: () => ({}),
@@ -95,12 +99,12 @@ export default {
   computed: {
     chartOptions() {
       const areaColor = '#343d4e';
-      const { formatLabel } = this;
+      const { formatLabel, formatLabelAxis } = this;
       return {
         chart: {
           backgroundColor: 'transparent',
           height: 330,
-          margin: [5, 0, 75, 32],
+          margin: [5, 0, 75, 62],
           type: 'column',
           // events: {
           //   load: function()  {
@@ -180,7 +184,7 @@ export default {
           categories: this.xAxisCategories,
           labels: {
             useHTML: true,
-            style: { color: '#fff', fontSize: 10 },
+            style: { color: '#fff', fontSize: 11 },
             title: false,
             overflow: 'allow',
             margin: 0,
@@ -194,12 +198,13 @@ export default {
         },
         yAxis: {
           // min: 0,
+          title: false,
           className: 'highcharts-yaxis--title',
           labels: {
             formatter() {
-              return formatLabel(this.value);
+              return formatLabelAxis(this.value);
             },
-            style: { color: '#fff', fontSize: "7px" },
+            style: { color: '#fff', fontSize: "10px", fontWeight: 600 },
             x: -5,
           },
           gridLineColor: areaColor,

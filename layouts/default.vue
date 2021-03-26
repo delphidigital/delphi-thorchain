@@ -13,7 +13,7 @@
               exact-active-class="header__link--active"
               :to="{name: 'thorchain-blockchain', params: { blockchain: currentBlockchain }}"
             >
-              Pool Overview
+              Liquidity Pools
             </nuxt-link>
             <nuxt-link
               class="header__link"

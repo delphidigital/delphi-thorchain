@@ -337,13 +337,14 @@ async function updateBlockchainData(blockchain) {
   ), 0);
 
   const totalValueLockedUSD = (((runeDepth * 2) + totalBonded) /  (10 ** 8));
-  // TODO: Replace circulating calc (which is incomplete) with the circ supply endpoint when ready
-  const circulating = ((totalBonded + runeDepth) / (10 ** 8));
   const priceUsd = stats.runePriceUSD;
   const coingeckoMarketData = await getRuneMarketData();
   const ta = technicalAnalysis(
     poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
   );
+  // TODO: Replace circulating calc (which is incomplete) with the circ supply endpoint when ready
+  // const circulating = ((totalBonded + runeDepth) / (10 ** 8));
+  const circulating = coingeckoMarketData.circulating_supply; // ((totalBonded + runeDepth) / (10 ** 8));
 
   // SET DATA
   await set('queue', queue);

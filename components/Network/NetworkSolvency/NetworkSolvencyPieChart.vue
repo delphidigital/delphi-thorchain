@@ -40,7 +40,7 @@ export default {
           style: { color: '#fff' },
           useHtml: true,
           floating: true,
-          y: 20
+          verticalAlign: 'middle',
         },
         tooltip: {
           enabled: false,

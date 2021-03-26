@@ -66,8 +66,8 @@
 
             <td class="section__table__data">
               <div>
-                <!-- Rewards -->
-                <RuneUSD :rune="pool.totalEarningsRune" />
+                <!-- Rewards was  pool.totalEarningsRune --> 
+                {{ pool.rewards }}%
               </div>
             </td>
 
@@ -118,7 +118,7 @@ export default {
           label: 'IL',
         },
         {
-          name: 'totalEarningsRune',
+          name: 'rewards', // 'totalEarningsRune'
           label: 'Rewards',
         },
         {
@@ -143,7 +143,8 @@ export default {
           ...poolPeriodTA,
           poolId,
           impermanentLoss: poolPeriodTA.intervals[lastInterval].impermanentLoss,
-          apy: parseFloat(poolPeriodStats.poolAPY)
+          apy: poolPeriodTA.intervals[lastInterval].periodAPY,
+          rewards: parseFloat(poolPeriodStats.poolAPY).toFixed(2), // NOTE: Rewards is the APY without imp lost that comes from api
         };
       });
       const descChar = this.sortDescending ? '-' : '';

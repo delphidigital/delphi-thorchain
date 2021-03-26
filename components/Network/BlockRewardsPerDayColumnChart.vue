@@ -3,6 +3,7 @@
     <ColumnChart
       :chart-data="getBlockRewardsPerDayData"
       :format-label="formatLabel"
+      :format-label-axis="formatLabelAxis"
       :x-axis-categories="xAxisColumCategories"
       :custom-chart-options="customChartOptions"
       class="blockrewardsperday-chart"
@@ -51,6 +52,9 @@ export default {
   methods: {
     formatLabel(value) {
       return numeral(value).format("$0,0.0a").toUpperCase();
+    },
+    formatLabelAxis(value) {
+      return numeral(value).format("$0,0a").toUpperCase();
     },
   },
 };

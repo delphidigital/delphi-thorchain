@@ -9,7 +9,7 @@
           <line
             x1="10"
             y1="9"
-            x2="515"
+            :x2="maxBarWidth"
             y2="9"
             stroke="#2D3958"
             stroke-width="18"
@@ -18,7 +18,7 @@
           <line
             x1="10"
             y1="9"
-            :x2="200"
+            :x2="linePercentWidth"
             y2="9"
             stroke="#16ceb9"
             stroke-width="12"
@@ -28,14 +28,14 @@
         <div class="cirq-supply-bar-tooltip app-tooltip">
           <div class="app-tooltip__body">
             <p class="app-tooltip__text" style="font-weight: bold; font-size: 12px;">
-              {{customFormatUSDValue(circulatingSupply)}}
+              {{formatValue(circulatingSupply)}}
             </p>
           </div>
         </div>
       </div>
       <div class="cirq-supply-max">
-        <div>0</div>
-        <div>{{customFormatUSDValue(maxSupply)}}</div>
+        <div>{{formatValue(circulatingSupply)}}</div>
+        <div>{{formatValue(maxSupply)}}</div>
       </div>
     </div>
   </div>
@@ -45,16 +45,24 @@
 import numeral from 'numeral';
 
 export default {
+  data() {
+    return {
+      maxBarWidth: 515
+    }
+  },
   computed: {
     circulatingSupply() {
-      return 230000000;
+      return this.$store.state.runeMarketData.coingeckoMarketData.circulating_supply;
     },
     maxSupply() {
-      return 500000000;
+      return this.$store.state.runeMarketData.coingeckoMarketData.total_supply;
+    },
+    linePercentWidth() {
+      return (this.circulatingSupply / this.maxSupply) * this.maxBarWidth;
     },
   },
   methods:{
-    customFormatUSDValue(value) {
+    formatValue(value) {
       const thousandsConvert = value / 1000;
       return `${numeral(thousandsConvert).format('(0,0)').replace(',','.')}K`;
     },

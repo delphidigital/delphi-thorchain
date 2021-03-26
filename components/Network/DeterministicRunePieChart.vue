@@ -98,7 +98,7 @@ export default {
                 </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text">
-                    ${numeral(this.point.y).format('($0,0.00)')}
+                    ${numeral(this.point.label).format('($0,0.00)')}
                   </p>
                 </div>
               </div>

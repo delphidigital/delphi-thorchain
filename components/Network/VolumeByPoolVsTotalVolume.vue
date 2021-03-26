@@ -4,6 +4,7 @@
       ref-name="vol_chart"
       :chart-data="chartData"
       :format-label="formatLabel"
+      :format-label-axis="formatLabelAxis"
       :x-axis-options="xAxisOptions"
       :x-axis-categories="xAxisCategories"
       :custom-plot-options="customPlotOptions"
@@ -33,7 +34,7 @@ export default {
     return {
       customChartOptions: {
         marginBottom: 120,
-        height: 370,
+        height: 420,
         reflow: true,
         redraw: true,
       },
@@ -74,6 +75,9 @@ export default {
   methods: {
     formatLabel(value) {
       return numeral(value).format("$0,0.0a").toUpperCase();
+    },
+    formatLabelAxis(value) {
+      return numeral(value).format("$0,0a").toUpperCase();
     },
     getChartData(currentTimeOption) {
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
