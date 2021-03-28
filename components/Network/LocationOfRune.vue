@@ -5,27 +5,86 @@
       :key="item['name']"
       class="location-squarebox-lvl1"
     >
-      <div :style="getItemCssProps(item, 1)">
-        <div class="squarebox-label">{{ displayName(item) }}</div>
+      <div :style="getItemCssProps(item, 1)" class="squarebox-container">
+        
+        <div class="squarebox-label">
+          {{ displayName(item) }}
+
+          <div class="app-tooltip">
+            <div class="app-tooltip__header">
+              <span class="app-tooltip__marker"></span>
+              <span>{{ item.name }}</span>
+            </div>
+            <div class="app-tooltip__body">
+              <p class="app-tooltip__text">
+                {{formatValueLabel(item.value)}}
+              </p>
+            </div>
+          </div>
+
+        </div>
+
         <div v-if="item.child">
           <div
             class="location-squarebox-inner"
             :style="getItemCssProps(item.child, 2)"
           >
-            <div class="squarebox-label">{{ displayName(item.child) }}</div>
+            <div class="squarebox-label">
+              {{ displayName(item.child) }}
+
+              <div class="app-tooltip">
+                <div class="app-tooltip__header">
+                  <span class="app-tooltip__marker"></span>
+                  <span>{{ item.child.name }}</span>
+                </div>
+                <div class="app-tooltip__body">
+                  <p class="app-tooltip__text">
+                    {{formatValueLabel(item.child.value)}}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div v-if="item.child.child">
               <div
                 class="location-squarebox-inner"
                 :style="getItemCssProps(item.child.child, 3)"
               >
-                <div class="squarebox-label">{{ displayName(item.child.child) }}</div>
+                <div class="squarebox-label">
+                  {{ displayName(item.child.child) }}
+                  <div class="app-tooltip">
+                    <div class="app-tooltip__header">
+                      <span class="app-tooltip__marker"></span>
+                      <span>{{ item.child.child.name }}</span>
+                    </div>
+                    <div class="app-tooltip__body">
+                      <p class="app-tooltip__text">
+                        {{formatValueLabel(item.child.child.value)}}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
                 <div v-if="item.child.child.child">
                   <div
                     class="location-squarebox-inner"
                     :style="getItemCssProps(item.child.child.child, 4)"
                   >
-                    <div class="squarebox-label">{{ displayName(item.child.child.child) }}</div>
+                    <div class="squarebox-label">
+                      {{ displayName(item.child.child.child) }}
+                      <div class="app-tooltip">
+                        <div class="app-tooltip__header">
+                          <span class="app-tooltip__marker"></span>
+                          <span>{{ item.child.child.child.name }}</span>
+                        </div>
+                        <div class="app-tooltip__body">
+                          <p class="app-tooltip__text">
+                            {{formatValueLabel(item.child.child.child.value)}}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
@@ -38,24 +97,29 @@
 </template>
 
 <script>
+import numeral from 'numeral';
 import getProportions from "../../plugins/customSquareChartUtil";
+
 export default {
   methods: {
+    formatValueLabel(value) {
+      const thousandsConvert = value / 1000;
+      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+    },
     getItemCssProps(item, level) {
       let css = `width: ${item.width}px; height:${item.height}px; background-color: ${item.color};`;
-      if (item.value < 100) {
+      const logValue = this.logScale(item.value);
+      if (logValue < 100) {
         css += ` color: ${item.color};`;
       }
-      if (level === 1 && item.value < 120) {
+      if (level === 1 && logValue < 120) {
         css += `writing-mode: vertical-rl;text-orientation: upright;text-align: start;`;
       }
       return css;
     },
     displayName(item) {
-      if (item.value < 100) {
-        return '';
-      }
-      return item.name;
+      const logValue = this.logScale(item.value);
+      return (logValue < 100) ? '' : item.name;
     },
     logScale(value) {
       const totalSupply = this.$store.state.runeMarketData.coingeckoMarketData.total_supply;
@@ -101,19 +165,23 @@ export default {
       chartData: [
         {
           name: "Unlocked",
-          value: this.logScale(supUnlocked),
+          value: supUnlocked,
+          // logValue: this.logScale(supUnlocked),
           color: "#3f4456",
           child: {
             name: "Active Bonded",
-            value: this.logScale(supActiveBonded),
+            value: supActiveBonded,
+            // logValue: this.logScale(supActiveBonded),
             color: "#2d99fe",
             child: {
               name: "Standby Bonded",
-              value: this.logScale(supSandbyBonded),
+              value: supSandbyBonded,
+              // logValue: this.logScale(supSandbyBonded),
               color: "#5e2bbc",
               child: {
                 name: "Pooled",
-                value: 3,
+                value: supPooled,
+                // logValue: this.logScale(supPooled),
                 color: "#f8c950",
               },
             },
@@ -121,12 +189,14 @@ export default {
         },
         {
           name: "Reserve",
-          value: this.logScale(supReserve),
+          value: supReserve,
+          // logValue: this.logScale(supReserve),
           color: "#19ceb8",
         },
         {
           name: "Unreleased",
-          value: this.logScale(supUnreleased),
+          value: supUnreleased,
+          // logValue: this.logScale(supUnreleased),
           color: "#4346d3",
         },
       ],
@@ -140,7 +210,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .chart-placeholder {
   height: 320px;
 }
@@ -166,6 +236,29 @@ export default {
 .squarebox-label {
   font-size: 11px;
   padding-top: 20px;
+  position: relative;
+  > .app-tooltip {
+    visibility: hidden;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 30%;
+    top: 20%;
+    z-index: 10;
+
+    font-weight: bold;
+    font-size: 12px;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+
+    > .app-tooltip__body {
+      flex: 1;
+      margin: auto;
+    }
+  }
+}
+.squarebox-container:hover > .squarebox-label > .app-tooltip {
+  visibility: visible;
 }
 .location-squarebox-inner > .squarebox-label {
   font-size: 10px;

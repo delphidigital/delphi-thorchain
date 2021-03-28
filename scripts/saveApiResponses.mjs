@@ -17,13 +17,26 @@ process.on('unhandledRejection', (up) => { throw up; });
 async function redisSet(key, data) {
   await redisClient.setAsync(key, JSON.stringify(data));
 }
-async function getRuneMarketData() {
+async function getRuneMarketData(blockchain) {
   const response = await axios.get('https://api.coingecko.com/api/v3/coins/thorchain?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false');
+  let circulating_supply = response.data.market_data.circulating_supply;
+  if (blockchain === 'testnet') {
+    const cirqSupplyResponse = await getTestnetV2CirqSupply();
+    circulating_supply = cirqSupplyResponse.supply.reduce((acc, next) => (
+      acc + parseInt(next.amount, 10)
+    ),0) / 10**8;
+  }
   return {
     total_supply: response.data.market_data.total_supply,
     max_supply: response.data.market_data.max_supply,
-    circulating_supply: response.data.market_data.circulating_supply,
+    circulating_supply,
   };
+}
+
+// TODO: use this value as placeholder for cirq supply until v2 api cirq supply is released
+async function getTestnetV2CirqSupply() {
+  const response = await axios.get('https://testnet.thornode.thorchain.info/cosmos/bank/v1beta1/supply');
+  return { supply: response.data.supply };
 }
 
 // History depth and swaps contain this keys: 
@@ -338,7 +351,7 @@ async function updateBlockchainData(blockchain) {
 
   const totalValueLockedUSD = (((runeDepth * 2) + totalBonded) /  (10 ** 8));
   const priceUsd = stats.runePriceUSD;
-  const coingeckoMarketData = await getRuneMarketData();
+  const coingeckoMarketData = await getRuneMarketData(blockchain);
   const ta = technicalAnalysis(
     poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
   );
