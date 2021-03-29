@@ -78,7 +78,7 @@ export default {
           percentage: percentage(totalStandbyBonded),
           color: '#5E2BBC',
         },
-        {
+        { // TODO: Add Standby pools
           name: 'Standby pools',
           percentage: 0,
           color: '#6648FF',

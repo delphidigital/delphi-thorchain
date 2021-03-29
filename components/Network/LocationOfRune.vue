@@ -7,7 +7,11 @@
     >
       <div :style="getItemCssProps(item, 1)" class="squarebox-container">
         
-        <div class="squarebox-label">
+        <div class="squarebox-label"
+          @mouseover="hoveringId = item.name"
+          @mouseout="hoveringId = null"
+          :class="{ 'squarebox-label--hover': hoveringId == item.name}"
+        >
           {{ displayName(item) }}
 
           <div class="app-tooltip">
@@ -29,7 +33,11 @@
             class="location-squarebox-inner"
             :style="getItemCssProps(item.child, 2)"
           >
-            <div class="squarebox-label">
+            <div class="squarebox-label"
+              @mouseover="hoveringId = item.child.name"
+              @mouseout="hoveringId = null"
+              :class="{ 'squarebox-label--hover': hoveringId == item.child.name}"
+            >
               {{ displayName(item.child) }}
 
               <div class="app-tooltip">
@@ -50,7 +58,11 @@
                 class="location-squarebox-inner"
                 :style="getItemCssProps(item.child.child, 3)"
               >
-                <div class="squarebox-label">
+                <div class="squarebox-label"
+                  @mouseover="hoveringId = item.child.child.name"
+                  @mouseout="hoveringId = null"
+                  :class="{ 'squarebox-label--hover': hoveringId == item.child.child.name}"
+                >
                   {{ displayName(item.child.child) }}
                   <div class="app-tooltip">
                     <div class="app-tooltip__header">
@@ -70,7 +82,11 @@
                     class="location-squarebox-inner"
                     :style="getItemCssProps(item.child.child.child, 4)"
                   >
-                    <div class="squarebox-label">
+                    <div class="squarebox-label"
+                      @mouseover="hoveringId = item.child.child.child.name"
+                      @mouseout="hoveringId = null"
+                      :class="{ 'squarebox-label--hover': hoveringId == item.child.child.child.name}"
+                    >
                       {{ displayName(item.child.child.child) }}
                       <div class="app-tooltip">
                         <div class="app-tooltip__header">
@@ -126,7 +142,11 @@ export default {
       var minp = 1;
       var maxp = totalSupply;
       // The result should be between 100 an 10000000
-      var minv = Math.log(100);
+      var minv = Math.log(1000);
+      
+      // const coingeckoMarketData = this.$store.state.runeMarketData.coingeckoMarketData;
+      // const totalSupply = coingeckoMarketData.total_supply;
+      
       var maxv = Math.log(100000);
       // calculate adjustment factor
       var scale = (maxv-minv) / (maxp-minp);
@@ -162,6 +182,7 @@ export default {
         : 0;
 
     return {
+      hoveringId: null,
       chartData: [
         {
           name: "Unlocked",
@@ -193,12 +214,12 @@ export default {
           // logValue: this.logScale(supReserve),
           color: "#19ceb8",
         },
-        {
-          name: "Unreleased",
-          value: supUnreleased,
-          // logValue: this.logScale(supUnreleased),
-          color: "#4346d3",
-        },
+        // {
+        //   name: "Unreleased",
+        //   value: 0, supUnreleased,
+        //   // logValue: this.logScale(supUnreleased),
+        //   color: "#4346d3",
+        // },
       ],
     };
   },
@@ -237,6 +258,7 @@ export default {
   font-size: 11px;
   padding-top: 20px;
   position: relative;
+  height: 100%;
   > .app-tooltip {
     visibility: hidden;
     position: absolute;
@@ -257,8 +279,8 @@ export default {
     }
   }
 }
-.squarebox-container:hover > .squarebox-label > .app-tooltip {
-  visibility: visible;
+.squarebox-label--hover > .app-tooltip {
+  visibility: visible !important;
 }
 .location-squarebox-inner > .squarebox-label {
   font-size: 10px;
