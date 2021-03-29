@@ -688,5 +688,12 @@ export default {
     flex-direction: column;
     height: auto;
   }
+  .deeplink-selector, .tweet__link {
+    margin-bottom: 14px;
+    margin-right: 0;
+    &:first-child {
+      margin-top: 14px;
+    }
+  }
 }
 </style>

@@ -64,29 +64,31 @@
         <div class="pure-u-1 pure-u-md-2-3 section--split-left" style="display: inline-flex;">
           <div class="section" style="flex: 1;">
             <div class="section__header" id="volumebypool_vs_total_volume">
-              <h2 class="section__title">
+              <h2 class="section__title display--notmobile">
                 Volume by pool vs. Total volume
               </h2>
-              <div class="volume-by-pool-time-selector">
-                <button
-                  v-for="option in timeOptions"
-                  :key="option"
-                  class="volume-by-pool-time-option"
-                  :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
-                  @click="togglePeriod(option)"
-                >
-                  {{ option }}
-                </button>
+              <div class="section__title__actions">
+                <div class="volume-by-pool-time-selector">
+                  <button
+                    v-for="option in timeOptions"
+                    :key="option"
+                    class="volume-by-pool-time-option"
+                    :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
+                    @click="togglePeriod(option)"
+                  >
+                    {{ option }}
+                  </button>
+                </div>
+                <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
+                  <Icon name="link" scale="0.7"></Icon>
+                </a>
+                <a class="tweet__link" :href="tweetVolumeByPoolVsTotalVolume" target="_blank">
+                  <Icon
+                    name="brands/twitter"
+                    scale="0.7"
+                  ></Icon>
+                </a>
               </div>
-              <a class="deeplink-selector" href="#volumebypool_vs_total_volume">
-                <Icon name="link" scale="0.7"></Icon>
-              </a>
-              <a class="tweet__link" :href="tweetVolumeByPoolVsTotalVolume" target="_blank">
-                <Icon
-                  name="brands/twitter"
-                  scale="0.7"
-                ></Icon>
-              </a>
             </div>
             <VolumeByPoolVsTotalVolume :currentTimeOption="currentTimeOption" />
           </div>
@@ -563,8 +565,14 @@ export default {
   border-radius: 15px;
   padding: 0 16px;
     margin-right: 16px;
+  @media screen and (max-width: $pureg-lg) {
+    height: 30px; margin-left: 10px; padding: 0 8px; margin-right: 10px;
+  }
 }
 
+.section__title__actions {
+  display: flex;
+}
 .volume-by-pool-time-option {
   font-size: 13px;
   font-weight: 500;
@@ -694,6 +702,13 @@ export default {
       }
     }
     
+  }
+}
+
+#volumebypool_vs_total_volume {
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+    margin: 16px;
   }
 }
 </style>

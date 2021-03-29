@@ -375,6 +375,7 @@ a {
   height: 58px;
   display: flex;
   align-items: center;
+  overflow: auto;
 }
 
 .section__title {
@@ -385,7 +386,6 @@ a {
 
 .section__header {
   @media screen and (max-width: 500px) {
-    overflow: auto;
     h2 {
       font-size: 14px !important;
     }

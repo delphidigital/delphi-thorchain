@@ -486,7 +486,11 @@ export default {
   background-color: $color-bg-tint;
   border-radius: 15px;
   padding: 0 16px;
-    margin-right: 16px;
+  margin-right: 16px;
+
+  @media screen and (max-width: $pureg-lg) {
+    height: 30px; margin-left: 10px; padding: 0 8px; margin-right: 10px;
+  }
 }
 
 .pool-list-time-option {
