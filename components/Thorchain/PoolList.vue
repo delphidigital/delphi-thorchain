@@ -135,11 +135,11 @@
               </div>
             </td>
 
-            <td class="section__table__data">
+            <!-- <td class="section__table__data">
               <div>
                 <Percentage :value="pool.correllation" />
               </div>
-            </td>
+            </td> -->
           </tr>
 
 
@@ -220,11 +220,11 @@
               </div>
             </td>
 
-            <td class="section__table__data">
+            <!-- <td class="section__table__data">
               <div>
                 <Percentage :value="pool.correllation" />
               </div>
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </table>
@@ -283,11 +283,11 @@ export default {
           label: 'V/D Ratio',
           info: 'A metric which indicates a pool’s potential. A higher number means higher potential.',
         },
-        {
-          name: 'correllation',
-          label: 'Correllation',
-          info: 'A metric which indicates a pool’s risk. A higher number indicates lower risk as assets are more correlated, there’s a lower risk of impermanent loss.',
-        },
+        // {
+        //   name: 'correllation',
+        //   label: 'Correllation',
+        //   info: 'A metric which indicates a pool’s risk. A higher number indicates lower risk as assets are more correlated, there’s a lower risk of impermanent loss.',
+        // },
       ],
       yAxisLabelOptions: {
         type: 'linear',

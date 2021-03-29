@@ -437,16 +437,17 @@ export default {
       // When deterministic price is the same as the current price the circle should be filled with the deterministic multiplier.
       // When deterministic price is 1/2 of the current price it should fill half.
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+      const detRuneProportion = this.deterministicRunePrice * 100 / price;
       return [
         {
           name: "Actual price",
-          y: price,
+          y: 100 - detRuneProportion,
           color: "#5529a9",
           label: price,
         },
         {
           name: "Deterministic price",
-          y: this.deterministicRunePrice,
+          y: detRuneProportion,
           color: "#2d99fe",
           label: this.deterministicRunePrice,
         },

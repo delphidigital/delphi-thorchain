@@ -46,7 +46,7 @@ export default {
         chart: {
           backgroundColor: 'transparent',
           height: 330,
-          margin: [5, 0, 75, 32],
+          margin: [5, 0, 75, 62],
         },
         title: false,
         labels: false,
@@ -85,7 +85,14 @@ export default {
         xAxis: {
           labels: {
             useHTML: true,
-            style: { color: '#fff', fontSize: 10 },
+            style: {
+              color: '#FFFFFF',
+              fontFamily: 'Montserrat',
+              fontSize: 12,
+              letterSpacing: 0,
+              lineHeight: '16px',
+              fontWeight: 500,
+            },
             title: false,
             overflow: 'allow',
             margin: 0,
@@ -109,7 +116,15 @@ export default {
               }
               return null;
             },
-            style: { color: '#fff', fontSize: 7 },
+            style: {
+              color: '#FFFFFF',
+              fontFamily: 'Montserrat',
+              fontSize: 11,
+              letterSpacing: 0,
+              lineHeight: '20px',
+              textAlign: 'right',
+              fontWeight: 500,
+            },
             x: -5,
           },
           gridLineColor: areaColor,

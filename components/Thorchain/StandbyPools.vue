@@ -1,9 +1,22 @@
 <template>
   <div class="section">
-    <div class="section__header standby-pools-header">
+    <div class="section__header standby-pools-header" id="standby-pools">
       <h2 class="section__title">
         Standby Pools
       </h2>
+
+      <a class="deeplink-selector" href="#standby-pools">
+        <Icon
+          name="link"
+          scale="0.7"
+        ></Icon>
+      </a>
+      <a class="tweet__link" :href="tweetStandbyPools" target="_blank">
+        <Icon
+          name="brands/twitter"
+          scale="0.7"
+        ></Icon>
+      </a>
       <!--
       <div class="standby-pools-gauge">
         <div
@@ -13,16 +26,15 @@
       </div>
       -->
     </div>
-    <div class="section__body coming-soon__parent">
-      <ComingSoon />
-      <table class="section__table standby-pools-table coming-soon__target">
+    <div class="section__body">
+      <table class="section__table standby-pools-table">
         <thead>
           <tr>
             <th class="section__table__head">
               Name
             </th>
             <th class="section__table__head section__table__head--right">
-              Amount Staked
+              Depth
             </th>
           </tr>
         </thead>
@@ -32,7 +44,7 @@
               {{ pool.name }}
             </td>
             <td class="section__table__data section__table__data--right">
-              {{ pool.amountStaked }} RUNE
+              {{ pool.depth }}
             </td>
           </tr>
         </tbody>
@@ -43,20 +55,34 @@
 
 <script>
 import numeral from 'numeral';
+import { poolNameWithoutAddr } from '../../lib/utils';
 
 export default {
   data() {
-    // TODO(Fede): this is tmp dummy data for building the front end, probably not a good idea to
-    // build data here
-    const poolIds = this.$store.state.pools.poolIds;
+    const baseUrl = process.env.APP_URL;
+    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const standbyPoolsDeepLink = `${baseUrl}${tabBasePath}#standby-pools`;
+    // status enum: "available" "staged" "suspended"
+    // Ref: https://testnet.midgard.thorchain.info/v2/doc#operation/GetPools
+    const stagedPools = this.$store.state.pools.pools.filter(p => p.poolStats.periodALL.status === 'staged');
+    // const ta = this.$store.state.pools.technicalAnalysis;
     return {
-      pools: poolIds.map(pid => ({
-        name: pid,
-        amountStaked: numeral(Math.random() * 4000000).format('0'),
+      tweetStandbyPools: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Standby Pools')}&url=${encodeURIComponent(standbyPoolsDeepLink)}`,
+      pools: stagedPools.map(p => ({
+        name: poolNameWithoutAddr(p.poolStats.periodALL.asset),
+        depth: this.formatDepthUsdValue(
+          (parseInt(p.poolStats.periodALL.assetDepth, 10) * parseInt(p.poolStats.periodALL.assetPriceUSD, 10) / 10**8)
+        ),
       })),
-      nextChurnHeightProgress: Math.random(),
+      // nextChurnHeightProgress: Math.random(),
     };
   },
+  methods: {
+    formatDepthUsdValue(value) {
+      const thousandsConvert = value / 1000;
+      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+    },
+  }
 };
 </script>
 <style lang="scss" scoped>

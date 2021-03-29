@@ -60,7 +60,7 @@
             </td>
             <td class="section__table__data">
               <span>
-                {{ (pool.impermanentLoss || 0).toFixed(4) }}
+                {{ (pool.impermanentLoss || 0).toFixed(2) }}%
               </span>
             </td>
 

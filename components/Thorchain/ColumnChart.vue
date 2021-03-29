@@ -184,7 +184,14 @@ export default {
           categories: this.xAxisCategories,
           labels: {
             useHTML: true,
-            style: { color: '#fff', fontSize: 11 },
+            style: {
+              color: '#FFFFFF',
+              fontFamily: 'Montserrat',
+              fontSize: 12,
+              letterSpacing: 0,
+              lineHeight: '16px',
+              fontWeight: 500,
+            },
             title: false,
             overflow: 'allow',
             margin: 0,
@@ -204,7 +211,15 @@ export default {
             formatter() {
               return formatLabelAxis(this.value);
             },
-            style: { color: '#fff', fontSize: "10px", fontWeight: 600 },
+            style: {
+              color: '#FFFFFF',
+              fontFamily: 'Montserrat',
+              fontSize: 11,
+              letterSpacing: 0,
+              lineHeight: '20px',
+              textAlign: 'right',
+              fontWeight: 500,
+            },
             x: -5,
           },
           gridLineColor: areaColor,
