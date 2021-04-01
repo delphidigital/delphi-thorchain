@@ -35,7 +35,7 @@
           Total value locked in pools:
         </td>
         <td class="table__highlight">
-          {{ formatUsd(totalPoolsDepthStats.totalDepthUsd) }}
+          {{ formatUsd(totalDepthUsd) }}
         </td>
       </tr>
     </tbody>
@@ -51,9 +51,6 @@ export default {
       type: Array,
       default: [],
     },
-    totalPoolsDepthStats: {
-      type: Object,
-    }
   },
   computed: {
     data() {
@@ -61,6 +58,9 @@ export default {
     },
     aggregate() {
       return this.top5PoolsWithOthers.find(d => d.poolId === 'Other');
+    },
+    totalDepthUsd() {
+      return this.top5PoolsWithOthers.reduce((acc, next) => acc + next.totalDepthUsd, 0);
     },
   },
   methods: {

@@ -30,7 +30,7 @@ thorchain.all('/overview', async (req, res) => {
   const version = await loadCached(`${req.blockchain}::version`);
   const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
 
-  const technicalAnalysis = await loadCached(`${req.blockchain}::technicalAnalysis`);
+  // const technicalAnalysis = await loadCached(`${req.blockchain}::technicalAnalysis`);
 
   // NOTE: stats payload not used by frontend
   const stats = await loadCached(`${req.blockchain}::stats`);
@@ -62,7 +62,7 @@ thorchain.all('/overview', async (req, res) => {
     availablePoolStats,
     availablePoolHistoryDepths,
     availablePoolHistorySwaps,
-    technicalAnalysis,
+    // technicalAnalysis,
     allPoolsHistoryEarnings,
   });
 });

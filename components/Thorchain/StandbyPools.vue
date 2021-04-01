@@ -71,7 +71,7 @@ export default {
       pools: stagedPools.map(p => ({
         name: poolNameWithoutAddr(p.poolStats.periodALL.asset),
         depth: this.formatDepthUsdValue(
-          (parseInt(p.poolStats.periodALL.assetDepth, 10) * parseInt(p.poolStats.periodALL.assetPriceUSD, 10) / 10**8)
+          (parseInt(p.poolStats.periodALL.assetDepth, 10) * parseFloat(p.poolStats.periodALL.assetPriceUSD) / 10**8) * 2
         ),
       })),
       // nextChurnHeightProgress: Math.random(),

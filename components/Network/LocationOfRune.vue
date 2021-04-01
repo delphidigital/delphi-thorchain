@@ -12,7 +12,8 @@
           @mouseout="hoveringId = null"
           :class="{ 'squarebox-label--hover': hoveringId == item.name}"
         >
-          {{ displayName(item) }}
+          {{ displayName(item) }}<br/>
+          {{ (item.value * 100 / totalSupply).toFixed(2) }}%
 
           <div class="app-tooltip">
             <div class="app-tooltip__header">
@@ -38,7 +39,8 @@
               @mouseout="hoveringId = null"
               :class="{ 'squarebox-label--hover': hoveringId == item.child.name}"
             >
-              {{ displayName(item.child) }}
+              {{ displayName(item.child) }}<br/>
+              {{ (item.child.value * 100 / totalSupply).toFixed(2) }}%
 
               <div class="app-tooltip">
                 <div class="app-tooltip__header">
@@ -63,7 +65,8 @@
                   @mouseout="hoveringId = null"
                   :class="{ 'squarebox-label--hover': hoveringId == item.child.child.name}"
                 >
-                  {{ displayName(item.child.child) }}
+                  {{ displayName(item.child.child) }}<br/>
+                  {{ (item.child.child.value * 100 / totalSupply).toFixed(2) }}%
                   <div class="app-tooltip">
                     <div class="app-tooltip__header">
                       <span class="app-tooltip__marker"></span>
@@ -87,7 +90,8 @@
                       @mouseout="hoveringId = null"
                       :class="{ 'squarebox-label--hover': hoveringId == item.child.child.child.name}"
                     >
-                      {{ displayName(item.child.child.child) }}
+                      {{ displayName(item.child.child.child) }}<br/>
+                      {{ (item.child.child.child.value * 100 / totalSupply).toFixed(2) }}%
                       <div class="app-tooltip">
                         <div class="app-tooltip__header">
                           <span class="app-tooltip__marker"></span>
@@ -120,7 +124,7 @@ export default {
   methods: {
     formatValueLabel(value) {
       const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+      return `${numeral(thousandsConvert).format('(0,0)').replace(',','.')}K`;
     },
     getItemCssProps(item, level) {
       let css = `width: ${item.width}px; height:${item.height}px; background-color: ${item.color};`;
@@ -224,6 +228,10 @@ export default {
     };
   },
   computed: {
+    totalSupply() {
+      const coingeckoMarketData = this.$store.state.runeMarketData.coingeckoMarketData;
+      return coingeckoMarketData.total_supply;
+    },
     dataProportions() {
       return getProportions(this.chartData, 1000, 300);
     },
@@ -256,9 +264,17 @@ export default {
 }
 .squarebox-label {
   font-size: 11px;
-  padding-top: 20px;
+  padding-top: 10%;
   position: relative;
   height: 100%;
+
+  color: #FFFFFF;
+  font-family: Montserrat;
+  font-size: 14px;
+  letter-spacing: 0;
+  line-height: 21px;
+  font-weight: 600;
+
   > .app-tooltip {
     visibility: hidden;
     position: absolute;
@@ -281,17 +297,5 @@ export default {
 }
 .squarebox-label--hover > .app-tooltip {
   visibility: visible !important;
-}
-.location-squarebox-inner > .squarebox-label {
-  font-size: 10px;
-  padding-top: 10px;
-}
-.location-squarebox-inner > div > .location-squarebox-inner > .squarebox-label {
-  font-size: 9px;
-  padding-top: 5px;
-}
-.location-squarebox-inner > div > .location-squarebox-inner > div > .location-squarebox-inner > .squarebox-label {
-  font-size: 8px;
-  padding-top: 2px; 
 }
 </style>

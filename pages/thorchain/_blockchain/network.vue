@@ -409,8 +409,8 @@ export default {
       return parseFloat(this.$store.state.networkHealth.stats.dailyActiveUsers) || 0;
     },
     monthBondRewardPerNode() {
-      const monthBondingEarnings = parseInt(this.$store.state.pools.allPoolsHistoryEarnings?.period1M?.meta?.bondingEarnings || '0', 10);
-      const monthAvgNodeCount = parseFloat(this.$store.state.pools.allPoolsHistoryEarnings?.period1M?.meta?.avgNodeCount || '0.0');
+      const monthBondingEarnings = parseInt(this.$store.state.pools.allPoolsHistoryEarnings?.period1HM?.meta?.bondingEarnings || '0', 10);
+      const monthAvgNodeCount = parseFloat(this.$store.state.pools.allPoolsHistoryEarnings?.period1HM?.meta?.avgNodeCount || '0.0');
       const monthBondRewardPerNode = ((monthBondingEarnings / (10**8)) / monthAvgNodeCount);
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
       return monthBondRewardPerNode * price;

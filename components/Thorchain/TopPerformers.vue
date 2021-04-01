@@ -42,6 +42,19 @@
               @click="toggleSort(field.name)"
             >
               {{ field.label }}
+              <span class="section__table__head--tooltip">
+                <Icon
+                  class="section__table__head--info"
+                  name="info"
+                  scale="0.4"
+                >
+                </Icon>
+                <div class="app-tooltip table__head__tooltip">
+                  <div class="app-tooltip__body">
+                    {{ field.info }}
+                  </div>
+                </div>
+              </span>
               <span class="top-performers-sort-mark">
                 {{ sortBy === field.name ? (sortDescending ? '▼' : '▲') : '&nbsp;' }}
               </span>
@@ -56,18 +69,20 @@
             <td class="section__table__data top-performers-apy">
               <div>
                 <Percentage :value="pool.apy" />
+                <!-- {{ pool.apy.toFixed(2) }}% -->
               </div>
             </td>
             <td class="section__table__data">
               <span>
-                {{ (pool.impermanentLoss || 0).toFixed(2) }}%
+                <!-- {{ (pool.impermanentLoss || 0).toFixed(2) }}% -->
+                <Percentage :value="(pool.impermanentLoss || 0)" />
               </span>
             </td>
 
             <td class="section__table__data">
               <div>
                 <!-- Rewards was  pool.totalEarningsRune --> 
-                {{ pool.rewards }}%
+                <Percentage :value="(pool.rewards || 0)" />
               </div>
             </td>
 
@@ -88,6 +103,7 @@ import Percentage from '../Common/Percentage.vue';
 import RuneUSD from '../Common/RuneUSD.vue';
 import { periodsHistoryMap, periodToStatsMap } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
+import { getInvervalsFromPeriodKey, calculateFeeAPY, getTopPerformers, e8ValueParser, getPoolDailyEarningsAfter } from '../../lib/ta';
 
 export default {
   components: {
@@ -108,43 +124,88 @@ export default {
         {
           name: 'poolId',
           label: 'Pool',
+          info: 'Read as Chain.Asset, eg: for wrapped bitcoin (asset) on ethereum (chain) it would read ETH.wBTC',
         },
         {
           name: 'apy',
           label: 'APY',
+          info: 'Average APY over the selected period including impermanent loss.',
         },
         {
           name: 'impermanentLoss',
           label: 'IL',
+          info: 'Impermanent loss over the selected period. Thorchain’s impermanent loss protection covers 1% of IL accrued per day.',
         },
         {
           name: 'rewards', // 'totalEarningsRune'
           label: 'Rewards',
+          info: 'Accrued rewards over the selected period.',
         },
         {
           name: 'totalDepthUsd',
           label: 'Depth',
+          info: 'Current depth of the pool.',
         },
       ],
     };
   },
   computed: {
     pools() {
-      const unsortedPools = Object.keys(this.$store.state.pools.technicalAnalysis).map((poolId) => {
-        const period = periodsHistoryMap[this.currentTimeOption];
-        const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
+      const topPerformers = getTopPerformers(
+        this.$store.state.pools.poolHistoryDepths, // history depths
+        periodsHistoryMap[this.currentTimeOption], // history detphs period key
+        this.$store.state.pools.pools, // pool stats
+        periodToStatsMap[this.currentTimeOption],  // stats period key
+      );
+      const poolsDepths = getInvervalsFromPeriodKey(
+        this.$store.state.pools.poolHistoryDepths,
+        periodsHistoryMap[this.currentTimeOption],
+      );
+      const unsortedPools = topPerformers.map(({ poolId, apy, intervalsWithFeesAndImpLoss }) => {
+        // const period = periodsHistoryMap[this.currentTimeOption];
+        // const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
         const poolStats = this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats;
         const poolPeriodStats = poolStats[periodToStatsMap[this.currentTimeOption]];
         // const poolsOverviewPeriod = this.$store.state.pools.poolsOverview[poolId][period];
-        const periodIntervals = Object.keys(poolPeriodTA.intervals).map(i => parseInt(i, 10)).sort();
+        // const periodIntervals = Object.keys(intervalsCalculations).map(i => parseInt(i, 10)).sort();
         // the impermanent loss of the entire period is the last interval IL
-        const lastInterval = periodIntervals[periodIntervals.length-1];
+        // const lastInterval = periodIntervals[periodIntervals.length-1];
+        let assetPriceUSD = parseFloat(poolPeriodStats.assetPriceUSD);
+        let assetDepth = e8ValueParser(poolPeriodStats.assetDepth);
+        if (isNaN(assetPriceUSD)) { assetPriceUSD = 0; }
+        if (isNaN(assetDepth)) { assetDepth = 0; }
+
+        // (allPoolsHistoryEarnings, startTime, poolId) => {
+        // this.$store.state.pools.allPoolsHistoryEarnings.period1Y.intervals[0].startTime
+        // const startTime = parseInt(intervalsWithFeesAndImpLoss[0].timestamp, 10);
+        // const dailyPoolEarningsAfter = getPoolDailyEarningsAfter(this.$store.state.pools.allPoolsHistoryEarnings, startTime, poolId)
+        // console.log(dailyPoolEarningsAfter);
+        // const rewards = dailyPoolEarningsAfter.reduce((acc, next) => acc + e8ValueParser(next.rewards), 0);calculateFeeAPY
+
+        
+        // const poolDepthIntervals = poolsDepths
+        //   .find(pd => pd.poolId === poolId).intervals.filter(di => parseInt(di.liquidityUnits, 10) > 0);
+
+        // const apyValues = [];
+        // poolDepthIntervals.forEach((pdi, idx) => {
+        //   const next = poolDepthIntervals[idx+1];
+        //   if (!next) {
+        //     return;
+        //   }
+        //   apyValues.push(calculateFeeAPY([pdi, next]));
+        // });
+        // const apyAverageValues = apyValues.length
+        //   ? (apyValues.reduce((acc, next) => acc + next) / apyValues.length)
+        //   : 0;
+
+        // const apy2 = calculateFeeAPY(poolDepthIntervals)
         return {
-          ...poolPeriodTA,
           poolId,
-          impermanentLoss: poolPeriodTA.intervals[lastInterval].impermanentLoss,
-          apy: poolPeriodTA.intervals[lastInterval].periodAPY,
-          rewards: parseFloat(poolPeriodStats.poolAPY).toFixed(2), // NOTE: Rewards is the APY without imp lost that comes from api
+          totalDepthUsd: (assetDepth * assetPriceUSD * 2),
+          impermanentLoss: intervalsWithFeesAndImpLoss[intervalsWithFeesAndImpLoss.length - 1].impermLoss,
+          apy: parseFloat(apy),
+           // NOTE: Maybe show .totalGains ?
+          rewards: intervalsWithFeesAndImpLoss[intervalsWithFeesAndImpLoss.length - 1].feeAccrued,
         };
       });
       const descChar = this.sortDescending ? '-' : '';
@@ -274,5 +335,38 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.section__table__head--tooltip {
+  position: relative;
+  z-index: 10;
+
+  .table__head__tooltip {
+    display: none;
+    position: absolute;
+    top: calc(100% + 20px);
+    right: calc(50% - 125px);
+    background-color: $color-bg-popup;
+    border-radius: 4px;
+    width: 250px;
+    text-transform: none;
+  }
+
+  .table__head__tooltip:before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid $color-bg-popup;
+    top: -6px;
+    left: calc(50% - 6px);
+  }
+
+  &:hover {
+    .table__head__tooltip {
+      display: block;
+    }
+  }
 }
 </style>

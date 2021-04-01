@@ -425,7 +425,7 @@ export default {
       ];
     },
     poolListOptions() {
-      return Object.keys(this.$store.state.pools.technicalAnalysis);
+      return Object.keys(this.$store.state.pools.poolHistoryDepths);
     },
     formUpdatedGetData() {
       if (!this.dateInvested || !this.selectedPool || !this.amountInvested) {

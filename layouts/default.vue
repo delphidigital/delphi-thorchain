@@ -372,10 +372,10 @@ a {
 .section__header {
   padding: 0px 25px;
   border-bottom: 1px solid $color-border;
-  height: 58px;
+  min-height: 58px;
   display: flex;
   align-items: center;
-  overflow: auto;
+  overflow-x: auto;
 }
 
 .section__title {

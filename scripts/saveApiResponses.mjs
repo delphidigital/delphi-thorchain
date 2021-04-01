@@ -173,9 +173,6 @@ function technicalAnalysis(
                 // ? ((periodRuneEarnings/(intervalRuneDepth*2)))
                 : 0;
               // APY = ((1 + Periodic Rate)^Number of periods) – 1
-              // NOTE: this numberOfPeriods only works for daily intervals
-              //       need to fix this for 24h period in hoours and
-              //       for 6M and 1Y period in weeks
               let numberOfPeriods = 365;
               if (periodKey === 'period24H') {
                 numberOfPeriods = 365 * 24;
@@ -352,9 +349,9 @@ async function updateBlockchainData(blockchain) {
   const totalValueLockedUSD = (((runeDepth * 2) + totalBonded) /  (10 ** 8));
   const priceUsd = stats.runePriceUSD;
   const coingeckoMarketData = await getRuneMarketData(blockchain);
-  const ta = technicalAnalysis(
-    poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
-  );
+  // const ta = technicalAnalysis(
+  //   poolStats, poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings,
+  // );
   // TODO: Replace circulating calc (which is incomplete) with the circ supply endpoint when ready
   // const circulating = ((totalBonded + runeDepth) / (10 ** 8));
   const circulating = coingeckoMarketData.circulating_supply; // ((totalBonded + runeDepth) / (10 ** 8));
@@ -372,7 +369,7 @@ async function updateBlockchainData(blockchain) {
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
-  await set('technicalAnalysis', ta);
+  // await set('technicalAnalysis', ta);
   
   // Keep a list of most recent asgard vault addresses
   inboundAddresses.forEach(async (addressData) => {

@@ -16,11 +16,12 @@
 </template>
 
 <script>
-import { format } from "date-fns";
+import { format, subDays, subHours, getUnixTime } from "date-fns";
 import numeral from "numeral";
 import ColumnChart from "../Thorchain/ColumnChart";
 import { periodsHistoryMap } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
+import { periodKeyToDaysMap } from '../../lib/ta';
 
 export default {
   components: { ColumnChart },
@@ -80,9 +81,60 @@ export default {
       return numeral(value).format("$0,0a").toUpperCase();
     },
     getChartData(currentTimeOption) {
+      const period = periodsHistoryMap[currentTimeOption];
+      const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
+      const poolHistorySwaps = this.$store.state.pools.poolHistorySwaps;
+      const periodDataPoints = periodKeyToDaysMap[period] || 365;
+      const startAtPeriodUnixTime = getUnixTime(subDays(new Date(), periodDataPoints));
+      const poolsDepths = Object.keys(poolHistoryDepths).map((poolId, _index) => {
+        const intervals = poolHistoryDepths[poolId]['period1Y'].intervals.filter(iv => (
+          parseInt(iv.startTime, 10) >= startAtPeriodUnixTime
+        ));
+        return { poolId, intervals }
+      });
+      // poolId apy volumeAverageUsd depthAverageUsd volumeOverDepthRatio correllation
+      // const poolsDepths = getInvervalsFromPeriodKey(poolHistoryDepths, period);
+      // getInvervalsFromPeriodKey(this.$store.state.pools.poolHistorySwaps)
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
+
+      const allPoolsSorted = poolsDepths.map(({ poolId, intervals }) => {
+        
+        
+        // return Object.keys(poolHistorySwaps).map((poolId, index) => {
+          const data = poolHistorySwaps[poolId]['period1Y'].intervals.filter(iv => (
+            parseInt(iv.startTime, 10) >= startAtPeriodUnixTime
+          )).map((iv, _idx) => {
+            return {
+              totalVolume: parseInt(iv.totalVolume,10),
+              startTime: iv.startTime
+            };
+          });
+          // return {
+          //   poolId, intervals,
+          // }
+        // });
+
+        // const period = periodsHistoryMap[currentTimeOption];
+        // let data = [];
+        // if (this.$store.state.pools.poolHistorySwaps[poolId][period]) {
+        //   data = this.$store.state.pools.poolHistorySwaps[poolId][period].intervals.map((iv, _idx) => {
+        //     return {
+        //       totalVolume: parseInt(iv.totalVolume,10),
+        //       startTime: iv.startTime
+        //     };
+        //   });
+        // }
+        return {
+          poolId,
+          data,
+        };
+      }).sort((a, b) => (
+        parseInt(b.data[b.data.length-1]?.totalVolume || '0', 10) -
+        parseInt(a.data[b.data.length-1]?.totalVolume || '0', 10)
+      ));
+      /*
       const allPoolsSorted = Object.keys(this.$store.state.pools.poolHistorySwaps).map((poolId, _index) => {
-        const period = periodsHistoryMap[currentTimeOption];
+        // const period = periodsHistoryMap[currentTimeOption];
         let data = [];
         if (this.$store.state.pools.poolHistorySwaps[poolId][period]) {
           data = this.$store.state.pools.poolHistorySwaps[poolId][period].intervals.map((iv, _idx) => {
@@ -100,6 +152,11 @@ export default {
         parseInt(b.data[b.data.length-1]?.totalVolume || '0', 10) -
         parseInt(a.data[b.data.length-1]?.totalVolume || '0', 10)
       ));
+      */
+
+      // console.log(periodsHistoryMap, periodsHistoryMap[currentTimeOption])
+      // debugger;
+      // console.log(periodsHistoryMap, periodsHistoryMap[currentTimeOption])
       // calculate other pools payload
       const top3PoolsSortedByVolume = allPoolsSorted.slice(0, 3);
       const allPoolsTimeMap = {};

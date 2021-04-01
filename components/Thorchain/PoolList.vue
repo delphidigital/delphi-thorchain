@@ -95,8 +95,8 @@
             <td class="section__table__data pool-list-apy">
               <div>
                 <span
-                  :class="(sortBy == 'apy') ? 'column__highlight__colored' : ''"
-                  @click="changeColumn('apy')"
+                  :class="(sortBy == 'averagePeriodAPY') ? 'column__highlight__colored' : ''"
+                  @click="changeColumn('averagePeriodAPY')"
                 >
                   <Percentage :value="pool.averagePeriodAPY" />
                 </span>
@@ -129,7 +129,7 @@
                 </span>
               </div>
               <div v-if="isNaN(pool.volumeOverDepthRatio)">
-                <span@click="changeColumn('volumeOverDepthRatio')">
+                <span @click="changeColumn('volumeOverDepthRatio')">
                   n/a
                 </span>
               </div>
@@ -180,8 +180,8 @@
             <td class="section__table__data pool-list-apy">
               <div>
                 <span
-                  :class="(sortBy == 'apy') ? 'column__highlight__colored' : ''"
-                  @click="changeColumn('apy')"
+                  :class="(sortBy == 'averagePeriodAPY') ? 'column__highlight__colored' : ''"
+                  @click="changeColumn('averagePeriodAPY')"
                 >
                   <Percentage :value="pool.averagePeriodAPY" />
                 </span>
@@ -214,7 +214,7 @@
                 </span>
               </div>
               <div v-if="isNaN(pool.volumeOverDepthRatio)">
-                <span@click="changeColumn('volumeOverDepthRatio')">
+                <span @click="changeColumn('volumeOverDepthRatio')">
                   n/a
                 </span>
               </div>
@@ -233,12 +233,17 @@
 </template>
 
 <script>
+import subDays from 'date-fns/subDays';
+import subHours from 'date-fns/subHours';
+import getUnixTime from 'date-fns/getUnixTime';
 import numeral from 'numeral';
 import sortBy from 'sort-by';
 import Percentage from '../Common/Percentage.vue';
 import LineChart from './LineChart.vue';
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
+import { technicalAnalysis, periodKeyToIntervalsDatapointsMap } from '../../lib/ta';
+
 export default {
   components: {
     Percentage,
@@ -255,38 +260,38 @@ export default {
       currentTimeOption: '1W',
       searchinput: '',
       selectedPools: [],
-      sortBy: 'apy',
+      sortBy: 'averagePeriodAPY',
       sortDescending: false,
       fields: [
         {
           name: 'poolId',
           label: 'Pool',
-          info: 'The paired asset is always RUNE. Eg.: BTC : RUNE, ETH : RUNE',
+          info: 'Read as Chain.Asset, eg: for wrapped bitcoin (asset) on ethereum (chain) it would read ETH.wBTC',
         },
         {
-          name: 'apy',
+          name: 'averagePeriodAPY',
           label: 'APY',
-          info: 'Calculation (make clear that it includes IL), MA used and definition of APY.',
+          info: 'Current APY including impermanent loss. The APY is smoothed by a moving average, to reflect a more representative APY.',
         },
         {
           name: 'volumeAverageUsd',
           label: '24H Volume',
-          info: 'Avg. 24h volume over the selected timeframe.',
+          info: 'Average 24h volume over the selected period.',
         },
         {
           name: 'depthAverageUsd',
           label: 'Depth',
-          info: 'Avg. depth over the selected timeframe.',
+          info: 'Current depth of the pool.',
         },
         {
           name: 'volumeOverDepthRatio',
           label: 'V/D Ratio',
-          info: 'A metric which indicates a pool’s potential. A higher number means higher potential.',
+          info: 'A metric which indicates a pool’s potential. A higher number means higher demand.',
         },
         // {
         //   name: 'correllation',
         //   label: 'Correllation',
-        //   info: 'A metric which indicates a pool’s risk. A higher number indicates lower risk as assets are more correlated, there’s a lower risk of impermanent loss.',
+        //   info: 'price divergence between ASSET and RUNE. A high correlation is favorable (close to 1). it indicates a lower chance of IL.',
         // },
       ],
       yAxisLabelOptions: {
@@ -302,11 +307,25 @@ export default {
     };
   },
   computed: {
+    poolsTA() {
+      const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
+      const poolHistorySwaps = this.$store.state.pools.poolHistorySwaps;
+      const allPoolsHistoryEarnings = this.$store.state.pools.allPoolsHistoryEarnings;
+      const periodKey = periodsHistoryMap[this.currentTimeOption];
+
+      const ta = technicalAnalysis(
+        poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings, periodKey
+      );
+      return ta;
+    },
     pools() {
-      const unsortedPools = Object.keys(this.$store.state.pools.technicalAnalysis).map((poolId) => {
-        const period = periodsHistoryMap[this.currentTimeOption];
-        const poolPeriodTA = this.$store.state.pools.technicalAnalysis[poolId][period];
-        const volumeOverDepthRatio = poolPeriodTA.totalVolume / poolPeriodTA.totalDepth;
+      const period = periodsHistoryMap[this.currentTimeOption];
+      // const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
+      // poolId apy volumeAverageUsd depthAverageUsd volumeOverDepthRatio correllation
+      // const poolsDepths = getInvervalsFromPeriodKey(poolHistoryDepths, period);
+      const unsortedPools = Object.keys(this.poolsTA).map((poolId) => {
+        const poolPeriodTA = this.poolsTA[poolId][period];
+        const volumeOverDepthRatio = poolPeriodTA ? (poolPeriodTA.totalVolume / poolPeriodTA.totalDepth) : 0;
         return {
           ...poolPeriodTA,
           poolId,
@@ -332,7 +351,7 @@ export default {
       return this.pools.filter(p => !this.selectedPools.includes(p.poolId));
     },
     selectedPoolsChartTitle() {
-      if (this.sortBy === 'apy') {
+      if (this.sortBy === 'averagePeriodAPY') {
         return { title: 'APY of selected pools' };
       } else if (this.sortBy === 'depthAverageUsd') {
         return { title: 'Depth of selected pools' };
@@ -344,11 +363,14 @@ export default {
      selectedPoolsLinechartData() {
       const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
       const period = periodsHistoryMap[this.currentTimeOption];
+      const periodResolutionKey = ['period24H', 'period1W'].find(k => k === period) ? 'period1HM' : 'period1Y';
+      const periodDataPoints = periodKeyToIntervalsDatapointsMap[period] || 365;
+
       const data = this.selectedPools.map((sp, colorIndex) => {
         const pname = this.displayPoolName(sp);
-        if (this.sortBy === 'apy') {
+        if (this.sortBy === 'averagePeriodAPY') {
           // _this2.$store.state.pools.technicalAnalysis["BTC.BTC"].period1W.intervals["1614902400"].periodAPY
-          const poolTA = this.$store.state.pools.technicalAnalysis;
+          const poolTA = this.poolsTA;
           const periodTA = poolTA[sp][period];
           const ret = {
             name: pname,
@@ -364,11 +386,15 @@ export default {
           };
           return ret;
         } else if (this.sortBy === 'depthAverageUsd') {
-          const poolTA = this.$store.state.pools.poolHistoryDepths
-          const periodDepths = poolTA[sp][period];
+          const poolDepths = this.$store.state.pools.poolHistoryDepths
+          const periodDepths = poolDepths[sp][periodResolutionKey];
+          let startTime = getUnixTime(subDays(new Date(), periodDataPoints));
+          if (periodResolutionKey === 'period1HM') {
+            startTime = getUnixTime(subHours(new Date(), periodDataPoints));
+          }
           return {
             name: pname,
-            data: periodDepths.intervals.map(pd => {
+            data: periodDepths.intervals.filter(i => i.startTime >= startTime).map(pd => {
               return {
                 x: (parseInt(pd.startTime, 10) * 1000),
                 y: ((parseInt(pd.assetDepth, 10) / runeDivider) * parseFloat(pd.assetPriceUSD) * 2),
@@ -377,13 +403,18 @@ export default {
             color: colorsList[colorIndex],
           };
         } else if (this.sortBy === 'volumeOverDepthRatio') {
-          const poolHD = this.$store.state.pools.poolHistoryDepths
-          const poolTA = this.$store.state.pools.technicalAnalysis
+          const poolHD = this.$store.state.pools.poolHistoryDepths;
+          const poolTA = this.poolsTA;
           const periodTA = poolTA[sp][period];
-          const periodDepths = poolHD[sp][period];
+          const periodDepths = poolHD[sp][periodResolutionKey];
+          let startTime = getUnixTime(subDays(new Date(), periodDataPoints));
+          if (periodResolutionKey === 'period1HM') {
+            startTime = getUnixTime(subHours(new Date(), periodDataPoints));
+          }
+
           const ret = {
             name: pname,
-            data: periodDepths.intervals.map(pd => {
+            data: periodDepths.intervals.filter(i => i.startTime >= startTime).map(pd => {
               const totalVolume = periodTA.intervalSwaps[pd.startTime]?.totalVolumeUsd || 0;
               const assetDepth = (parseInt(pd.assetDepth, 10) / runeDivider) * pd.assetPriceUSD;
               const y = assetDepth ? (totalVolume/assetDepth) : 0;
@@ -396,7 +427,7 @@ export default {
           };
           return ret;
         } else { // if (this.chartedValue === 'volumeAverageUsd') {
-          const poolTA = this.$store.state.pools.technicalAnalysis
+          const poolTA = this.poolsTA
           const periodTA = poolTA[sp][period];
           return {
             name: pname,
@@ -424,7 +455,7 @@ export default {
       this.$refs.searchinputref.focus()
     },
     formatYValueTooltip(value) {
-      if (this.sortBy === 'apy') {
+      if (this.sortBy === 'averagePeriodAPY') {
         return this.displayPoolAPY(value);
       } else if (this.sortBy === 'volumeOverDepthRatio') {
         return `${(value || 0.0).toFixed(2)}`;
