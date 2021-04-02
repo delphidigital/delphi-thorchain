@@ -56,9 +56,6 @@ export default {
           formatter() {
             return `
               <div class="app-tooltip">
-                <div class="app-tooltip__header">
-                  <span>${format(this.point.x, 'dd MMM yyyy')}</span>
-                </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text">
                     ${formatLabel(this.point.y)}

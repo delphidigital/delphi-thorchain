@@ -2,7 +2,7 @@
   <div class="section">
     <div class="section__header" id="pool-prediction-analysis">
       <div class="section__title" :class="{'plot--active': plot == 'rewards'}" @click="setPlotRewards">
-        Historical pool data
+        Historical Pool Data
       </div>
       <div class="section__title" :class="{'plot--active': plot == 'total_value'}" @click="setPlotTotalValue">
         Total Value
@@ -11,7 +11,7 @@
         Profit / Loss Breakdown
       </div>
       <div class="section__title" :class="{'plot--active': plot == 'predict_future'}" @click="setPlotPredictFuture">
-        Predict future returns
+        Predict Future Returns
       </div>
       <div class="section__title section__title--empty"></div>
       <a class="deeplink-selector" href="#pool-prediction-analysis">
@@ -465,10 +465,21 @@ export default {
       this.$refs.assetPTargetRef.focus();
     },
     formatLabel(value) {
-      return numeral(value).format("$0,0.0a").toUpperCase();
+      // https://github.com/adamwdraper/Numeral-js/issues/615
+      let val = numeral(value).format("$0,0.0a").toUpperCase();
+      // Other bug if val === -1.8651583981628417e-7 , devuelve N$aN
+      if (val === '0$.0' || val === 'N$aN') {
+        val = '$0.0';
+      }
+      return val;
     },
     formatLabelAxis(value) {
-      return numeral(value).format("$0,0a").toUpperCase();
+      // https://github.com/adamwdraper/Numeral-js/issues/615
+      let val = numeral(value).format("$0,0a").toUpperCase();;
+      if (val === '0$.0' || val === 'N$aN') {
+        val = '$0.0';
+      }
+      return val;
     },
   },
 };

@@ -52,6 +52,24 @@
           <div class="section network__header__values">
             <h2 class="networksection__title" :style="`color: ${queueStatus[1]}`">
               {{ queueStatus[0] }}
+
+            <span class="section__title--tooltip section__title--tooltip--bottom">
+              <Icon
+                class="tooltip__hover--info"
+                name="info"
+                scale="0.4"
+              >
+              </Icon>
+              <div class="app-tooltip section__title__tooltip">
+                <div class="app-tooltip__body">
+                  Normal: No delays expected<br />
+                  Busy: Expect delayed transactions <br />
+                  Congested: Expect severely delayed transactions.
+                </div>
+              </div>
+            </span>
+
+
             </h2>
             <div class="networksection__subtitle">
               Thorchain Queue Status
@@ -114,11 +132,11 @@
               <div class="body__listitem"><span>Total Volume:</span> {{ formatUsd(swapVolume) }}</div>
               <div class="body__listitem"><span>Total Depth:</span> {{ formatUsd(totalDepth) }}</div>
               <div class="body__listitem"><span>Total Earnings:</span> {{ formatUsd(totalEarnings) }}</div>
-              <div class="body__listitem"><span># of Swaps:</span> {{ swapCount }}</div>
+              <div class="body__listitem"><span>Total # of swaps:</span> {{ swapCount }}</div>
               <div class="body__listitem"><span>Daily Users:</span> {{ dailyActiveUsers }}</div>
               <div class="body__listitem"><span># of liquidity providers:</span> {{ addLiquidityCount }}</div>
               <div class="body__listitem"><span>Liquidity added:</span> {{ formatUsd(addLiquidityVolume) }}</div>
-              <div class="body__listitem"><span>Liquidity withdraw:</span> {{ formatUsd(liquidityWithdraw) }}</div>
+              <div class="body__listitem"><span>Liquidity withdrawn:</span> {{ formatUsd(liquidityWithdraw) }}</div>
             </div>
           </div>
         </div>
@@ -128,9 +146,23 @@
         <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="overflow: overlay;">
           
           <div class="section" style="flex: 1;">
-            <div class="section__header" id="deterministic-rune">
+            <div class="section__header" id="deterministic-rune" style="overflow-x: visible;">
               <h2 class="section__title">
                 Deterministic RUNE
+
+                <span class="section__title--tooltip">
+                  <Icon
+                    class="tooltip__hover--info"
+                    name="info"
+                    scale="0.4"
+                  >
+                  </Icon>
+                  <div class="app-tooltip section__title__tooltip">
+                    <div class="app-tooltip__body">
+                      The deterministic price of RUNE is the minimum expected value of RUNE, given the current total value locked on Thorchain. A speculative multiplier is expected.
+                    </div>
+                  </div>
+                </span>
               </h2>
               <a class="deeplink-selector" href="#deterministic-rune">
                 <Icon
@@ -158,9 +190,22 @@
 
         <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
           <div class="section" style="flex: 1;">
-            <div class="section__header" id="block-rewards-per-day">
+            <div class="section__header" id="block-rewards-per-day" style="overflow-x: visible;">
               <h2 class="section__title">
                 Block Rewards per Day
+                <span class="section__title--tooltip">
+                  <Icon
+                    class="tooltip__hover--info"
+                    name="info"
+                    scale="0.4"
+                  >
+                  </Icon>
+                  <div class="app-tooltip section__title__tooltip">
+                    <div class="app-tooltip__body">
+                      An overview of the reward the network pays out to the liquidity pools and nodes. Bond Reward/Node: The amount an average Thornode earns per month.
+                    </div>
+                  </div>
+                </span>
               </h2>
               <a class="deeplink-selector" href="#block-rewards-per-day">
                 <Icon
@@ -190,9 +235,28 @@
       <div class="pure-g">
         <div class="pure-u-1">
           <div class="section" style="flex: 1;">
-            <div class="section__header" id="rune_location">
+            <div class="section__header" id="rune_location" style="overflow-x: visible;">
               <h2 class="section__title">
                 Location of RUNE
+                <span class="section__title--tooltip">
+                  <Icon
+                    class="tooltip__hover--info"
+                    name="info"
+                    scale="0.4"
+                  >
+                  </Icon>
+                  <div class="app-tooltip section__title__tooltip" style="width:340px;">
+                    <div class="app-tooltip__body">
+                      An overview of where all RUNE is located:<br />
+                      Pooled: The amount of RUNE in liquidity pools on Thorchain<br />
+                      Standby Bonded: The amount of RUNE bonded by standby nodes.<br />
+                      Active Bonded: The amount of RUNE bonded by active nodes.<br />
+                      Reserve: The amount of RUNE in the reserve.<br />
+                      Unreleased: The amount of unreleased RUNE. This portion will be released in line with the emission schedule.<br />
+                      Unlocked: The amount of RUNE elsewhere.<br />
+                    </div>
+                  </div>
+                </span>
               </h2>
               <a class="deeplink-selector" href="#rune_location">
                 <Icon name="link" scale="0.7"></Icon>

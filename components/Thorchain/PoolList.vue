@@ -112,10 +112,10 @@
             </td>
             <td class="section__table__data">
               <span
-                :class="(sortBy == 'depthAverageUsd') ? 'column__highlight__colored' : ''"
-                @click="changeColumn('depthAverageUsd')"
+                :class="(sortBy == 'totalDepthUsd') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('totalDepthUsd')"
               >
-                {{ formatLabelDepth(pool.depthAverageUsd) }}
+                {{ formatLabelDepth(pool.totalDepthUsd) }}
               </span>
             </td>
 
@@ -197,10 +197,10 @@
             </td>
             <td class="section__table__data">
               <span
-                :class="(sortBy == 'depthAverageUsd') ? 'column__highlight__colored' : ''"
-                @click="changeColumn('depthAverageUsd')"
+                :class="(sortBy == 'totalDepthUsd') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('totalDepthUsd')"
               >
-                {{ formatLabelDepth(pool.depthAverageUsd) }}
+                {{ formatLabelDepth(pool.totalDepthUsd) }}
               </span>
             </td>
 
@@ -233,8 +233,6 @@
 </template>
 
 <script>
-import subDays from 'date-fns/subDays';
-import subHours from 'date-fns/subHours';
 import getUnixTime from 'date-fns/getUnixTime';
 import numeral from 'numeral';
 import sortBy from 'sort-by';
@@ -242,7 +240,7 @@ import Percentage from '../Common/Percentage.vue';
 import LineChart from './LineChart.vue';
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
-import { technicalAnalysis, periodKeyToIntervalsDatapointsMap } from '../../lib/ta';
+import { technicalAnalysis, periodKeyToSecondsMap } from '../../lib/ta';
 
 export default {
   components: {
@@ -271,7 +269,7 @@ export default {
         {
           name: 'averagePeriodAPY',
           label: 'APY',
-          info: 'Current APY including impermanent loss. The APY is smoothed by a moving average, to reflect a more representative APY.',
+          info: 'Current APY excluding impermanent loss. The APY is smoothed by a moving average, to reflect a more representative figure.',
         },
         {
           name: 'volumeAverageUsd',
@@ -279,7 +277,7 @@ export default {
           info: 'Average 24h volume over the selected period.',
         },
         {
-          name: 'depthAverageUsd',
+          name: 'totalDepthUsd',
           label: 'Depth',
           info: 'Current depth of the pool.',
         },
@@ -325,11 +323,16 @@ export default {
       // const poolsDepths = getInvervalsFromPeriodKey(poolHistoryDepths, period);
       const unsortedPools = Object.keys(this.poolsTA).map((poolId) => {
         const poolPeriodTA = this.poolsTA[poolId][period];
-        const volumeOverDepthRatio = poolPeriodTA ? (poolPeriodTA.totalVolume / poolPeriodTA.totalDepth) : 0;
+        const volumeOverDepthRatio = poolPeriodTA ? (poolPeriodTA.totalVolumeUsd / poolPeriodTA.totalDepthUsd) : 0;
+        // const periodStatsKey = periodToStatsMap[this.currentTimeOption];
+        // const averagePeriodAPY = parseFloat(
+        //   this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats[periodStatsKey].poolAPY
+        // );
         return {
           ...poolPeriodTA,
           poolId,
           volumeOverDepthRatio,
+          // averagePeriodAPY,
         };
       })
       const descChar = this.sortDescending ? '-' : '';
@@ -353,45 +356,41 @@ export default {
     selectedPoolsChartTitle() {
       if (this.sortBy === 'averagePeriodAPY') {
         return { title: 'APY of selected pools' };
-      } else if (this.sortBy === 'depthAverageUsd') {
+      } else if (this.sortBy === 'totalDepthUsd') {
         return { title: 'Depth of selected pools' };
       } else if (this.sortBy === 'volumeOverDepthRatio') {
         return { title: 'V/D of selected pools' };
       }
       return { title: 'Volume of selected pools' };
     },
-     selectedPoolsLinechartData() {
+    selectedPoolsLinechartData() {
       const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
       const period = periodsHistoryMap[this.currentTimeOption];
       const periodResolutionKey = ['period24H', 'period1W'].find(k => k === period) ? 'period1HM' : 'period1Y';
-      const periodDataPoints = periodKeyToIntervalsDatapointsMap[period] || 365;
-
+      const secondsElapsedSincePeriod = periodKeyToSecondsMap[period];
+      const startTime = getUnixTime(new Date()) - secondsElapsedSincePeriod;
       const data = this.selectedPools.map((sp, colorIndex) => {
         const pname = this.displayPoolName(sp);
         if (this.sortBy === 'averagePeriodAPY') {
-          // _this2.$store.state.pools.technicalAnalysis["BTC.BTC"].period1W.intervals["1614902400"].periodAPY
           const poolTA = this.poolsTA;
           const periodTA = poolTA[sp][period];
           const ret = {
             name: pname,
+            // data: poolData,
             data: Object.keys(periodTA.intervals)
               .sort((a,b) => (parseInt(a) - parseInt(b)))
               .map(intervalKey => {
                 return {
                   x: (parseInt(periodTA.intervals[intervalKey].startTime, 10) * 1000),
-                  y: periodTA.intervals[intervalKey].periodAPY,
+                  y: periodTA.intervals[intervalKey].periodAPY_MA,
                 };
               }),
             color: colorsList[colorIndex],
           };
           return ret;
-        } else if (this.sortBy === 'depthAverageUsd') {
+        } else if (this.sortBy === 'totalDepthUsd') {
           const poolDepths = this.$store.state.pools.poolHistoryDepths
           const periodDepths = poolDepths[sp][periodResolutionKey];
-          let startTime = getUnixTime(subDays(new Date(), periodDataPoints));
-          if (periodResolutionKey === 'period1HM') {
-            startTime = getUnixTime(subHours(new Date(), periodDataPoints));
-          }
           return {
             name: pname,
             data: periodDepths.intervals.filter(i => i.startTime >= startTime).map(pd => {
@@ -407,11 +406,6 @@ export default {
           const poolTA = this.poolsTA;
           const periodTA = poolTA[sp][period];
           const periodDepths = poolHD[sp][periodResolutionKey];
-          let startTime = getUnixTime(subDays(new Date(), periodDataPoints));
-          if (periodResolutionKey === 'period1HM') {
-            startTime = getUnixTime(subHours(new Date(), periodDataPoints));
-          }
-
           const ret = {
             name: pname,
             data: periodDepths.intervals.filter(i => i.startTime >= startTime).map(pd => {

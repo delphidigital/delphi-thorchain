@@ -378,10 +378,76 @@ a {
   overflow-x: auto;
 }
 
+.tooltip__hover--info {
+    font-size: 0.4em;
+    width: 12px;
+    height: 12px;
+    background-color: rgb(120, 124, 161);
+    padding: 3px;
+    border-radius: 8px;
+    color: rgb(27, 28, 41);
+    vertical-align: middle;
+    line-height: 1;
+    margin-left: 4px;
+}
+
+.section__title--tooltip {
+  position: relative;
+  z-index: 10;
+
+  .section__title__tooltip {
+    display: none;
+    position: absolute;
+    top: -100%;
+    left: 30px;
+    background-color: $color-bg-popup;
+    border-radius: 4px;
+    width: 250px;
+    text-transform: none;
+  }
+
+  .section__title__tooltip:before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    border-top: 6px solid transparent;
+    border-right: 6px solid $color-bg-popup;
+    border-bottom: 6px solid transparent;
+    top: calc(50% - 6px);
+    left: -6px;
+  }
+
+  &:hover {
+    .section__title__tooltip {
+      display: block;
+    }
+  }
+
+  &.section__title--tooltip--bottom {
+    .section__title__tooltip {
+      right: unset;
+      left: unset;
+      top: 30px;
+    }
+    .section__title__tooltip:before {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid $color-bg-popup;
+      top: -12px;
+      left: calc(50%);
+    }
+  }
+}
+
 .section__title {
   font-size: 17px;
   font-weight: 600;
   flex: 1;
+}
+
+h2.section__title {
+  text-transform: capitalize;
 }
 
 .section__header {
@@ -587,9 +653,10 @@ $padding-section-table: 25px;
   margin: 0;
   padding: 0;
   font-family: Montserrat;
-  font-size: 12px;
+  font-size: 11px;
   border-radius: 4px;
   width: 170px;
+  font-weight: 400;
   box-shadow: 10px 10px 30px 0px rgba(0,0,0,0.4);
 }
 
