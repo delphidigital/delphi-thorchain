@@ -14,7 +14,7 @@
         ></Icon>
       </a>
     </div>
-    <div class="section__body">
+    <div class="section__body" style="display: inline-flex;overflow: overlay;">
       <div class="solvency-body">
         <div class="overall-container">
           <NetworkSolvencyOverall />

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="section__body volume-by-poolvstotal-section">
     <ColumnChart
       ref-name="vol_chart"
       :chart-data="chartData"
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { format, subDays, subHours, getUnixTime } from "date-fns";
+import { format, subDays, startOfDay, startOfWeek, startOfMonth, fromUnixTime, getUnixTime, isSameDay, isSameWeek, isSameMonth } from "date-fns";
 import numeral from "numeral";
 import ColumnChart from "../Thorchain/ColumnChart";
 import { periodsHistoryMap } from '../../store/pools';
@@ -28,7 +28,7 @@ export default {
   props: {
     currentTimeOption: {
       type: String,
-      default: '1W',
+      default: '1D', // VALUES: 1D, 1W, 1M
     },
   },
   data() {
@@ -47,6 +47,11 @@ export default {
       xAxisCategories: [],
       xAxisOptions: {
         // type: 'datetime',
+        // labels: {
+        //   formatter() {
+        //     return new Date(this.value).toLocaleString('default', { month: 'short' })
+        //   }
+        // },
       },
       customPlotOptions: {
         column: {
@@ -81,83 +86,115 @@ export default {
       return numeral(value).format("$0,0a").toUpperCase();
     },
     getChartData(currentTimeOption) {
-      const period = periodsHistoryMap[currentTimeOption];
+      // const period = periodsHistoryMap[currentTimeOption];
       const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
       const poolHistorySwaps = this.$store.state.pools.poolHistorySwaps;
-      const periodDataPoints = periodKeyToDaysMap[period] || 365;
+      const periodToDaysMap = { '1D': 12, '1W': 12*7, '1M': 365 };
+      const periodDataPoints = periodToDaysMap[currentTimeOption];
       const startAtPeriodUnixTime = getUnixTime(subDays(new Date(), periodDataPoints));
       const poolsDepths = Object.keys(poolHistoryDepths).map((poolId, _index) => {
         const intervals = poolHistoryDepths[poolId]['period1Y'].intervals.filter(iv => (
           parseInt(iv.startTime, 10) >= startAtPeriodUnixTime
         ));
-        return { poolId, intervals }
+        const reducedIntervals = [];
+        let aggregationInterval = null;
+        intervals.forEach(iv => {
+          let startOfPeriod = startOfMonth;
+          if (currentTimeOption === '1D') {
+            startOfPeriod = startOfDay;
+          } else if (currentTimeOption === '1W') {
+            startOfPeriod = startOfWeek;
+          }
+          const startOfPeriodTime = `${getUnixTime(startOfPeriod(fromUnixTime(parseInt(iv.startTime, 10))))}`;
+          if (!aggregationInterval) {
+            aggregationInterval = {
+              ...iv,
+              startTime: startOfPeriodTime,
+            };
+          } else {
+            const intervalDate = fromUnixTime(aggregationInterval.startTime);
+            const nextDatapointDate = fromUnixTime(parseInt(iv.startTime, 10));
+            let compareIfSamePeriod = isSameMonth;
+            if (currentTimeOption === '1D') {
+              compareIfSamePeriod = isSameDay;
+            } else if (currentTimeOption === '1W') {
+              compareIfSamePeriod = isSameWeek;
+            }
+            if (compareIfSamePeriod(intervalDate, nextDatapointDate)) {
+              aggregationInterval = {
+                assetDepth: iv.assetDepth,
+                assetPrice: iv.assetPrice,
+                assetPriceUSD: iv.assetPriceUSD,
+                endTime: iv.endTime,
+                liquidityUnits: iv.liquidityUnits,
+                runeDepth: iv.runeDepth,
+                startTime: aggregationInterval.startTime,
+              };
+            } else {
+              reducedIntervals.push(aggregationInterval);
+              aggregationInterval = {
+                ...iv,
+                startTime: startOfPeriodTime,
+              };
+            }
+          }
+        });
+        reducedIntervals.push(aggregationInterval);
+        return { poolId, intervals: reducedIntervals }
       });
+
+
       // poolId apy volumeAverageUsd depthAverageUsd volumeOverDepthRatio correllation
       // const poolsDepths = getInvervalsFromPeriodKey(poolHistoryDepths, period);
       // getInvervalsFromPeriodKey(this.$store.state.pools.poolHistorySwaps)
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
-
       const allPoolsSorted = poolsDepths.map(({ poolId, intervals }) => {
-        
-        
-        // return Object.keys(poolHistorySwaps).map((poolId, index) => {
-          const data = poolHistorySwaps[poolId]['period1Y'].intervals.filter(iv => (
-            parseInt(iv.startTime, 10) >= startAtPeriodUnixTime
-          )).map((iv, _idx) => {
-            return {
-              totalVolume: parseInt(iv.totalVolume,10),
-              startTime: iv.startTime
-            };
-          });
-          // return {
-          //   poolId, intervals,
-          // }
-        // });
-
-        // const period = periodsHistoryMap[currentTimeOption];
-        // let data = [];
-        // if (this.$store.state.pools.poolHistorySwaps[poolId][period]) {
-        //   data = this.$store.state.pools.poolHistorySwaps[poolId][period].intervals.map((iv, _idx) => {
-        //     return {
-        //       totalVolume: parseInt(iv.totalVolume,10),
-        //       startTime: iv.startTime
-        //     };
-        //   });
-        // }
-        return {
-          poolId,
-          data,
-        };
+        const periodDailyData = poolHistorySwaps[poolId]['period1Y'].intervals.filter(iv => (
+          parseInt(iv.startTime, 10) >= startAtPeriodUnixTime
+        )).map((iv, _idx) => {
+          return {
+            totalVolume: parseInt(iv.totalVolume,10),
+            startTime: iv.startTime
+          };
+        });
+        const reducedIntervals = [];
+        let aggregationInterval = null;
+        periodDailyData.forEach(pd => {
+          let startOfPeriod = startOfMonth;
+          if (currentTimeOption === '1D') {
+            startOfPeriod = startOfDay;
+          } else if (currentTimeOption === '1W') {
+            startOfPeriod = startOfWeek;
+          }
+          const startOfPeriodTime = `${getUnixTime(startOfPeriod(fromUnixTime(parseInt(pd.startTime, 10))))}`;
+          if (!aggregationInterval) {
+            aggregationInterval = { ...pd, startTime: startOfPeriodTime };
+          } else {
+            const intervalDate = fromUnixTime(aggregationInterval.startTime);
+            const nextDatapointDate = fromUnixTime(pd.startTime);
+            let compareIfSamePeriod = isSameMonth;
+            if (currentTimeOption === '1D') {
+              compareIfSamePeriod = isSameDay;
+            } else if (currentTimeOption === '1W') {
+              compareIfSamePeriod = isSameWeek;
+            }
+            if (compareIfSamePeriod(intervalDate, nextDatapointDate)) {
+              aggregationInterval = {
+                totalVolume: aggregationInterval.totalVolume + pd.totalVolume,
+                startTime: aggregationInterval.startTime,
+              };
+            } else {
+              reducedIntervals.push(aggregationInterval);
+              aggregationInterval = { ...pd, startTime: startOfPeriodTime };
+            }
+          }
+        });
+        reducedIntervals.push(aggregationInterval);
+        return { poolId, data: reducedIntervals };
       }).sort((a, b) => (
         parseInt(b.data[b.data.length-1]?.totalVolume || '0', 10) -
         parseInt(a.data[b.data.length-1]?.totalVolume || '0', 10)
       ));
-      /*
-      const allPoolsSorted = Object.keys(this.$store.state.pools.poolHistorySwaps).map((poolId, _index) => {
-        // const period = periodsHistoryMap[currentTimeOption];
-        let data = [];
-        if (this.$store.state.pools.poolHistorySwaps[poolId][period]) {
-          data = this.$store.state.pools.poolHistorySwaps[poolId][period].intervals.map((iv, _idx) => {
-            return {
-              totalVolume: parseInt(iv.totalVolume,10),
-              startTime: iv.startTime
-            };
-          });
-        }
-        return {
-          poolId,
-          data,
-        };
-      }).sort((a, b) => (
-        parseInt(b.data[b.data.length-1]?.totalVolume || '0', 10) -
-        parseInt(a.data[b.data.length-1]?.totalVolume || '0', 10)
-      ));
-      */
-
-      // console.log(periodsHistoryMap, periodsHistoryMap[currentTimeOption])
-      // debugger;
-      // console.log(periodsHistoryMap, periodsHistoryMap[currentTimeOption])
-      // calculate other pools payload
       const top3PoolsSortedByVolume = allPoolsSorted.slice(0, 3);
       const allPoolsTimeMap = {};
       top3PoolsSortedByVolume.forEach(tp => {
@@ -192,12 +229,7 @@ export default {
           totalVolume: otherPoolStartTimeMap[stKey].totalVolume,
         })),
       }
-      const colors = [
-        "#f8c950",
-        "#5e2bbc",
-        "#2d99fe",
-        "#3f4456",
-      ];
+      const colors = ["#f8c950", "#5e2bbc", "#2d99fe", "#3f4456"];
       const allPoolsTimeKeys = Object.keys(allPoolsTimeMap)
         .map(k => parseInt(k, 10))
         .sort((a,b) => a-b)
@@ -221,9 +253,15 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.volume-by-poolvstotal-section {
+    @media screen and (max-width: $pureg-lg) {
+    overflow-x: scroll;
+  }
+}
 .blockrewardsperday-chart {
   border-top: 1px solid #353C50;
   padding: 15px 25px;
+  min-width: 450px;
   :first-child {
     > .highcharts-container {
       text-align: center;

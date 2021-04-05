@@ -8,8 +8,6 @@
 </template>
 
 <script>
-import { format } from 'date-fns';
-
 export default {
   props: {
     // NOTE(Fede): data prop should be a list of objects {date: Date, value: number}
@@ -54,8 +52,17 @@ export default {
         legend: false,
         tooltip: {
           formatter() {
+            const date = new Date(this.point.x);
+            const year = date.getUTCFullYear();
+            const month = date.getUTCMonth() < 10 ? `0${date.getUTCMonth()}` : `${date.getUTCMonth()}`;
+            const day = date.getUTCDate() < 10 ? `0${date.getUTCDate()}` : `${date.getUTCDate()}`;
+            const hours = date.getUTCHours() < 10 ? `0${date.getUTCHours()}` : `${date.getUTCHours()}`;
+            const mins = date.getUTCMinutes() < 10 ? `0${date.getUTCMinutes()}` : `${date.getUTCMinutes()}`;
             return `
               <div class="app-tooltip">
+                <div class="app-tooltip__header">
+                  <span>${year}-${month}-${day} ${hours}:${mins}</span>
+                </div>
                 <div class="app-tooltip__body">
                   <p class="app-tooltip__text">
                     ${formatLabel(this.point.y)}
@@ -122,7 +129,7 @@ export default {
               textAlign: 'right',
               fontWeight: 500,
             },
-            x: -5,
+            // x: -5,
           },
           gridLineColor: areaColor,
           lineColor: areaColor,

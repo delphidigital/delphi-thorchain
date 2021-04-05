@@ -132,7 +132,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .runepiechart-wrapper {
   display: flex;
   flex-direction: row;
@@ -164,6 +164,9 @@ export default {
   margin-bottom: 12px;
   font-size: 14px;
   font-weight: 500;
+  @media screen and (max-width: $pureg-lg) {
+    font-size: 12px;
+  }
 }
 .runepiechart-legendtext {
   flex: 1;

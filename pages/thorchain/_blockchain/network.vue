@@ -79,7 +79,7 @@
       </div>
 
       <div class="pure-g">
-        <div class="pure-u-1 pure-u-md-2-3 section--split-left" style="display: inline-flex;">
+        <div class="pure-u-1 pure-u-md-2-3 section--split-left">
           <div class="section" style="flex: 1;">
             <div class="section__header" id="volumebypool_vs_total_volume">
               <h2 class="section__title display--notmobile">
@@ -143,7 +143,7 @@
       </div>
 
       <div class="pure-g">
-        <div class="pure-u-1 pure-u-md-1-2 section--split-left" style="overflow: overlay;">
+        <div class="pure-u-1 pure-u-md-1-2 section--split-left">
           
           <div class="section" style="flex: 1;">
             <div class="section__header" id="deterministic-rune" style="overflow-x: visible;">
@@ -188,7 +188,7 @@
           <NetworkSolvency />
         </div>
 
-        <div class="pure-u-1 pure-u-md-1-2 section--split-right" style="display: inline-flex;overflow: overlay;">
+        <div class="pure-u-1 pure-u-md-1-2 section--split-right">
           <div class="section" style="flex: 1;">
             <div class="section__header" id="block-rewards-per-day" style="overflow-x: visible;">
               <h2 class="section__title">
@@ -220,12 +220,14 @@
                 ></Icon>
               </a>
             </div>
-            <BlockRewardsPerDayColumnChart />
-            <hr class="section__divider" />
-            <div class="section__footer" style="display: flex;flex: 1;margin-top:0;">
-              <div class="section_footer_info">
-                <span>Bond Reward / Node:</span>
-                <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
+            <div class="block-rewards-perday-section">
+              <BlockRewardsPerDayColumnChart />
+              <hr class="section__divider" />
+              <div class="section__footer" style="display: flex;flex: 1;margin-top:0;">
+                <div class="section_footer_info">
+                  <span>Bond Reward / Node:</span>
+                  <span>{{ formatUsd(monthBondRewardPerNode) }} / Month</span>
+                </div>
               </div>
             </div>
           </div>
@@ -280,7 +282,9 @@
                   <CirculatingSupply />
                 </div>
               </div>
-              <LocationOfRune />
+              <div class="location-of-rune-section">
+                <LocationOfRune />
+              </div>
             </div>
           </div>
         </div>
@@ -380,8 +384,8 @@ export default {
     const runeLocationDeepLink = `${baseUrl}${tabBasePath}#rune_location`;
     const thorchainDevActivityDeepLink = `${baseUrl}${tabBasePath}#thorchain_dev_activity`;
     return {
-      currentTimeOption: '1W',
-      timeOptions: ['1W', '1M', '3M', '6M', '1Y'],
+      currentTimeOption: '1D',
+      timeOptions: ['1D', '1W', '1M'],
       tweetBlockRewardsPerDay: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Block Rewards Per Day')}&url=${encodeURIComponent(rewardsPerDayDeepLink)}`,
       tweetDeterministicRune: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Deterministic RUNE')}&url=${encodeURIComponent(deterministicRuneDeepLink)}`,
       tweetVolumeByPoolVsTotalVolume: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Volume by pool vs. Total volume')}&url=${encodeURIComponent(volumeByPoolVsTotalDeepLink)}`,
@@ -583,6 +587,10 @@ export default {
     font-size: 13px;
     font-weight: 600;
     opacity: 0.75;
+
+    @media screen and (max-width: $pureg-lg) {
+      font-size: 12px;
+    }
   }
 }
 .section__body--list {
@@ -661,7 +669,11 @@ export default {
 .volume-by-pool-time-option--active {
   color: #fff;
 }
-
+.location-of-rune-section, .block-rewards-perday-section {
+  @media screen and (max-width: $pureg-lg) {
+    overflow-x: scroll;
+  }
+}
 .location-rune-detail {
   display: flex;
   margin: 22px;
@@ -772,7 +784,11 @@ export default {
 #volumebypool_vs_total_volume {
   @media screen and (max-width: 500px) {
     flex-direction: column;
-    margin: 16px;
+    border-bottom: none;
+    > h2 {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
   }
 }
 </style>

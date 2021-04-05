@@ -251,6 +251,7 @@ export default {
   justify-content: center;
   padding-bottom: 28px;
   user-select: none;
+  min-width: 450px;
 }
 .location-squarebox-lvl1 {
   position: relative;

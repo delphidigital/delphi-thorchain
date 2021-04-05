@@ -66,5 +66,6 @@ export default {
     max-width: inherit;
     width: inherit;
     margin: auto;
+    min-width: 500px;
 }
 </style>
