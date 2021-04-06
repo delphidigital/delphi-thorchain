@@ -104,7 +104,7 @@
             </td>
             <td class="section__table__data">
               <span
-                :class="(sortBy == 'poolId' || sortBy == 'correllation' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
+                :class="(sortBy == 'poolId' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('volumeAverageUsd')"
               >
                 {{ formatLabel(pool.volumeAverageUsd) }}
@@ -135,11 +135,14 @@
               </div>
             </td>
 
-            <!-- <td class="section__table__data">
-              <div>
-                <Percentage :value="pool.correllation" />
-              </div>
-            </td> -->
+            <td class="section__table__data">
+              <span
+                :class="(sortBy == 'lastCorrellation') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('lastCorrellation')"
+              >
+                {{(pool.lastCorrellation || 0).toFixed(2)}}
+              </span>
+            </td>
           </tr>
 
 
@@ -189,7 +192,7 @@
             </td>
             <td class="section__table__data">
               <span
-                :class="(sortBy == 'poolId' || sortBy == 'correllation' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
+                :class="(sortBy == 'poolId' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('volumeAverageUsd')"
               >
                 {{ formatLabel(pool.volumeAverageUsd) }}
@@ -220,11 +223,14 @@
               </div>
             </td>
 
-            <!-- <td class="section__table__data">
-              <div>
-                <Percentage :value="pool.correllation" />
-              </div>
-            </td> -->
+            <td class="section__table__data">
+              <span
+                :class="(sortBy == 'lastCorrellation') ? 'column__highlight__colored' : ''"
+                @click="changeColumn('lastCorrellation')"
+              >
+                {{(pool.lastCorrellation || 0).toFixed(2)}}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -286,11 +292,11 @@ export default {
           label: 'V/D Ratio',
           info: 'A metric which indicates a pool’s potential. A higher number means higher demand.',
         },
-        // {
-        //   name: 'correllation',
-        //   label: 'Correllation',
-        //   info: 'price divergence between ASSET and RUNE. A high correlation is favorable (close to 1). it indicates a lower chance of IL.',
-        // },
+        {
+          name: 'lastCorrellation',
+          label: 'Correllation',
+          info: 'Price divergence between ASSET and RUNE. A high correllation is favorable (close to 1). it indicates a lower chance of IL.',
+        },
       ],
       yAxisLabelOptions: {
         type: 'linear',
@@ -360,6 +366,8 @@ export default {
         return { title: 'Depth of selected pools' };
       } else if (this.sortBy === 'volumeOverDepthRatio') {
         return { title: 'V/D of selected pools' };
+      } else if (this.sortBy === 'lastCorrellation') {
+        return { title: 'Correllation of selected pools' };
       }
       return { title: 'Volume of selected pools' };
     },
@@ -420,6 +428,19 @@ export default {
             color: colorsList[colorIndex],
           };
           return ret;
+        } else if (this.sortBy === 'lastCorrellation') {
+          const poolTA = this.poolsTA
+          const periodTA = poolTA[sp][period];
+          return {
+            name: pname,
+            data: Object.keys(periodTA.intervals).map(timestamp => {
+              return {
+                x: (parseInt(periodTA.intervals[timestamp].startTime)*1000),
+                y: periodTA.intervals[timestamp].correllation,
+              }
+            }),
+            color: colorsList[colorIndex],
+          };
         } else { // if (this.chartedValue === 'volumeAverageUsd') {
           const poolTA = this.poolsTA
           const periodTA = poolTA[sp][period];
@@ -451,7 +472,7 @@ export default {
     formatYValueTooltip(value) {
       if (this.sortBy === 'averagePeriodAPY') {
         return this.displayPoolAPY(value);
-      } else if (this.sortBy === 'volumeOverDepthRatio') {
+      } else if (this.sortBy === 'volumeOverDepthRatio' || this.sortBy === 'lastCorrellation') {
         return `${(value || 0.0).toFixed(2)}`;
       }
       return this.formatLabel(value);
