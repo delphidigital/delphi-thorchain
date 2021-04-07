@@ -43,7 +43,7 @@
 export default {
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const percentageRuneLockedDeepLink = `${baseUrl}${tabBasePath}#percentage-rune-locked`;
     return {
       tweetPercentageRUNElocked: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Percentage RUNE locked')}&url=${encodeURIComponent(percentageRuneLockedDeepLink)}`,

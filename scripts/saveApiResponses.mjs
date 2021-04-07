@@ -197,7 +197,8 @@ async function fetchDataJob(blockchain) {
   }
 }
 
-fetchDataJob('testnet');
-
-// NOTE: no chaosnet on v2 testnet, so no fetch data for it for now
-// fetchDataJob('chaosnet');
+async function main() {
+  await fetchDataJob('chaosnet');
+  await fetchDataJob('testnet');
+}
+main();

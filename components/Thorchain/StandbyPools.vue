@@ -60,7 +60,7 @@ import { poolNameWithoutAddr } from '../../lib/utils';
 export default {
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const standbyPoolsDeepLink = `${baseUrl}${tabBasePath}#standby-pools`;
     // status enum: "available" "staged" "suspended"
     // Ref: https://testnet.midgard.thorchain.info/v2/doc#operation/GetPools

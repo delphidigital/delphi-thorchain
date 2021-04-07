@@ -230,7 +230,7 @@ export default {
   components: { DatePicker, LineChart, ColumnChart },
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const poolPredictionAnalysisDeepLink = `${baseUrl}${tabBasePath}#pool-prediction-analysis`;
     return {
       tweetRunePredictionAnalysis: `http://twitter.com/intent/tweet?text=${encodeURIComponent('RUNE prediction analysis')}&url=${encodeURIComponent(poolPredictionAnalysisDeepLink)}`,

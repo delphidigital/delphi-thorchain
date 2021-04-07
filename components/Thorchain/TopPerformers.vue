@@ -125,7 +125,7 @@ export default {
   },
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const topPerformersDeepLink = `${baseUrl}${tabBasePath}#top-performers`;
     return {
       tweetTopPerformers: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Top performers')}&url=${encodeURIComponent(topPerformersDeepLink)}`,

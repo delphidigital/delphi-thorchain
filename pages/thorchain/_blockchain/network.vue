@@ -376,7 +376,7 @@ export default {
   },
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet/network'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const rewardsPerDayDeepLink = `${baseUrl}${tabBasePath}#block-rewards-per-day`;
     const deterministicRuneDeepLink = `${baseUrl}${tabBasePath}#deterministic-rune`;
     const volumeByPoolVsTotalDeepLink = `${baseUrl}${tabBasePath}#volumebypool_vs_total_volume`;

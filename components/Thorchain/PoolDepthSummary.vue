@@ -94,7 +94,7 @@ export default {
   },
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const poolDepthAndVolumeLink = `${baseUrl}${tabBasePath}#pool-depth-volume`;
     return {
       tweetPoolDepthSummary: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Pool depth and volume')}&url=${encodeURIComponent(poolDepthAndVolumeLink)}`,

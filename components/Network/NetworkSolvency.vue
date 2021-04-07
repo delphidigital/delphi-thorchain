@@ -30,7 +30,7 @@
 export default {
   data() {
     const baseUrl = process.env.APP_URL;
-    const tabBasePath = '/thorchain/testnet/network'; // TODO: include mainnet too
+    const tabBasePath = this.$route.path;
     const networkSolvencyDeepLink = `${baseUrl}${tabBasePath}#network-solvency`;
     return {
       tweetDeepLink: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Network Solvency')}&url=${encodeURIComponent(networkSolvencyDeepLink)}`,
