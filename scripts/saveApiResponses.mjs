@@ -45,7 +45,7 @@ async function updateBlockchainData(blockchain) {
   console.log(`[${blockchain}]: starting data fetch...`);
   const redisKey = key => `thorchain::${blockchain}::${key}`;
   const set = (key, data) => redisSet(redisKey(key), data);
-  const api = thorchainDataFetcher(blockchain);
+  const api = await thorchainDataFetcher(blockchain);
 
   // FETCH DATA
   // Thorchain
