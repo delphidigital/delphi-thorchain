@@ -195,7 +195,7 @@ export default {
         parseInt(b.data[b.data.length-1]?.totalVolume || '0', 10) -
         parseInt(a.data[b.data.length-1]?.totalVolume || '0', 10)
       ));
-      const top3PoolsSortedByVolume = allPoolsSorted.slice(0, 3);
+      const top3PoolsSortedByVolume = allPoolsSorted.slice(0, 4);
       const allPoolsTimeMap = {};
       top3PoolsSortedByVolume.forEach(tp => {
         tp.data.forEach(dp => {
@@ -204,7 +204,7 @@ export default {
           }
         })
       });
-      const otherPoolsSorted = allPoolsSorted.slice(3, allPoolsSorted.length);
+      const otherPoolsSorted = allPoolsSorted.slice(4, allPoolsSorted.length);
       // create a map of time keys to a set of pools that provide data for that time key
       const otherPoolStartTimeMap = {};
       otherPoolsSorted.forEach(op => {
@@ -229,7 +229,7 @@ export default {
           totalVolume: otherPoolStartTimeMap[stKey].totalVolume,
         })),
       }
-      const colors = ["#f8c950", "#5e2bbc", "#2d99fe", "#3f4456"];
+      const colors = ["#f8c950", "#5e2bbc", "#2d99fe", "#3f9456", "#3f4456"];
       const allPoolsTimeKeys = Object.keys(allPoolsTimeMap)
         .map(k => parseInt(k, 10))
         .sort((a,b) => a-b)

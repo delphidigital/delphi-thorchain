@@ -192,7 +192,7 @@
           <div class="section" style="flex: 1;">
             <div class="section__header" id="block-rewards-per-day" style="overflow-x: visible;">
               <h2 class="section__title">
-                Block Rewards per Day
+                Earnings per Day
                 <span class="section__title--tooltip">
                   <Icon
                     class="tooltip__hover--info"
