@@ -10,6 +10,7 @@ export const state = () => ({
   network: null,
   stats: null,
   queue: null,
+  v1SinglechainStats: null,
 });
 
 export const mutations = {
@@ -29,10 +30,14 @@ export const mutations = {
       state.lastBinanceBlock = parseInt(lastBlock, 10);
     }
   },
+  setSinglechainStats(state, payload) {
+    state.v1SinglechainStats = payload;
+  },
   setStats(state, payload) {
     state.stats = payload;
   },
   setQueue(state, payload) {
     state.queue = payload;
   },
+
 };

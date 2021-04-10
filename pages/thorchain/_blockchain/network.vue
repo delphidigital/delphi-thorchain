@@ -484,11 +484,14 @@ export default {
       return monthBondRewardPerNode * price;
     },
     deterministicRunePrice() {
+      const v1SinglechainTotalDepth = this.$store.state.networkHealth.v1SinglechainStats?.totalDepth || 0;
+      // pooling is 50% rune value and 50% asset, so non rune assets value is 1/2 of totalDepth
+      const v1SinglechainNonRuneDepth = v1SinglechainTotalDepth ? ((parseInt(v1SinglechainTotalDepth, 10)/runeDivider)/2) : 0;
       // The deterministic Rune Price chart is a hisorical chart of the deterministic price. Formula: 
       // Deterministic Price = 3 * non-RUNE assets pooled / circulating supply
       const nonRuneDepthsPooled = this.$store.state.pools.poolsOverview.reduce((acc, next) => (
         acc + (parseInt(next.runeDepth, 0) / runeDivider) // rune depth value is = to assetDepth value
-      ), 0);
+      ), 0) + v1SinglechainNonRuneDepth;
       const cirqSupply = this.$store.state.runeMarketData && this.$store.state.runeMarketData.circulatingSupply || 0;
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
       let deterministicRunePrice = 0;

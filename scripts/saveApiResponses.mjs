@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { format, subDays, startOfDay, differenceInDays } from 'date-fns';
 import { thorchainDataFetcher } from '../lib/thorchainUrls.mjs';
 import { binanceFetchAccounts } from '../lib/binanceApi.mjs';
 import { lookupGeoIP } from '../lib/geoIP.mjs';
@@ -7,11 +6,7 @@ import { withCache } from '../lib/cacheUtils.mjs';
 import redisClient from '../lib/redisClient.mjs';
 import EmailProvider from '../lib/emailProvider.mjs';
 
-// const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Utility methods for rune value parsing
-const runeDivider = 10 ** 8;
-const runeE8toValue = runeString => (runeString ? (parseFloat(runeString) / runeDivider) : 0);
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 process.on('unhandledRejection', (up) => { throw up; });
 async function redisSet(key, data) {
@@ -51,6 +46,7 @@ async function updateBlockchainData(blockchain) {
   // Thorchain
   const queue = await api.loadQueue();
   const poolList = await api.loadPools();
+  const v1SinglechainStats = await api.loadV1SinglechainStats();
   // NOTE: v1 returned status: 'Enabled'
   //       v2 thorchain is returning status: Available
   //       v2 midgard is returning status available
@@ -133,6 +129,7 @@ async function updateBlockchainData(blockchain) {
   Object.keys(poolStats).forEach(async (poolId) => {
     await set(`pools-${poolId}`, poolStats[poolId]);
   });
+  await set('v1SinglechainStats', v1SinglechainStats);
   await set('allPoolsHistoryEarnings', allPoolsHistoryEarnings);
   await set('poolHistoryDepths', poolHistoryDepths);
   await set('poolHistorySwaps', poolHistorySwaps);
@@ -168,16 +165,17 @@ async function updateBlockchainData(blockchain) {
 
   const end = new Date();
   console.log(`[${blockchain}]: ended data fetch in ${(end - start) / 1000} seconds...`);
+  await sleep(10000);
 }
 
 let consecutiveErrorAttempts = 0;
 let notificationSent = false;
 const NOTIFICATION_MINUTE_TIME_INTERVAL = process.env.NOTIFICATION_MINUTE_TIME_INTERVAL || 30;
+
 async function fetchDataJob(blockchain) {
-  let timeout = 1000
   try {
     await updateBlockchainData(blockchain);
-    if (consecutiveErrorAttempts > 0) consecutiveErrorAttempts = 0;
+    if (consecutiveErrorAttempts > 0) { consecutiveErrorAttempts = 0; }
   } catch (e) {
     const errorIntervalInSeconds = 5;
     consecutiveErrorAttempts += 1;
@@ -189,16 +187,16 @@ async function fetchDataJob(blockchain) {
       notificationSent = true;
     }
     console.log(`[${blockchain}]: Data fetch failed with: `, e);
-    timeout = 100000;
   } finally {
-    setTimeout(() => {
-      fetchDataJob(blockchain);
-    }, timeout);
+    await sleep(60*1000*5); // sleep 5 mins
+    fetchDataJob(blockchain);
   }
 }
 
 async function main() {
   await fetchDataJob('chaosnet');
+  await sleep(10000);
   await fetchDataJob('testnet');
+  await sleep(10000);
 }
 main();
