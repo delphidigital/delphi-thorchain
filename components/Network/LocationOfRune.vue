@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="location-squarebox-wrapper">
     <div
       v-for="item in dataProportions"
@@ -114,6 +115,24 @@
       </div>
     </div>
   </div>
+  <div class="location-legend">
+    <div>
+      <span class="location-legendcolor location-legendcolor--unlocked">&nbsp;</span><span>Unlocked</span>
+    </div>
+    <div>
+      <span class="location-legendcolor location-legendcolor--activebonded">&nbsp;</span><span>Active Bonded</span>
+    </div>
+    <div>
+      <span class="location-legendcolor location-legendcolor--standbybonded">&nbsp;</span><span>Standby Bonded</span>
+    </div>
+    <div>
+      <span class="location-legendcolor location-legendcolor--pooled">&nbsp;</span><span>Pooled</span>
+    </div>
+    <div>
+      <span class="location-legendcolor location-legendcolor--reserve">&nbsp;</span><span>Reserve</span>
+    </div>
+  </div>
+  </div>
 </template>
 
 <script>
@@ -138,8 +157,19 @@ export default {
       return css;
     },
     displayName(item) {
-      const logValue = this.logScale(item.value);
-      return (logValue < 100) ? '' : item.name;
+      if (item.width < 70 || item.height < 40) {
+        return '';
+      }
+      if (item.child) {
+        const realWidth = item.width - item.child.width;
+        const realHeight = item.height - item.child.height;
+        if (realWidth < 60 || realHeight < 40) {
+          return '';
+        }
+      }
+      return item.name;
+      // const logValue = this.logScale(item.value);
+      // return (logValue < 100) ? '' : item.name;
     },
     logScale(value) {
       const totalSupply = this.$store.state.runeMarketData.coingeckoMarketData.total_supply;
@@ -258,7 +288,7 @@ export default {
       return coingeckoMarketData.total_supply;
     },
     dataProportions() {
-      return getProportions(this.chartData, 1000, 300);
+      return getProportions(this.chartData, 1040, 380);
     },
   },
 };
@@ -282,15 +312,18 @@ export default {
   position: relative;
   color: white;
   text-align:center;
+  border: 1px solid rgba(0,0,0,0.3);
 }
 .location-squarebox-inner {
   position: absolute;
   bottom: 0;
   right: 0;
+  border-top: 1px solid rgba(0,0,0,0.3);
+  border-left: 1px solid rgba(0,0,0,0.3);
 }
 .squarebox-label {
   font-size: 11px;
-  padding-top: 10%;
+  padding-top: 8%;
   position: relative;
   height: 100%;
 
@@ -323,5 +356,30 @@ export default {
 }
 .squarebox-label--hover > .app-tooltip {
   visibility: visible !important;
+}
+.location-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  padding-bottom: 28px;
+  cursor: default;
+  > div {
+    margin-right: 16px;
+  }
+
+  .location-legendcolor {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 8px;
+  }
+  .location-legendcolor--unlocked { background-color: #3f4456; }
+  .location-legendcolor--activebonded { background-color: #2d99fe; }
+  .location-legendcolor--standbybonded { background-color: #5e2bbc; }
+  .location-legendcolor--pooled { background-color: #f8c950; }
+  .location-legendcolor--reserve { background-color: #19ceb8; }
 }
 </style>

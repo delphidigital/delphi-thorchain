@@ -327,9 +327,18 @@ export default {
       // const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
       // poolId apy volumeAverageUsd depthAverageUsd volumeOverDepthRatio correllation
       // const poolsDepths = getInvervalsFromPeriodKey(poolHistoryDepths, period);
+      const timeOptionToDaysMap = {
+        '24H': 1,
+        '1W': 7,
+        '1M': 30,
+        '3M': 90,
+        '1Y': 365,
+      };
       const unsortedPools = Object.keys(this.poolsTA).map((poolId) => {
         const poolPeriodTA = this.poolsTA[poolId][period];
-        const volumeOverDepthRatio = poolPeriodTA ? (poolPeriodTA.totalVolumeUsd / poolPeriodTA.totalDepthUsd) : 0;
+        const volumeOverDepthRatio = poolPeriodTA
+          ? ((poolPeriodTA.totalVolumeUsd / poolPeriodTA.totalDepthUsd) / timeOptionToDaysMap[this.currentTimeOption])
+          : 0;
         // const periodStatsKey = periodToStatsMap[this.currentTimeOption];
         // const averagePeriodAPY = parseFloat(
         //   this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats[periodStatsKey].poolAPY
