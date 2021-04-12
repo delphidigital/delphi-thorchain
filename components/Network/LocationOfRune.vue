@@ -165,24 +165,49 @@ export default {
     const circulatingSupply = coingeckoMarketData.circulating_supply;
     const net = this.$store.state.networkHealth.network;
     const bm = net.bondMetrics;
+
+    const v1Net = this.$store.state.networkHealth.v1SinglechainNetwork
+    const v1Bm = v1Net.bondMetrics;
+
     const supActiveBonded =
       bm.totalActiveBond && bm.totalActiveBond !== "0"
         ? parseInt(bm.totalActiveBond, 10) / 10 ** 8
         : 0;
+    const v1SupActiveBonded =
+      v1Bm.totalActiveBond && v1Bm.totalActiveBond !== "0"
+        ? parseInt(v1Bm.totalActiveBond, 10) / 10 ** 8
+        : 0;
+
     const supSandbyBonded =
       bm.totalStandbyBond && bm.totalStandbyBond !== "0"
         ? parseInt(bm.totalStandbyBond, 10) / 10 ** 8
         : 0;
-    const totalBonded = supActiveBonded + supSandbyBonded;
+    const v1SupSandbyBonded =
+      v1Bm.totalStandbyBond && v1Bm.totalStandbyBond !== "0"
+        ? parseInt(v1Bm.totalStandbyBond, 10) / 10 ** 8
+        : 0;
+
+    const totalBonded = supActiveBonded + v1SupActiveBonded + supSandbyBonded + v1SupSandbyBonded;
     const supPooled =
       net.totalPooledRune && net.totalPooledRune !== "0"
         ? parseInt(net.totalPooledRune, 10) / 10 ** 8
         : 0;
-    const supUnlocked = circulatingSupply - (totalBonded + supPooled);
+    // note: v1 the field is totalStaked
+    // http://157.90.98.200:8080/v1/doc#operation/GetNetworkData
+    const v1SupPooled =
+      v1Net.totalStaked && v1Net.totalStaked !== "0"
+        ? parseInt(v1Net.totalStaked, 10) / 10 ** 8
+        : 0;
+
+    const supUnlocked = circulatingSupply - (totalBonded + (supPooled + v1SupPooled));
     const supUnreleased = totalSupply - circulatingSupply;
     const supReserve =
       net.totalReserve && net.totalReserve !== "0"
         ? parseInt(net.totalReserve, 10) / 10 ** 8
+        : 0;
+    const v1SupReserve =
+      v1Net.totalReserve && v1Net.totalReserve !== "0"
+        ? parseInt(v1Net.totalReserve, 10) / 10 ** 8
         : 0;
 
     return {
@@ -195,17 +220,17 @@ export default {
           color: "#3f4456",
           child: {
             name: "Active Bonded",
-            value: supActiveBonded,
+            value: supActiveBonded + v1SupActiveBonded,
             // logValue: this.logScale(supActiveBonded),
             color: "#2d99fe",
             child: {
               name: "Standby Bonded",
-              value: supSandbyBonded,
+              value: supSandbyBonded + v1SupSandbyBonded,
               // logValue: this.logScale(supSandbyBonded),
               color: "#5e2bbc",
               child: {
                 name: "Pooled",
-                value: supPooled,
+                value: supPooled + v1SupPooled,
                 // logValue: this.logScale(supPooled),
                 color: "#f8c950",
               },
@@ -214,7 +239,7 @@ export default {
         },
         {
           name: "Reserve",
-          value: supReserve,
+          value: supReserve + v1SupReserve,
           // logValue: this.logScale(supReserve),
           color: "#19ceb8",
         },

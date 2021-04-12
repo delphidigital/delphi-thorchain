@@ -11,6 +11,7 @@ export const state = () => ({
   stats: null,
   queue: null,
   v1SinglechainStats: null,
+  v1SinglechainNetwork: null,
 });
 
 export const mutations = {
@@ -32,6 +33,9 @@ export const mutations = {
   },
   setSinglechainStats(state, payload) {
     state.v1SinglechainStats = payload;
+  },
+  setSinglechainNetworkInfo(state, payload) {
+    state.v1SinglechainNetwork = payload;
   },
   setStats(state, payload) {
     state.stats = payload;

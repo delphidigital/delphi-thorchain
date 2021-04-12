@@ -47,6 +47,7 @@ async function updateBlockchainData(blockchain) {
   const queue = await api.loadQueue();
   const poolList = await api.loadPools();
   const v1SinglechainStats = await api.loadV1SinglechainStats();
+  const v1SinglechainNetwork = await api.loadV1SinglechainNetwork();
   // NOTE: v1 returned status: 'Enabled'
   //       v2 thorchain is returning status: Available
   //       v2 midgard is returning status available
@@ -130,6 +131,7 @@ async function updateBlockchainData(blockchain) {
     await set(`pools-${poolId}`, poolStats[poolId]);
   });
   await set('v1SinglechainStats', v1SinglechainStats);
+  await set('v1SinglechainNetwork', v1SinglechainNetwork);
   await set('allPoolsHistoryEarnings', allPoolsHistoryEarnings);
   await set('poolHistoryDepths', poolHistoryDepths);
   await set('poolHistorySwaps', poolHistorySwaps);

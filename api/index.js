@@ -27,6 +27,7 @@ thorchain.all('/overview', async (req, res) => {
   const constants = await loadCached(`${req.blockchain}::constants`);
   const runevaultBalance = await loadCached(`${req.blockchain}::runevaultBalance`);
   const v1SinglechainStats = await loadCached(`${req.blockchain}::v1SinglechainStats`);
+  const v1SinglechainNetwork = await loadCached(`${req.blockchain}::v1SinglechainNetwork`);
 
   const version = await loadCached(`${req.blockchain}::version`);
   const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
@@ -66,6 +67,7 @@ thorchain.all('/overview', async (req, res) => {
     // technicalAnalysis,
     allPoolsHistoryEarnings,
     v1SinglechainStats,
+    v1SinglechainNetwork,
   });
 });
 
