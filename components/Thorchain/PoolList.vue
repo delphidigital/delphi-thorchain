@@ -261,11 +261,11 @@ export default {
       tweetPoolList: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Pool list')}&url=${encodeURIComponent(poolListDeepLink)}`,
       dummyRealRewards: Math.random(),
       timeOptions: ['24H', '1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
-      currentTimeOption: '1W',
+      currentTimeOption: '24H',
       searchinput: '',
       selectedPools: [],
-      sortBy: 'averagePeriodAPY',
-      sortDescending: false,
+      sortBy: 'volumeAverageUsd',
+      sortDescending: true,
       fields: [
         {
           name: 'poolId',

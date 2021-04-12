@@ -84,7 +84,7 @@
                 <tr>
                   <td class="incentive-tooltip-data">
                     <span class="incentive-mark incentive-mark-staker" />
-                    Staker Rewards
+                    Liquidity Pools
                   </td>
                   <td class="align-right app-tooltip__table__data--highlight">
                     {{ formatPercentage(poolShareFactor) }}

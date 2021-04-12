@@ -131,7 +131,7 @@ export default {
       tweetTopPerformers: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Top performers')}&url=${encodeURIComponent(topPerformersDeepLink)}`,
       timeOptions: ['1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
       currentTimeOption: '1W',
-      sortBy: 'totalEarningsRune',
+      sortBy: 'apy',
       sortDescending: true,
       fields: [
         {
@@ -306,6 +306,12 @@ export default {
   align-items: center;
   justify-content: space-between;
 }
+.section__table__head:not(:first-child) {
+  text-align: center;
+  &:last-child {
+    padding-left: 10px;
+  }
+}
 .section__table__head--tooltip {
   position: relative;
   z-index: 10;
@@ -337,6 +343,12 @@ export default {
     .table__head__tooltip {
       display: block;
     }
+  }
+}
+.section__table__row > .section__table__data:not(:first-child) {
+  text-align: center;
+  > div, > span {
+    margin: auto;
   }
 }
 </style>
