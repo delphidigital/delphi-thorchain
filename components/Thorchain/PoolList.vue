@@ -374,7 +374,7 @@ export default {
     selectedPoolsLinechartData() {
       const colorsList = ['#4346D3', '#5E2BBC', '#F7517F', '#2D99FF', '#16CEB9'];
       const period = periodsHistoryMap[this.currentTimeOption];
-      const periodResolutionKey = ['period24H', 'period1W'].find(k => k === period) ? 'period1HM' : 'period1Y';
+      const periodResolutionKey = ['period24H', 'period1W', 'period1M'].find(k => k === period) ? 'period1HM' : 'period1Y';
       const secondsElapsedSincePeriod = periodKeyToSecondsMap[period];
       const startTime = getUnixTime(new Date()) - secondsElapsedSincePeriod;
       const data = this.selectedPools.map((sp, colorIndex) => {

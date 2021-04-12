@@ -293,6 +293,18 @@ a {
   max-width: 1200px;
   padding: 0 10px;
 }
+.section-disclamer {
+  font-family: FreeSans,Arimo,"Droid Sans",Helvetica,Arial,sans-serif;
+  font-size: 12px;
+  padding: 16px 30px;
+  margin: 16px auto 0 auto;
+  background-color: #1e273c;
+  font-weight: 600;
+  max-width: 740px;
+  text-align: center;
+  line-height: 20px;
+  color: #ffc4c4;
+}
 
 .page__header {
   display: flex;
