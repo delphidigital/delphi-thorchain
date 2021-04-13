@@ -141,7 +141,8 @@ export default {
       return this.runeBonded / this.totalRune;
     },
     runeStaked() {
-      return this.$store.state.networkHealth.totalStaked;
+      // return this.$store.state.networkHealth.totalStaked; // singlechain v1 is totalStaked
+      return this.$store.state.networkHealth.totalPooledRune
     },
     runeStakedPercentage() {
       if (!this.runeStaked || !this.totalRune) { return 0; }
