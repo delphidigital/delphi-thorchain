@@ -51,9 +51,28 @@ export default {
   },
   computed: {
     runeLockedData() {
+      const v1Net = this.$store.state.networkHealth.v1SinglechainNetwork;
+      const v1Stats = this.$store.state.networkHealth.v1SinglechainStats;
+
+      const v1Bm = v1Net?.bondMetrics;
+      const v1TotalActiveBonded = v1Bm?.totalActiveBond && v1Bm.totalActiveBond !== "0"
+          ? parseInt(v1Bm.totalActiveBond, 10) / (10 ** 8)
+          : 0;
+      const v1SupSandbyBonded = v1Bm?.totalStandbyBond && v1Bm.totalStandbyBond !== "0"
+        ? parseInt(v1Bm.totalStandbyBond, 10) / (10 ** 8)
+        : 0;
+
+      const v1SupReserve = v1Net?.totalReserve && v1Net.totalReserve !== "0"
+          ? parseInt(v1Net.totalReserve, 10) / 10 ** 8
+          : 0;
+      // http://157.90.98.196:8080/v1/doc#operation/GetStats
+      const v1RuneDepth = parseInt(v1Stats.totalDepth, 10) / (10 ** 8);
+
+      const v1TotalLocked = v1RuneDepth + v1TotalActiveBonded + v1SupSandbyBonded + v1SupReserve;
       const totalRuneDepth = this.$store.getters['pools/totalRuneDepth'];
       const totalActiveBonded = this.$store.getters['nodes/totalActiveBonded'];
       const totalStandbyBonded = this.$store.getters['nodes/totalStandbyBonded'];
+
       const totalRunevault = this.$store.state.vaultBalances.runevaultBalance;
       const totalLocked =
         totalRuneDepth + totalActiveBonded + totalStandbyBonded + totalRunevault;
@@ -61,7 +80,7 @@ export default {
       const unlocked = circulatingSupply - totalLocked;
 
       const stagedPools = this.$store.state.pools.poolsOverview.filter(p => p.status === 'staged');
-      const totalStagedPools = stagedPools.reduce((acc, next) => (acc + (parseInt(next.runeDepth, 10) / 10 ** 8)), 0);
+      const totalStagedPools = stagedPools.reduce((acc, next) => (acc + (parseInt(next.runeDepth, 10) / (10 ** 8))), 0);
 
       const percentage = value => value / circulatingSupply;
 
@@ -85,6 +104,11 @@ export default {
           name: 'Standby pools',
           percentage: percentage(totalStagedPools),
           color: '#6648FF',
+        },
+        {
+          name: 'Single chain',
+          percentage: percentage(v1TotalLocked),
+          color: '#fD99FF',
         },
       ];
 

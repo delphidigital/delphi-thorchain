@@ -200,46 +200,46 @@ export default {
     const bm = net.bondMetrics;
 
     const v1Net = this.$store.state.networkHealth.v1SinglechainNetwork
-    const v1Bm = v1Net.bondMetrics;
+    const v1Bm = v1Net?.bondMetrics;
 
     const supActiveBonded =
-      bm.totalActiveBond && bm.totalActiveBond !== "0"
+      bm?.totalActiveBond && bm.totalActiveBond !== "0"
         ? parseInt(bm.totalActiveBond, 10) / 10 ** 8
         : 0;
     const v1SupActiveBonded =
-      v1Bm.totalActiveBond && v1Bm.totalActiveBond !== "0"
+      v1Bm?.totalActiveBond && v1Bm.totalActiveBond !== "0"
         ? parseInt(v1Bm.totalActiveBond, 10) / 10 ** 8
         : 0;
 
     const supSandbyBonded =
-      bm.totalStandbyBond && bm.totalStandbyBond !== "0"
+      bm?.totalStandbyBond && bm.totalStandbyBond !== "0"
         ? parseInt(bm.totalStandbyBond, 10) / 10 ** 8
         : 0;
     const v1SupSandbyBonded =
-      v1Bm.totalStandbyBond && v1Bm.totalStandbyBond !== "0"
+      v1Bm?.totalStandbyBond && v1Bm.totalStandbyBond !== "0"
         ? parseInt(v1Bm.totalStandbyBond, 10) / 10 ** 8
         : 0;
 
     const totalBonded = supActiveBonded + v1SupActiveBonded + supSandbyBonded + v1SupSandbyBonded;
     const supPooled =
-      net.totalPooledRune && net.totalPooledRune !== "0"
+      net?.totalPooledRune && net.totalPooledRune !== "0"
         ? parseInt(net.totalPooledRune, 10) / 10 ** 8
         : 0;
     // note: v1 the field is totalStaked
     // http://157.90.98.200:8080/v1/doc#operation/GetNetworkData
     const v1SupPooled =
-      v1Net.totalStaked && v1Net.totalStaked !== "0"
+      v1Net?.totalStaked && v1Net.totalStaked !== "0"
         ? parseInt(v1Net.totalStaked, 10) / 10 ** 8
         : 0;
 
     const supUnlocked = circulatingSupply - (totalBonded + (supPooled + v1SupPooled));
     const supUnreleased = totalSupply - circulatingSupply;
     const supReserve =
-      net.totalReserve && net.totalReserve !== "0"
+      net?.totalReserve && net.totalReserve !== "0"
         ? parseInt(net.totalReserve, 10) / 10 ** 8
         : 0;
     const v1SupReserve =
-      v1Net.totalReserve && v1Net.totalReserve !== "0"
+      v1Net?.totalReserve && v1Net.totalReserve !== "0"
         ? parseInt(v1Net.totalReserve, 10) / 10 ** 8
         : 0;
 
