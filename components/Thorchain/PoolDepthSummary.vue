@@ -40,7 +40,7 @@
     <div class="section__body--area-chart">
       <div class="section__chart-title">
         <h3 class="section__subtitle">
-          Liquidity depth over time
+          Liquidity Over Time
         </h3>
         <div>
         <span

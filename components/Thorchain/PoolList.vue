@@ -261,7 +261,7 @@ export default {
       tweetPoolList: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Pool list')}&url=${encodeURIComponent(poolListDeepLink)}`,
       dummyRealRewards: Math.random(),
       timeOptions: ['24H', '1W', '1M', '3M', '1Y'], // '6M' is not available at stats endpoint
-      currentTimeOption: '24H',
+      currentTimeOption: '1W',
       searchinput: '',
       selectedPools: [],
       sortBy: 'volumeAverageUsd',
@@ -298,19 +298,32 @@ export default {
           info: 'Price divergence between ASSET and RUNE. A high correllation is favorable (close to 1). it indicates a lower chance of IL.',
         },
       ],
-      yAxisLabelOptions: {
-        type: 'linear',
-        title: {
-          text: 'Volume',
-          useHTML: true,
-          style: {
-            color: 'rgba(255,255,255,0.7)',
-          }
-        },
-      }
     };
   },
   computed: {
+    yAxisLabelOptions() {
+      let text = 'Volume';
+      if (this.sortBy === 'averagePeriodAPY') {
+        text = 'APY';
+      } else if (this.sortBy === 'totalDepthUsd') {
+        text = 'Depth';
+      } else if (this.sortBy === 'volumeOverDepthRatio') {
+        text = 'V/D Ratio';
+      } else if (this.sortBy === 'lastCorrellation') {
+        text = 'Correlation';
+      }
+      return {
+        type: 'linear',
+        title: {
+          text,
+          useHTML: true,
+          style: {
+            fontSize: '10px',
+            color: 'rgba(255,255,255,0.7)',
+          }
+        },
+      };
+    },
     poolsTA() {
       const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
       const poolHistorySwaps = this.$store.state.pools.poolHistorySwaps;
@@ -363,7 +376,10 @@ export default {
       return filteredPools;
     },
     poolsSelected() {
-      return this.pools.filter(p => this.selectedPools.includes(p.poolId));
+      const descChar = this.sortDescending ? '-' : '';
+      return this.pools
+        .filter(p => this.selectedPools.includes(p.poolId))
+        .sort(sortBy(`${descChar}${this.sortBy}`));
     },
     poolsNotSelected() {
       return this.pools.filter(p => !this.selectedPools.includes(p.poolId));

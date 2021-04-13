@@ -1,7 +1,7 @@
 <template>
   <div class="page__container">
     <div class="section-disclamer">
-      This product is in open beta, don't make decision based on the information displayed on this dashboard.
+      This product is in open beta, don't make decisions based on the information displayed on this dashboard.
       The accuracy of displayed information is still being validated. 
       Please forward any feedback to @bitcoin_sage on twitter.
     </div>

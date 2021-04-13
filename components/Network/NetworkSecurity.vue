@@ -73,7 +73,7 @@
                   </tr>
                   <tr>
                     <td>
-                      RUNE Staked
+                      RUNE Pooled
                     </td>
                     <td class="align-right">
                       {{ formatRuneAmount(runeStaked) }}

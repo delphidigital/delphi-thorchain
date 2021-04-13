@@ -13,8 +13,8 @@
           @mouseout="hoveringId = null"
           :class="{ 'squarebox-label--hover': hoveringId == item.name}"
         >
-          {{ displayName(item) }}<br/>
-          {{ (item.value * 100 / totalSupply).toFixed(2) }}%
+          <!-- {{ displayName(item) }}<br/>
+          {{ (item.value * 100 / totalSupply).toFixed(2) }}% -->
 
           <div class="app-tooltip">
             <div class="app-tooltip__header">
@@ -40,8 +40,8 @@
               @mouseout="hoveringId = null"
               :class="{ 'squarebox-label--hover': hoveringId == item.child.name}"
             >
-              {{ displayName(item.child) }}<br/>
-              {{ (item.child.value * 100 / totalSupply).toFixed(2) }}%
+              <!-- {{ displayName(item.child) }}<br/>
+              {{ (item.child.value * 100 / totalSupply).toFixed(2) }}% -->
 
               <div class="app-tooltip">
                 <div class="app-tooltip__header">
@@ -66,8 +66,8 @@
                   @mouseout="hoveringId = null"
                   :class="{ 'squarebox-label--hover': hoveringId == item.child.child.name}"
                 >
-                  {{ displayName(item.child.child) }}<br/>
-                  {{ (item.child.child.value * 100 / totalSupply).toFixed(2) }}%
+                  <!-- {{ displayName(item.child.child) }}<br/>
+                  {{ (item.child.child.value * 100 / totalSupply).toFixed(2) }}% -->
                   <div class="app-tooltip">
                     <div class="app-tooltip__header">
                       <span class="app-tooltip__marker"></span>
@@ -91,8 +91,8 @@
                       @mouseout="hoveringId = null"
                       :class="{ 'squarebox-label--hover': hoveringId == item.child.child.child.name}"
                     >
-                      {{ displayName(item.child.child.child) }}<br/>
-                      {{ (item.child.child.child.value * 100 / totalSupply).toFixed(2) }}%
+                      <!-- {{ displayName(item.child.child.child) }}<br/>
+                      {{ (item.child.child.child.value * 100 / totalSupply).toFixed(2) }}% -->
                       <div class="app-tooltip">
                         <div class="app-tooltip__header">
                           <span class="app-tooltip__marker"></span>
@@ -131,6 +131,9 @@
     <div>
       <span class="location-legendcolor location-legendcolor--reserve">&nbsp;</span><span>Reserve</span>
     </div>
+    <div>
+      <span class="location-legendcolor location-legendcolor--unreleased">&nbsp;</span><span>Unreleased</span>
+    </div>
   </div>
   </div>
 </template>
@@ -142,8 +145,8 @@ import getProportions from "../../plugins/customSquareChartUtil";
 export default {
   methods: {
     formatValueLabel(value) {
-      const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('(0,0)').replace(',','.')}K`;
+      // const thousandsConvert = value / 1000;
+      return `${numeral(value).format('(0,0a)').replace(',','.').toUpperCase()}`;
     },
     getItemCssProps(item, level) {
       let css = `width: ${item.width}px; height:${item.height}px; background-color: ${item.color};`;
@@ -273,12 +276,12 @@ export default {
           // logValue: this.logScale(supReserve),
           color: "#19ceb8",
         },
-        // {
-        //   name: "Unreleased",
-        //   value: 0, supUnreleased,
-        //   // logValue: this.logScale(supUnreleased),
-        //   color: "#4346d3",
-        // },
+        {
+          name: "Unreleased",
+          value: supUnreleased,
+          // logValue: this.logScale(supUnreleased),
+          color: "#4346d3",
+        },
       ],
     };
   },
@@ -381,5 +384,6 @@ export default {
   .location-legendcolor--standbybonded { background-color: #5e2bbc; }
   .location-legendcolor--pooled { background-color: #f8c950; }
   .location-legendcolor--reserve { background-color: #19ceb8; }
+  .location-legendcolor--unreleased { background-color: #4346d3; }
 }
 </style>

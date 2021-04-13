@@ -1,11 +1,11 @@
 <template>
   <div class="section">
-    <div class="section__header standby-pools-header" id="standby-pools">
+    <div class="section__header standby-pools-header" id="staged-pools">
       <h2 class="section__title">
-        Standby Pools
+        Staged Pools
       </h2>
 
-      <a class="deeplink-selector" href="#standby-pools">
+      <a class="deeplink-selector" href="#staged-pools">
         <Icon
           name="link"
           scale="0.7"
@@ -61,17 +61,17 @@ export default {
   data() {
     const baseUrl = process.env.APP_URL;
     const tabBasePath = this.$route.path;
-    const standbyPoolsDeepLink = `${baseUrl}${tabBasePath}#standby-pools`;
+    const standbyPoolsDeepLink = `${baseUrl}${tabBasePath}#staged-pools`;
     // status enum: "available" "staged" "suspended"
     // Ref: https://testnet.midgard.thorchain.info/v2/doc#operation/GetPools
-    const stagedPools = this.$store.state.pools.pools.filter(p => p.poolStats.periodALL.status === 'staged');
+    const stagedPools = this.$store.state.pools.poolsOverview.filter(p => p.status === 'staged');
     // const ta = this.$store.state.pools.technicalAnalysis;
     return {
-      tweetStandbyPools: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Standby Pools')}&url=${encodeURIComponent(standbyPoolsDeepLink)}`,
+      tweetStandbyPools: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Staged Pools')}&url=${encodeURIComponent(standbyPoolsDeepLink)}`,
       pools: stagedPools.map(p => ({
-        name: poolNameWithoutAddr(p.poolStats.periodALL.asset),
+        name: poolNameWithoutAddr(p.asset),
         depth: this.formatDepthUsdValue(
-          (parseInt(p.poolStats.periodALL.assetDepth, 10) * parseFloat(p.poolStats.periodALL.assetPriceUSD) / 10**8) * 2
+          (parseInt(p.assetDepth, 10) * parseFloat(p.assetPriceUSD) / 10**8) * 2
         ),
       })),
       // nextChurnHeightProgress: Math.random(),

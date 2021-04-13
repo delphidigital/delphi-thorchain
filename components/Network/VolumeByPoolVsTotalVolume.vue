@@ -19,9 +19,7 @@
 import { format, subDays, startOfDay, startOfWeek, startOfMonth, fromUnixTime, getUnixTime, isSameDay, isSameWeek, isSameMonth } from "date-fns";
 import numeral from "numeral";
 import ColumnChart from "../Thorchain/ColumnChart";
-import { periodsHistoryMap } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
-import { periodKeyToDaysMap } from '../../lib/ta';
 
 export default {
   components: { ColumnChart },

@@ -14,9 +14,9 @@ export const getters = {
   // Counts coins on all vaults (active + retiring)
   coins(s, g, rootState) {
     const runePrice = (asset) => {
-      if (assetFromString(asset).ticker === 'RUNE') return 1;
+      if (assetFromString(asset).ticker === 'RUNE') { return 1; }
       const pool = rootState.pools.pools.find(p => p.poolId === asset);
-      if (!pool) return null;
+      if (!pool) { return null; }
       return pool.poolStats.periodALL.assetPrice;
     };
     const vaults = rootState.nodes.asgardVaults;
@@ -34,12 +34,16 @@ export const getters = {
     Object.keys(amountsRecorded).forEach((asset) => {
       const price = runePrice(asset);
       if (!price) return;
-      const amountRecorded = Number(amountsRecorded[asset]);
-      const amountStored = s.binanceBalances[assetFromString(asset).symbol] || 0;
+      const amountRecorded = Number(amountsRecorded[asset]) / e8;
+      // TODO: this amount stored value is only using stored values for binance, while the full
+      //       list of inbound addresses is this (not only binance):
+      //       https://testnet.midgard.thorchain.info/v2/thorchain/inbound_addresses
+      //       for now when checking with other blockchains, use the amountRecorded instead of 0
+      const amountStored = s.binanceBalances[assetFromString(asset).symbol] || amountRecorded;
       output.push({
         asset,
         // Amount according to Thorchain records
-        amountRecorded: amountRecorded / e8,
+        amountRecorded,
         // Amount stored in the vault addresses
         amountStored,
         price: Number(price),

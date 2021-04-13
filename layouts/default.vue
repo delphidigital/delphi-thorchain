@@ -31,6 +31,14 @@
             >
               Nodes
             </nuxt-link>
+            
+            <a class="header__link" :href="`https://defi.delphidigital.io/thorchain/${currentBlockchain}`">
+              Single Chain
+            </a>
+
+            <a class="header__link" href="https://bitcoin-sage.medium.com/the-delphi-thorchain-dashboard-a1ad6fe2df0c" target="_blank">
+              Documentation
+            </a>
           </nav>
         </div>
         <a href="https://www.delphidigital.io/" target="_blank" class="header__logo header__logo--right">

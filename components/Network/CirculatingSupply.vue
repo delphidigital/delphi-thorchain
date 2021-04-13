@@ -63,8 +63,8 @@ export default {
   },
   methods:{
     formatValue(value) {
-      const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('(0,0)').replace(',','.')}K`;
+      // const thousandsConvert = value / 1000;
+      return `${numeral(value).format('(0,0a)').replace(',','.').toUpperCase()}`;
     },
   },
 };

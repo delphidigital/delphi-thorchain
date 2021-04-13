@@ -156,7 +156,7 @@ export default {
 
 <style lang="scss">
 .highcharts-yaxis--title > span.highcharts-axis-title {
-  font-size: 11px !important;
-  left: -10px !important;
+  font-size: 10px !important;
+  left: 8px !important;
 }
 </style>

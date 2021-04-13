@@ -2,7 +2,7 @@
   <div class="section section--flex">
     <div class="section__header" id="percentage-rune-locked">
       <h2 class="section__title">
-        Percentage RUNE locked
+        Percentage of RUNE locked
       </h2>
       <a class="deeplink-selector" href="#percentage-rune-locked">
         <Icon
@@ -60,6 +60,9 @@ export default {
       const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
       const unlocked = circulatingSupply - totalLocked;
 
+      const stagedPools = this.$store.state.pools.poolsOverview.filter(p => p.status === 'staged');
+      const totalStagedPools = stagedPools.reduce((acc, next) => (acc + (parseInt(next.runeDepth, 10) / 10 ** 8)), 0);
+
       const percentage = value => value / circulatingSupply;
 
       const result = [
@@ -78,9 +81,9 @@ export default {
           percentage: percentage(totalStandbyBonded),
           color: '#5E2BBC',
         },
-        { // TODO: Add Standby pools
+        {
           name: 'Standby pools',
-          percentage: 0,
+          percentage: percentage(totalStagedPools),
           color: '#6648FF',
         },
       ];
