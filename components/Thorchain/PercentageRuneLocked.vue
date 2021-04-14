@@ -75,7 +75,7 @@ export default {
 
       const totalRunevault = this.$store.state.vaultBalances.runevaultBalance;
       const totalLocked =
-        totalRuneDepth + totalActiveBonded + totalStandbyBonded + totalRunevault;
+        totalRuneDepth + totalActiveBonded + totalStandbyBonded + totalRunevault + v1TotalLocked;
       const circulatingSupply = this.$store.state.runeMarketData.circulatingSupply;
       const unlocked = circulatingSupply - totalLocked;
 

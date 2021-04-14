@@ -44,7 +44,7 @@
               {{ pool.name }}
             </td>
             <td class="section__table__data section__table__data--right">
-              {{ pool.depth }}
+              {{ formatDepthUsdValue(pool.depth) }}
             </td>
           </tr>
         </tbody>
@@ -70,10 +70,8 @@ export default {
       tweetStandbyPools: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Staged Pools')}&url=${encodeURIComponent(standbyPoolsDeepLink)}`,
       pools: stagedPools.map(p => ({
         name: poolNameWithoutAddr(p.asset),
-        depth: this.formatDepthUsdValue(
-          (parseInt(p.assetDepth, 10) * parseFloat(p.assetPriceUSD) / 10**8) * 2
-        ),
-      })),
+        depth: ((parseInt(p.assetDepth, 10) * parseFloat(p.assetPriceUSD) / 10**8) * 2),
+      })).sort((a,b) => parseInt(b.depth, 10) - parseInt(a.depth, 10)),
       // nextChurnHeightProgress: Math.random(),
     };
   },
