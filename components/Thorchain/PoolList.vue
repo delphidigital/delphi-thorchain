@@ -444,9 +444,10 @@ export default {
         } else if (this.sortBy === 'totalDepthUsd') {
           const poolDepths = this.$store.state.pools.poolHistoryDepths
           const periodDepths = poolDepths[sp][periodResolutionKey];
+          const periodIntervals = periodDepths.intervals.filter(i => i.startTime >= startTime);
           return {
             name: pname,
-            data: periodDepths.intervals.filter(i => i.startTime >= startTime).map(pd => {
+            data: periodIntervals.map(pd => {
               return {
                 x: (parseInt(pd.startTime, 10) * 1000),
                 y: ((parseInt(pd.assetDepth, 10) / runeDivider) * parseFloat(pd.assetPriceUSD) * 2),

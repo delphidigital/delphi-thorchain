@@ -27,7 +27,7 @@ export default {
       xAxisColumCategories: [
         "Bond Reward",
         "Pool Reward",
-        "Block Reward"
+        "Total Rewards"
       ],
     };
   },

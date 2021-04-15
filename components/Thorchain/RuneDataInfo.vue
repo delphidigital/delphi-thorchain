@@ -407,15 +407,15 @@ export default {
       this.pastSimulationData.forEach(data => {
         feeAccrued.push({
             x: data.timestamp * 1000,
-            y: data.feeAccrued * 100
+            y: (data.feeAccrued * 100)
         });
         impermLoss.push({
             x: data.timestamp * 1000,
-            y: data.impermLoss * 100
+            y: (data.impermLoss * 100)
         });
         totalGains.push({
             x: data.timestamp * 1000,
-            y: data.totalGains * 100
+            y: (data.totalGains * 100)
         });
       });
       return [
@@ -465,6 +465,9 @@ export default {
       this.$refs.assetPTargetRef.focus();
     },
     formatLabel(value) {
+      if (this.plot === 'rewards') {
+        return `${value.toFixed(2)}%`;
+      }
       // https://github.com/adamwdraper/Numeral-js/issues/615
       let val = numeral(value).format("$0,0.0a").toUpperCase();
       // Other bug if val === -1.8651583981628417e-7 , devuelve N$aN
