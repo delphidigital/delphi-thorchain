@@ -28,10 +28,10 @@
       </div>
 
       <div class="pure-g">
-        <div class="pure-u-1 pure-u-lg-2-3 section--lg-split-left">
+        <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-left">
           <TopPerformers />
         </div>
-        <div class="pure-u-1 pure-u-lg-1-3 section--lg-split-right section-comming-soon">
+        <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-right section-comming-soon">
           <StandbyPools />
         </div>
       </div>

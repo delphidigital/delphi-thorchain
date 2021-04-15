@@ -4,7 +4,16 @@
       <h2 class="section__title">
         Staged Pools
       </h2>
-
+      <no-ssr>
+        <span style="font-size: 11px;display: inline-flex;flex: 1;">
+          <VueCountdown :time="secondsToNextPoolActivation * 1000" v-slot="{ days, hours, minutes }" :interval="60000">
+            <span style="font-weight: 600; color: #19ceb8;">
+              {{days}}d {{hours}}h {{minutes}}m
+            </span>
+            until next pool activation
+          </VueCountdown>
+        </span>
+      </no-ssr>
       <a class="deeplink-selector" href="#staged-pools">
         <Icon
           name="link"
@@ -33,6 +42,9 @@
             <th class="section__table__head">
               Name
             </th>
+            <th class="section__table__head">
+              Price
+            </th>
             <th class="section__table__head section__table__head--right">
               Depth
             </th>
@@ -42,6 +54,9 @@
           <tr v-for="pool in pools" :key="pool.name" class="section__table__row">
             <td class="section__table__data section__table__data--highlight">
               {{ pool.name }}
+            </td>
+            <td class="section__table__data">
+              {{ formatUsdValue(pool.assetPriceUSD) }}
             </td>
             <td class="section__table__data section__table__data--right">
               {{ formatDepthUsdValue(pool.depth) }}
@@ -54,10 +69,14 @@
 </template>
 
 <script>
+import VueCountdown from '@chenfengyuan/vue-countdown';
 import numeral from 'numeral';
 import { poolNameWithoutAddr } from '../../lib/utils';
 
 export default {
+  components: {
+    VueCountdown,
+  },
   data() {
     const baseUrl = process.env.APP_URL;
     const tabBasePath = this.$route.path;
@@ -70,15 +89,25 @@ export default {
       tweetStandbyPools: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Staged Pools')}&url=${encodeURIComponent(standbyPoolsDeepLink)}`,
       pools: stagedPools.map(p => ({
         name: poolNameWithoutAddr(p.asset),
-        depth: ((parseInt(p.assetDepth, 10) * parseFloat(p.assetPriceUSD) / 10**8) * 2),
+        depth: ((parseInt(p.assetDepth, 10)/ (10**8)) * parseFloat(p.assetPriceUSD) * 2),
+        assetPriceUSD: parseFloat(p.assetPriceUSD),
       })).sort((a,b) => parseInt(b.depth, 10) - parseInt(a.depth, 10)),
       // nextChurnHeightProgress: Math.random(),
     };
+  },
+  computed: {
+    secondsToNextPoolActivation() {
+      const secondsForEachBlock = 5.9;
+      return this.$store.state.networkHealth.network.poolActivationCountdown * secondsForEachBlock;
+    },
   },
   methods: {
     formatDepthUsdValue(value) {
       const thousandsConvert = value / 1000;
       return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+    },
+    formatUsdValue(value) {
+      return `${numeral(value).format('($0,0)').replace(',','.')}`;
     },
   }
 };
