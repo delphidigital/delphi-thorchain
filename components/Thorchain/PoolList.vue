@@ -154,11 +154,16 @@
                     {{ selectedPoolsChartTitle.title }}
                   </h3>
                 </div>
-                <LineChart
-                  :data="selectedPoolsLinechartData"
-                  :format-label="formatYValueTooltip"
-                  :y-axis-label-options="yAxisLabelOptions"
-                />
+                <div v-if="enoughDataForLineChart">
+                  <LineChart
+                    :data="selectedPoolsLinechartData"
+                    :format-label="formatYValueTooltip"
+                    :y-axis-label-options="yAxisLabelOptions"
+                  />
+                </div>
+                <div v-else class="not-enough-data-msg">
+                  Not enough data
+                </div>
               </div>
             </td>
           </tr>
@@ -246,7 +251,7 @@ import Percentage from '../Common/Percentage.vue';
 import LineChart from './LineChart.vue';
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
-import { technicalAnalysis, periodKeyToSecondsMap } from '../../lib/ta';
+import { technicalAnalysis, periodKeyToSecondsMap, simpleMovingAverage, periodKeyToDataPointsMovingAvg } from '../../lib/ta';
 
 export default {
   components: {
@@ -422,6 +427,7 @@ export default {
       const periodResolutionKey = ['period24H', 'period1W', 'period1M'].find(k => k === period) ? 'period1HM' : 'period1Y';
       const secondsElapsedSincePeriod = periodKeyToSecondsMap[period];
       const startTime = getUnixTime(new Date()) - secondsElapsedSincePeriod;
+      const movingAvgLength = periodKeyToDataPointsMovingAvg[period];
       const data = this.selectedPools.map((sp, colorIndex) => {
         const pname = this.displayPoolName(sp);
         if (this.sortBy === 'averagePeriodAPY') {
@@ -444,15 +450,16 @@ export default {
         } else if (this.sortBy === 'totalDepthUsd') {
           const poolDepths = this.$store.state.pools.poolHistoryDepths
           const periodDepths = poolDepths[sp][periodResolutionKey];
-          const periodIntervals = periodDepths.intervals.filter(i => i.startTime >= startTime);
+          const periodIntervals = periodDepths.intervals;
+          const periodIntervalsLinechartData = periodIntervals.map(pd => ({
+            x: (parseInt(pd.startTime, 10) * 1000),
+            y: ((parseInt(pd.assetDepth, 10) / runeDivider) * parseFloat(pd.assetPriceUSD) * 2),
+          }));
+          const finalData = simpleMovingAverage(periodIntervalsLinechartData, 'y', movingAvgLength)
+            .filter(i => i.x >= startTime * 1000);
           return {
             name: pname,
-            data: periodIntervals.map(pd => {
-              return {
-                x: (parseInt(pd.startTime, 10) * 1000),
-                y: ((parseInt(pd.assetDepth, 10) / runeDivider) * parseFloat(pd.assetPriceUSD) * 2),
-              }
-            }),
+            data: finalData,
             color: colorsList[colorIndex],
           };
         } else if (this.sortBy === 'volumeOverDepthRatio') {
@@ -460,50 +467,59 @@ export default {
           const poolTA = this.poolsTA;
           const periodTA = poolTA[sp][period];
           const periodDepths = poolHD[sp][periodResolutionKey];
+          const periodIntervalsLinechartData = periodDepths.intervals.map(pd => {
+            const totalVolume = periodTA.intervalSwaps[pd.startTime]?.totalVolumeUsd || 0;
+            const assetDepth = (parseInt(pd.assetDepth, 10) / runeDivider) * pd.assetPriceUSD;
+            const y = assetDepth ? (totalVolume/assetDepth) : 0;
+            return {
+              x: (parseInt(pd.startTime, 10) * 1000),
+              y,
+            }
+          });
+          const finalData = simpleMovingAverage(periodIntervalsLinechartData, 'y', movingAvgLength)
+            .filter(i => i.x >= startTime * 1000);
           const ret = {
             name: pname,
-            data: periodDepths.intervals.filter(i => i.startTime >= startTime).map(pd => {
-              const totalVolume = periodTA.intervalSwaps[pd.startTime]?.totalVolumeUsd || 0;
-              const assetDepth = (parseInt(pd.assetDepth, 10) / runeDivider) * pd.assetPriceUSD;
-              const y = assetDepth ? (totalVolume/assetDepth) : 0;
-              return {
-                x: (parseInt(pd.startTime, 10) * 1000),
-                y,
-              }
-            }),
+            data: finalData,
             color: colorsList[colorIndex],
           };
           return ret;
         } else if (this.sortBy === 'lastCorrellation') {
           const poolTA = this.poolsTA
           const periodTA = poolTA[sp][period];
+          const periodIntervalsLinechartData = Object.keys(periodTA.intervals).map(timestamp => ({
+            x: (parseInt(periodTA.intervals[timestamp].startTime)*1000),
+            y: periodTA.intervals[timestamp].correllation,
+          }));
+          const finalData = simpleMovingAverage(periodIntervalsLinechartData, 'y', movingAvgLength)
+            .filter(i => i.x >= startTime * 1000);
           return {
             name: pname,
-            data: Object.keys(periodTA.intervals).map(timestamp => {
-              return {
-                x: (parseInt(periodTA.intervals[timestamp].startTime)*1000),
-                y: periodTA.intervals[timestamp].correllation,
-              }
-            }),
+            data: finalData,
             color: colorsList[colorIndex],
           };
         } else { // if (this.chartedValue === 'volumeAverageUsd') {
           const poolTA = this.poolsTA
           const periodTA = poolTA[sp][period];
+          const periodIntervalsLinechartData = Object.keys(periodTA.intervalSwaps).map(timestamp => ({
+            x: (parseInt(periodTA.intervalSwaps[timestamp].startTime)*1000),
+            y: periodTA.intervalSwaps[timestamp].totalVolumeUsd,
+          }));
+          const finalData = simpleMovingAverage(periodIntervalsLinechartData, 'y', movingAvgLength)
+            .filter(i => i.x >= startTime * 1000);
           return {
             name: pname,
-            data: Object.keys(periodTA.intervalSwaps).map(timestamp => {
-              return {
-                x: (parseInt(periodTA.intervalSwaps[timestamp].startTime)*1000),
-                y: periodTA.intervalSwaps[timestamp].totalVolumeUsd,
-              }
-            }),
+            data: finalData,
             color: colorsList[colorIndex],
           };
         }
       });
       return data;
     },
+    enoughDataForLineChart() {
+      if (!this.selectedPoolsLinechartData.length) { return false; }
+      return this.selectedPoolsLinechartData.some(pd => pd.data.length);
+    }
   },
   methods: {
     displayPoolAPY(value) {
@@ -908,5 +924,12 @@ export default {
   background-color: #262f4a;
   border-top: 1px solid #353C50;
   padding: 15px 25px;
+}
+.not-enough-data-msg {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 20px;
+  padding-bottom: 40px;
 }
 </style>
