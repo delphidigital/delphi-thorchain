@@ -356,10 +356,30 @@ export default {
         // const averagePeriodAPY = parseFloat(
         //   this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats[periodStatsKey].poolAPY
         // );
+        // const volumeAverageUsd = (poolPeriodTA.totalVolume * this.$store.state.runeMarketData.priceUSD);
+        const totalVolumeUsd = (poolPeriodTA.totalVolume * this.$store.state.runeMarketData.priceUSD);
+        const intervalsN = Object.keys(poolPeriodTA.intervalSwaps).length;
+        const eachIntervalVolumeAverageUsd = intervalsN ? (totalVolumeUsd / intervalsN) : 0;
+        const periodKeyToDayDatapoints = {
+          period24H: 24, // hours
+          period1W: 24, // hours
+          period1M: 24, // hours
+          period1HM: 24, // hours
+          period3M: 1, // days
+          period6M: 1, // days
+          period1Y: 1, // days
+        };
+        // NOTE: calc average for total volume in the period, only by the available intervals.
+        // So if we are at 3M period, but only 5 day intervals available instead of 90, it averages the volume
+        // over 5 and uses that as the 24h volume avg.
+        // For the case of hourly intervals (e.g.: month, week and 24h period), it calculates the hourly average
+        // and then multiplies that average by 24.
+        const volumeAverageUsd = periodKeyToDayDatapoints[period] * eachIntervalVolumeAverageUsd;
         return {
           ...poolPeriodTA,
           poolId,
           volumeOverDepthRatio,
+          volumeAverageUsd,
           // averagePeriodAPY,
         };
       })

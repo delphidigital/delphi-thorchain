@@ -26,7 +26,13 @@ export default {
   align-items: center;
 }
 
-.standby-nodes-container, .active-nodes-container {
+.standby-nodes-container {
+  overflow: visible;
+  @media screen and (max-width: 600px) {
+    overflow-x: scroll;
+  }
+}
+.active-nodes-container {
   overflow-x: scroll;
 }
 

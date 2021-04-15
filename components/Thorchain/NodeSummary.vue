@@ -130,9 +130,6 @@ export default {
   overflow-x: scroll;
 }
 
-.standby-nodes-container {
-  overflow-x: visible;
-}
 .node-summary-table {
   width: 100%;
   min-width: 320px;

@@ -196,8 +196,8 @@
         <div class="pure-u-1 pure-u-md-1-2 section--split-right">
           <div class="section" style="flex: 1;">
             <div class="section__header" id="block-rewards-per-day" style="overflow-x: visible;">
-              <h2 class="section__title">
-                Earnings per Day
+              <h2 class="section__title" style="text-transform: none;">
+                Network Earnings per Day
                 <span class="section__title--tooltip">
                   <Icon
                     class="tooltip__hover--info"
@@ -431,10 +431,32 @@ export default {
       // const circulatingSupply = ;
         // ? pooledPlusBonded
         // : coingecko.circulating_supply;
+      const net = this.$store.state.networkHealth.network;
+      const bm = net.bondMetrics;
+      const v1Net = this.$store.state.networkHealth.v1SinglechainNetwork
+      const v1Bm = v1Net?.bondMetrics;
+      const v1SupActiveBonded = v1Bm?.totalActiveBond && v1Bm.totalActiveBond !== "0"
+        ? parseInt(v1Bm.totalActiveBond, 10) / (10 ** 8)
+        : 0;
+      const v1SupSandbyBonded = v1Bm?.totalStandbyBond && v1Bm.totalStandbyBond !== "0"
+        ? parseInt(v1Bm.totalStandbyBond, 10) / (10 ** 8)
+        : 0;
+      const v1SupPooled = v1Net?.totalDepth && v1Net.totalDepth !== "0"
+        ? parseInt(v1Net.totalDepth, 10) / (10 ** 8)
+        : 0;
+    const v1SupReserve =
+      v1Net?.totalReserve && v1Net.totalReserve !== "0"
+        ? parseInt(v1Net.totalReserve, 10) / (10 ** 8)
+        : 0;
       const supplyLocked = (
-        (this.$store.state.networkHealth.network.bondMetrics.totalActiveBond/10**8) +
-        (this.$store.state.networkHealth.network.totalPooledRune/10**8) + 
-        (this.$store.state.networkHealth.network.totalReserve/10**8)
+        (parseInt(bm.totalActiveBond, 10)/(10**8)) +
+        (parseInt(net.totalPooledRune, 10)/(10**8)) + 
+        (parseInt(net.totalReserve, 10)/(10**8)) + 
+        (parseInt(bm.totalStandbyBond, 10)/(10**8)) +
+        (v1SupActiveBonded) +
+        (v1SupPooled)+
+        (v1SupSandbyBonded) + 
+        (v1SupReserve)
       );
       const percentOfSupplyLocked = (
         (supplyLocked * 100) / coingecko.circulating_supply

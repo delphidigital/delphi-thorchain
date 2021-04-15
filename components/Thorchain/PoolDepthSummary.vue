@@ -212,7 +212,7 @@ export default {
         // const poolHistoryDepths = allPoolsHistoryDepths[poolId];
         // const poolPeriodHD = poolHistoryDepths ? poolHistoryDepths[period] : undefined;
         return periodPoolHistory.intervals.map(iv => {
-          const assetPriceUsd = parseFloat(iv.assetPriceUSD);
+          const assetPriceUsd = isNaN(parseFloat(iv.assetPriceUSD)) ? 0 : parseFloat(iv.assetPriceUSD);
           const assetPrice = parseFloat(iv.assetPrice);
           const runePriceUsd = isNaN(assetPriceUsd) || isNaN(assetPrice) || !assetPrice ? 0 : (assetPriceUsd / assetPrice);
           const runeDepthUsd = runePriceUsd * (parseInt(iv.runeDepth,10)/runeDivider);
@@ -255,7 +255,7 @@ export default {
               ? (parseFloat(secondIntervals[idx].runeDepth) || 0)
               : 0;
             const runeDepth = runeDepth1 + runeDepth2;
-            const runeDepthUsd = item.runeDepthUsd + secondIntervals[idx].runeDepthUsd;
+            const runeDepthUsd = item.runeDepthUsd + (secondIntervals[idx]?.runeDepthUsd || 0);
             return { runeDepth, runeDepthUsd, startTime: item.startTime };
           });
         })
