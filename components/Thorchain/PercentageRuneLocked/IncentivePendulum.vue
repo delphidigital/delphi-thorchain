@@ -113,8 +113,8 @@ export default {
     },
     apy() {
       return {
-        bondingAPY: parseFloat(this.$store.state.networkHealth.network.bondingAPY).toFixed(2),
-        liquidityAPY: parseFloat(this.$store.state.networkHealth.network.liquidityAPY).toFixed(2),
+        bondingAPY: (parseFloat(this.$store.state.networkHealth.network.bondingAPY) * 100).toFixed(2),
+        liquidityAPY: (parseFloat(this.$store.state.networkHealth.network.liquidityAPY) * 100).toFixed(2),
       };
     },
     efficient() {

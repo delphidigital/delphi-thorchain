@@ -3,6 +3,19 @@
     <div class="section__header" id="pool-depth-volume">
       <h2 class="section__title">
         Pool depth & volume
+        <span class="section__title--tooltip">
+          <Icon
+            class="tooltip__hover--info"
+            name="info"
+            scale="0.4"
+          >
+          </Icon>
+          <div class="app-tooltip section__title__tooltip">
+            <div class="app-tooltip__body">
+              An overview of the deepest pools and their respective total volume over the selected period.
+            </div>
+          </div>
+        </span>
       </h2>
        <div class="pool-depth-time-selector">
         <button

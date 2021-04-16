@@ -115,7 +115,7 @@ export const getters = {
         churnStatusType = 'forcedToLeave';
       } else if (node['requested_to_leave']) {
         churnStatusType = 'requestedToLeave';
-      } else if (node['leave_height'] !== '0') {
+      } else if (Number(node['leave_height']) !== 0) {
         churnStatusType = 'markedToLeave';
       } else if (nodeProps.oldest) {
         churnStatusType = 'oldest';

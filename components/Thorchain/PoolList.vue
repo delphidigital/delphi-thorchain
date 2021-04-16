@@ -284,7 +284,7 @@ export default {
         },
         {
           name: 'volumeAverageUsd',
-          label: '24H Volume',
+          label: 'Average 24H Volume',
           info: 'Average 24h volume over the selected period.',
         },
         {
@@ -354,9 +354,6 @@ export default {
       // };
       const unsortedPools = Object.keys(this.poolsTA).map((poolId) => {
         const poolPeriodTA = this.poolsTA[poolId][period];
-        const volumeOverDepthRatio = poolPeriodTA
-          ? ((poolPeriodTA.totalVolumeUsd / poolPeriodTA.totalDepthUsd))
-          : 0;
         // const periodStatsKey = periodToStatsMap[this.currentTimeOption];
         // const averagePeriodAPY = parseFloat(
         //   this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats[periodStatsKey].poolAPY
@@ -380,6 +377,10 @@ export default {
         // For the case of hourly intervals (e.g.: month, week and 24h period), it calculates the hourly average
         // and then multiplies that average by 24.
         const volumeAverageUsd = periodKeyToDayDatapoints[period] * eachIntervalVolumeAverageUsd;
+        const volumeOverDepthRatio = poolPeriodTA
+          // ? ((poolPeriodTA.totalVolumeUsd / poolPeriodTA.totalDepthUsd))
+          ? ((volumeAverageUsd / poolPeriodTA.totalDepthUsd))
+          : 0;
         return {
           ...poolPeriodTA,
           poolId,
