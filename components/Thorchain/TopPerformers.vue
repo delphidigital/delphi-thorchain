@@ -200,7 +200,7 @@ export default {
     },
     formatLabelDepth(value) {
       const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+      return `${numeral(thousandsConvert).format('($0,0)')}K`;
     },
     formatNumberDecimals(value){
       return value.toFixed(2);

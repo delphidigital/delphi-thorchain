@@ -104,10 +104,10 @@ export default {
   methods: {
     formatDepthUsdValue(value) {
       const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+      return `${numeral(thousandsConvert).format('($0,0.0)')}K`;
     },
     formatUsdValue(value) {
-      return `${numeral(value).format('($0,0)').replace(',','.')}`;
+      return `${numeral(value).format('($0,0.0)')}`;
     },
   }
 };

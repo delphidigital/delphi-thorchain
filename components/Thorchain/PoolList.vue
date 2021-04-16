@@ -542,7 +542,7 @@ export default {
     },
     formatLabelDepth(value) {
       const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('($0,0)').replace(',','.')}K`;
+      return `${numeral(thousandsConvert).format('($0,0.0)')}K`;
     },
     formatLabel(value) {
       return numeral(value).format('($0,00.00a)').toUpperCase();
