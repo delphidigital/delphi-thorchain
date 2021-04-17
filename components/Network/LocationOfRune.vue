@@ -228,8 +228,8 @@ export default {
     // note: v1 the field is totalStaked
     // http://157.90.98.200:8080/v1/doc#operation/GetNetworkData
     const v1SupPooled =
-      v1Net?.totalDepth && v1Net.totalDepth !== "0"
-        ? parseInt(v1Net.totalDepth, 10) / 10 ** 8
+      v1Net?.totalStaked && v1Net.totalStaked !== "0"
+        ? parseInt(v1Net.totalStaked, 10) / 10 ** 8
         : 0;
     const supUnlocked = circulatingSupply - (totalBonded + (supPooled + v1SupPooled));
     const supUnreleased = totalSupply - circulatingSupply;

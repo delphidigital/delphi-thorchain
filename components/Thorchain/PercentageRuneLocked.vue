@@ -60,8 +60,8 @@ export default {
       const v1SupActiveBonded = v1Bm?.totalActiveBond && v1Bm.totalActiveBond !== "0"
           ? parseInt(v1Bm.totalActiveBond, 10) / (10 ** 8)
           : 0;
-      const v1SupPooled = v1Net?.totalDepth && v1Net.totalDepth !== "0"
-        ? parseInt(v1Net.totalDepth, 10) / (10 ** 8)
+      const v1SupPooled = v1Net?.totalStaked && v1Net.totalStaked !== "0"
+        ? parseInt(v1Net.totalStaked, 10) / (10 ** 8)
         : 0;
       const v1SupSandbyBonded = v1Bm?.totalStandbyBond && v1Bm.totalStandbyBond !== "0"
         ? parseInt(v1Bm.totalStandbyBond, 10) / (10 ** 8)
