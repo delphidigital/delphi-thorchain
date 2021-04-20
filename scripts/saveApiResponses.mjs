@@ -196,7 +196,7 @@ async function fetchDataJob(blockchain) {
 async function main() {
   await fetchDataJob('chaosnet');
   await fetchDataJob('testnet');
-  await sleep(60*1000*1); // sleep 5 mins
+  await sleep(60*1000*5); // sleep 5 mins
   await main()
 }
 main();
