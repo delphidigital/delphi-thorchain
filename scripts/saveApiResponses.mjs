@@ -83,10 +83,11 @@ async function updateBlockchainData(blockchain) {
 
   // Other sources
   let runevaultBalance = 0;
-  if (blockchain === 'chaosnet') {
-    const frozenBalancesReq = await axios.get('http://frozenbalances.herokuapp.com/stats/RUNE-B1A');
-    runevaultBalance = frozenBalancesReq.data.totalFrozen;
-  }
+  // NOTE: runevaultBalance url is failing
+  // if (blockchain === 'chaosnet') {
+  //   const frozenBalancesReq = await axios.get('http://frozenbalances.herokuapp.com/stats/RUNE-B1A');
+  //   runevaultBalance = frozenBalancesReq.data.totalFrozen;
+  // }
   // Get Binance accounts
   // only query as many as there are asgard vaults
 
@@ -197,7 +198,6 @@ async function fetchDataJob(blockchain) {
 
 async function main() {
   await fetchDataJob('chaosnet');
-  await sleep(10000);
   await fetchDataJob('testnet');
   await sleep(10000);
 }
