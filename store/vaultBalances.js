@@ -8,38 +8,52 @@ const e8 = 10 ** 8;
 export const state = () => ({
   binanceBalances: {},
   runevaultBalance: 0,
+  chainBalances: null,
 });
 
 export const getters = {
   // Counts coins on all vaults (active + retiring)
   coins(s, g, rootState) {
     const runePrice = (asset) => {
-      if (assetFromString(asset).ticker === 'RUNE') { return 1; }
-      const pool = rootState.pools.pools.find(p => p.poolId === asset);
-      if (!pool) { return null; }
+      if (asset === 'RUNE') { return 1; }
+      const pool = rootState.pools.pools.find((p) => {
+        const assetKey = assetFromString(p.poolId);
+        if (!assetKey?.ticker) {
+          console.log(assetKey, p.poolId);
+          // eslint-disable-next-line
+          debugger;
+          console.log(assetKey, p.poolId);
+        }
+        return assetKey.ticker === asset;
+      });
+      if (!pool) {
+        return null;
+      }
       return pool.poolStats.periodALL.assetPrice;
     };
-    const vaults = rootState.nodes.asgardVaults;
     const amountsRecorded = {};
-
-    // Sum all coin amounts on different vaults
+    const vaults = rootState.nodes.asgardVaults;
     vaults.forEach((v) => {
       v.coins.forEach((coin) => {
-        const currentAmount = amountsRecorded[coin.asset] || 0;
-        amountsRecorded[coin.asset] = currentAmount + Number(coin.amount);
+        const assetSymbol = assetFromString(coin.asset).ticker;
+        const currentAmount = amountsRecorded[assetSymbol] || 0;
+        const newAmount = Number(coin.amount) / (coin.decimals ? (10 ** coin.decimals) : e8);
+        amountsRecorded[assetSymbol] = currentAmount + newAmount;
       });
     });
-
     const output = [];
     Object.keys(amountsRecorded).forEach((asset) => {
       const price = runePrice(asset);
-      if (!price) return;
-      const amountRecorded = Number(amountsRecorded[asset]) / e8;
-      // TODO: this amount stored value is only using stored values for binance, while the full
-      //       list of inbound addresses is this (not only binance):
-      //       https://testnet.midgard.thorchain.info/v2/thorchain/inbound_addresses
-      //       for now when checking with other blockchains, use the amountRecorded instead of 0
-      const amountStored = s.binanceBalances[assetFromString(asset).symbol] || amountRecorded;
+      if (!s.chainBalances || !price) {
+        return;
+      }
+      const amountRecorded = amountsRecorded[asset];
+      const assetMultichainBalances = s.chainBalances.filter(b => (
+        b.symbol
+          ? (assetFromString(`${b.network}.${b.symbol}`).ticker === asset)
+          : (b.network === asset)
+      ));
+      const amountStored = assetMultichainBalances.reduce((acc, next) => acc + next.balance, 0);
       output.push({
         asset,
         // Amount according to Thorchain records
@@ -52,12 +66,12 @@ export const getters = {
     return output.sort((a, b) => (b.amount * b.price) - (a.amount * a.price));
   },
   topList(s, g) {
-    const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
+    const other = g.coins.filter(item => !(item.asset === 'RUNE'));
     return other.slice(0, nRankedCoins);
   },
   solvency(s, g) {
-    const rune = g.coins.filter(item => assetFromString(item.asset).ticker === 'RUNE')[0];
-    const other = g.coins.filter(item => !(assetFromString(item.asset).ticker === 'RUNE'));
+    const rune = g.coins.find(item => item.asset === 'RUNE');
+    const other = g.coins.filter(item => !item.asset === 'RUNE');
     const otherAmountRecorded = other.reduce((total, item) => total + item.amountRecorded, 0);
     const otherAmountStored = other.reduce((total, item) => total + item.amountStored, 0);
     const runeSolvency = rune && rune.amountRecorded ? (rune.amountStored / rune.amountRecorded) : 1;
@@ -83,5 +97,8 @@ export const mutations = {
   },
   setRunevaultBalance(state, runevaultBalance) {
     state.runevaultBalance = parseInt(runevaultBalance, 10);
+  },
+  setChainBalances(state, payload) {
+    state.chainBalances = payload;
   },
 };

@@ -12,7 +12,6 @@
 
 <script>
 import numeral from 'numeral';
-import { assetFromString } from '@thorchain/asgardex-util';
 import AppHighchart from '../../Common/AppHighchart.vue';
 
 export default {
@@ -24,7 +23,7 @@ export default {
       const output = [];
       this.$store.getters['vaultBalances/topList'].forEach((item) => {
         output.push({
-          name: assetFromString(item.asset).ticker,
+          name: item.asset,
           assetsStored: item.amountStored,
           assetsRecorded: item.amountRecorded,
           price: item.price,

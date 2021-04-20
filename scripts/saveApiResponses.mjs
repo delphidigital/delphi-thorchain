@@ -8,6 +8,67 @@ import EmailProvider from '../lib/emailProvider.mjs';
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+const BITQUERY_API_KEY = 'BQYZBiPHTr0Y16cJjP0D3uRgpzYIaNPr';
+
+// Query each blockchain from inbound addresses
+// https://midgard.thorchain.info/v2/thorchain/inbound_addresses
+async function getBalancesFromChainAddr(chain, addr, net, routerAddr) {
+  console.log(`[${net}] [${chain}] Getting chain balances.`);
+  if (chain === 'BTC') {
+    const minConfirmationos = 50;
+    const btcnet = net === 'mainnet' ? 'BTC' : 'BTCTEST';
+    const url = `https://chain.so/api/v2/get_address_balance/${btcnet}/${addr}/${minConfirmationos}`;
+    const { data } = await axios.get(url);
+    return [{ network: chain, address: addr, balance: parseFloat(data.data.confirmed_balance) }];
+  } else if (chain === 'LTC') {
+    const minConfirmationos = 50;
+    const ltcnet = net === 'mainnet' ? 'LTC' : 'LTCTEST';
+    const url = `https://chain.so/api/v2/get_address_balance/${ltcnet}/${addr}/${minConfirmationos}`;
+    const { data } = await axios.get(url);
+    return [{ network: chain, address: addr, balance: parseFloat(data.data.confirmed_balance) }];
+  } else if (chain === 'BCH') {
+    // NOTE: BCH only works for mainnet, couldn't find a BCH testnet explorer
+    const query = `{
+      bitcoin(network: bitcash){
+        inputs(inputAddress: {is: "qzvhxqm3clrhewqllfmt2ekuaa7puhwpns3kl5nj7a" }){ value }
+        outputs(outputAddress: {is: "qzvhxqm3clrhewqllfmt2ekuaa7puhwpns3kl5nj7a" }){ value }
+      }
+    }`;
+    const url = "https://graphql.bitquery.io/";
+    const data = await axios.post(url, { query }, {
+      headers: { "Content-Type": "application/json", "X-API-KEY": BITQUERY_API_KEY },
+    });
+    const balance = data.data.data.bitcoin.outputs[0].value - data.data.data.bitcoin.inputs[0].value;
+    return [{ network: chain, address: addr, balance }];
+  } else if (chain === 'BNB') {
+    // https://docs.binance.org/api-reference/dex-api/paths.html
+    // net can be testnet or mainnet
+    const url = net === 'mainnet'
+      ? `https://dex.binance.org/api/v1/account/${addr}`
+      : `https://testnet-dex.binance.org/api/v1/account/${addr}`;
+    const { data } = await axios.get(url);
+    return data.balances.map(b => ({
+      network: chain, address: addr, symbol: b.symbol, balance: parseFloat(b.free)
+    }));
+  } else if (chain === 'ETH') {
+    // NOTE: on eth there is the eth address, and the router address provided,
+    //       the token balances is at the router address
+    const query = `{ ethereum { address(address: {in: ["${addr}", "${routerAddr}"]}) { balances { currency { symbol } value } } } }`;
+    const url = "https://graphql.bitquery.io/";
+    const { data } = await axios.post(url, { query }, {
+      headers: { "Content-Type": "application/json", "X-API-KEY": BITQUERY_API_KEY },
+    });
+    return [
+      ...data.data.ethereum.address[0].balances.map(b => ({
+        network: chain, address: addr, balance: b.value, symbol: b.currency.symbol
+      })),
+      ...data.data.ethereum.address[1].balances.map(b => ({
+        network: chain, address: addr, balance: b.value, symbol: b.currency.symbol
+      }))
+    ]
+  }
+}
+
 process.on('unhandledRejection', (up) => { throw up; });
 async function redisSet(key, data) {
   await redisClient.setAsync(key, JSON.stringify(data));
@@ -81,6 +142,17 @@ async function updateBlockchainData(blockchain) {
   const constants = await api.loadConstants(); // same, some props updated?
   const versionRequest = await api.loadNodeVersion();
 
+
+  // TODO HERE ADD BITQUERY
+  // NOTE USING https://sochain.com/api TO QUERY
+
+  let chainBalances = [];
+  for (const ia of inboundAddresses) {
+    const net = blockchain === 'chaosnet' ? 'mainnet' : 'testnet';
+    const balances = await getBalancesFromChainAddr(ia.chain, ia.address, net, ia.router);
+    chainBalances = chainBalances.concat(balances);
+  }
+
   // Other sources
   let runevaultBalance = 0;
   // NOTE: runevaultBalance url is failing
@@ -126,6 +198,7 @@ async function updateBlockchainData(blockchain) {
   const circulating = coingeckoMarketData.circulating_supply; // ((totalBonded + runeDepth) / (10 ** 8));
 
   // SET DATA
+  await set('chainBalances', chainBalances);
   await set('queue', queue);
   await set('pools', poolList);
   Object.keys(poolStats).forEach(async (poolId) => {

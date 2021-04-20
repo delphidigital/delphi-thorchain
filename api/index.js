@@ -55,6 +55,8 @@ thorchain.all('/overview', async (req, res) => {
   const availablePoolHistorySwaps = await loadCached(`${req.blockchain}::poolHistorySwaps`);
 
   const allPoolsHistoryEarnings = await loadCached(`${req.blockchain}::allPoolsHistoryEarnings`);
+  const chainBalances = await loadCached(`${req.blockchain}::chainBalances`);
+
   res.json({
     queue,
     stats,
@@ -76,6 +78,7 @@ thorchain.all('/overview', async (req, res) => {
     allPoolsHistoryEarnings,
     v1SinglechainStats,
     v1SinglechainNetwork,
+    chainBalances,
   });
 });
 
