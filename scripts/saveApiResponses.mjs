@@ -190,15 +190,13 @@ async function fetchDataJob(blockchain) {
       notificationSent = true;
     }
     console.log(`[${blockchain}]: Data fetch failed with: `, e);
-  } finally {
-    await sleep(60*1000*5); // sleep 5 mins
-    fetchDataJob(blockchain);
   }
 }
 
 async function main() {
   await fetchDataJob('chaosnet');
   await fetchDataJob('testnet');
-  await sleep(10000);
+  await sleep(60*1000*1); // sleep 5 mins
+  await main()
 }
 main();
