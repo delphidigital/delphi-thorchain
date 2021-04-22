@@ -29,16 +29,24 @@
 
       <div class="pure-g">
         <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-left">
+          <no-ssr>
           <TopPerformers />
+          </no-ssr>
         </div>
         <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-right section-comming-soon">
+          <no-ssr>
           <StandbyPools />
+          </no-ssr>
         </div>
       </div>
 
-      <PoolList />
+      <no-ssr>
+        <PoolList />
+      </no-ssr>
 
-      <RuneDataInfo />
+      <no-ssr>
+        <RuneDataInfo />
+      </no-ssr>
       <!-- <NodeSummary /> -->
 
       <Footer />

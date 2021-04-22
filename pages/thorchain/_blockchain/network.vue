@@ -241,6 +241,7 @@
 
       <div class="pure-g">
         <div class="pure-u-1">
+          <no-ssr>
           <div class="section" style="flex: 1;">
             <div class="section__header" id="rune_location" style="overflow-x: visible;">
               <h2 class="section__title">
@@ -292,6 +293,7 @@
               </div>
             </div>
           </div>
+          </no-ssr>
         </div>
       </div>
 

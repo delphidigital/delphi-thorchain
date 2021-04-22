@@ -1,6 +1,6 @@
 <template>
   <div class="overall">
-    <h3>Overall</h3>
+    <h3 style="flex: none; margin-right: 20px;">Overall</h3>
     <div class="solvencies">
       <div v-for="solvency in solvencies" :key="solvency.name" class="solvency">
         <div>
@@ -23,13 +23,13 @@ export default {
   computed: {
     solvencies() {
       return [
-        {
-          name: 'RUNE',
-          solvency: Number(this.$store.getters['vaultBalances/solvency'].rune.toFixed(2)),
+        // {
+        //   name: 'RUNE',
+        //   solvency: Number(this.$store.getters['vaultBalances/solvency'].rune.toFixed(2)),
 
-        },
+        // },
         {
-          name: 'Other',
+          name: '',
           solvency: Number(this.$store.getters['vaultBalances/solvency'].other.toFixed(2)),
         },
       ];
@@ -66,6 +66,7 @@ h4 {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin: auto;
 }
 
 .solvency {
