@@ -37,9 +37,9 @@ export default {
       const blocksPerDay = blocksPerYear/365;
       const runeDivider = 10 ** 8;
       const price = this.$store.state.runeMarketData && this.$store.state.runeMarketData.priceUSD || 0;
-      const bondReward = (this.$store.state.networkHealth.network.blockRewards.bondReward / runeDivider) * price * blocksPerDay
-      const poolReward = (this.$store.state.networkHealth.network.blockRewards.poolReward / runeDivider) * price * blocksPerDay;
-      const blockReward = (this.$store.state.networkHealth.network.blockRewards.blockReward / runeDivider) * price * blocksPerDay; 
+      const bondReward = (this.$store.state.networkHealth.network.blockRewards.bondReward / runeDivider) * price * blocksPerDay * 100;
+      const poolReward = (this.$store.state.networkHealth.network.blockRewards.poolReward / runeDivider) * price * blocksPerDay * 100;
+      const blockReward = (this.$store.state.networkHealth.network.blockRewards.blockReward / runeDivider) * price * blocksPerDay * 100; 
       return [{
         data: [
           { y: bondReward, color: '#19ceb8' },
