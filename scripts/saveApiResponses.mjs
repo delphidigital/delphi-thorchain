@@ -5,6 +5,7 @@ import { lookupGeoIP } from '../lib/geoIP.mjs';
 import { withCache } from '../lib/cacheUtils.mjs';
 import redisClient from '../lib/redisClient.mjs';
 import EmailProvider from '../lib/emailProvider.mjs';
+import { technicalAnalysis } from '../lib/ta.mjs';
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -197,6 +198,15 @@ async function updateBlockchainData(blockchain) {
   // const circulating = ((totalBonded + runeDepth) / (10 ** 8));
   const circulating = coingeckoMarketData.circulating_supply; // ((totalBonded + runeDepth) / (10 ** 8));
 
+
+  const periods = ['period24H', 'period1W', 'period1M', 'period3M', 'period6M', 'period1Y'];
+  const taPeriods = {};
+  periods.forEach(periodKey => {
+    taPeriods[periodKey] = technicalAnalysis(
+      poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings, periodKey
+    );
+  });
+
   // SET DATA
   await set('chainBalances', chainBalances);
   await set('queue', queue);
@@ -213,6 +223,7 @@ async function updateBlockchainData(blockchain) {
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
+  await set('taPeriods', taPeriods);
   // await set('technicalAnalysis', ta);
   
   // Keep a list of most recent asgard vault addresses

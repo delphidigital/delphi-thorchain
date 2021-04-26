@@ -251,7 +251,7 @@ import Percentage from '../Common/Percentage.vue';
 import LineChart from './LineChart.vue';
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
-import { technicalAnalysis, periodKeyToSecondsMap, simpleMovingAverage, periodKeyToDataPointsMovingAvg } from '../../lib/ta';
+import { periodKeyToSecondsMap, simpleMovingAverage, periodKeyToDataPointsMovingAvg } from '../../lib/ta';
 
 export default {
   components: {
@@ -330,15 +330,9 @@ export default {
       };
     },
     poolsTA() {
-      const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
-      const poolHistorySwaps = this.$store.state.pools.poolHistorySwaps;
-      const allPoolsHistoryEarnings = this.$store.state.pools.allPoolsHistoryEarnings;
+      const taPeriods = this.$store.state.pools.taPeriods;
       const periodKey = periodsHistoryMap[this.currentTimeOption];
-
-      const ta = technicalAnalysis(
-        poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings, periodKey
-      );
-      return ta;
+      return taPeriods[periodKey];
     },
     pools() {
       const period = periodsHistoryMap[this.currentTimeOption];

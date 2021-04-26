@@ -72,4 +72,7 @@ export const mutations = {
   setAllPoolsHistoryEarnings(state, payload) {
     state.allPoolsHistoryEarnings = payload;
   },
+  setTaPeriods(state, payload) {
+    state.taPeriods = payload;
+  },
 };
