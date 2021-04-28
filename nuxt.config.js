@@ -69,7 +69,7 @@ export default {
     }],
   ],
   env: {
-    pollingFrequency: process.env.POLLING_FREQUENCY || 5000,
+    pollingFrequency: process.env.POLLING_FREQUENCY || 60000,
     TESTNET_NODE_IP: process.env.TESTNET_NODE_IP,
     CHAOSNET_NODE_IP: process.env.CHAOSNET_NODE_IP,
     APP_URL: process.env.APP_URL || 'http://localhost:3021',
