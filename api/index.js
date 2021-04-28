@@ -27,42 +27,67 @@ async function loadCached(id) {
 }
 
 thorchain.all('/overview', async (req, res) => {
-  const queue = await loadCached(`${req.blockchain}::queue`) || {};
-  const pools = await loadCached(`${req.blockchain}::pools`) || [];
-  const nodes = await loadCached(`${req.blockchain}::nodeAccounts`);
-  const lastBlock = await loadCached(`${req.blockchain}::lastBlock`);
-  const mimir = await loadCached(`${req.blockchain}::mimir`);
-  const asgardVaults = await loadCached(`${req.blockchain}::asgardVaults`);
-  const network = await loadCached(`${req.blockchain}::network`);
-  const market = await loadCached(`${req.blockchain}::marketData`);
-  const constants = await loadCached(`${req.blockchain}::constants`);
-  const runevaultBalance = await loadCached(`${req.blockchain}::runevaultBalance`);
-  const v1SinglechainStats = await loadCached(`${req.blockchain}::v1SinglechainStats`);
-  const v1SinglechainNetwork = await loadCached(`${req.blockchain}::v1SinglechainNetwork`);
-  const taPeriods = await loadCached(`${req.blockchain}::taPeriods`);
-
-  const version = await loadCached(`${req.blockchain}::version`);
-  const binanceAccounts = await loadCached(`${req.blockchain}::binanceAccounts`);
-
-  // NOTE: stats payload not used by frontend
-  const stats = await loadCached(`${req.blockchain}::stats`);
-
+  const pools = await loadCached(`${req.blockchain}::pools`);
   // NOTE: provide by default all available pools info in advance
   const poolIds = pools.filter(i => (i.status || '').toLowerCase() === 'available').map(i => i.asset);
-  const availablePoolStats = await Promise.all(poolIds.map(async (poolId) => {
-    const poolStats = await loadCached(`${req.blockchain}::pools-${poolId}`);
-    return { poolId, poolStats };
-  }));
-  const availablePoolHistoryDepths = await loadCached(`${req.blockchain}::poolHistoryDepths`);
-  const availablePoolHistorySwaps = await loadCached(`${req.blockchain}::poolHistorySwaps`);
-
-  const allPoolsHistoryEarnings = await loadCached(`${req.blockchain}::allPoolsHistoryEarnings`);
-  const chainBalances = await loadCached(`${req.blockchain}::chainBalances`);
-
-  res.json({
+  const poolsPromises = poolIds.map((poolId) => {
+    return new Promise(async (res, rej) => {
+      try {
+        const poolStats = await loadCached(`${req.blockchain}::pools-${poolId}`);
+        return res({ poolId, poolStats });
+      } catch(err) {
+        return rej(err);
+      }
+    })
+  });
+  const payloadPromises = [
+    loadCached(`${req.blockchain}::queue`),
+    loadCached(`${req.blockchain}::nodeAccounts`),
+    loadCached(`${req.blockchain}::lastBlock`),
+    loadCached(`${req.blockchain}::mimir`),
+    loadCached(`${req.blockchain}::asgardVaults`),
+    loadCached(`${req.blockchain}::network`),
+    loadCached(`${req.blockchain}::marketData`),
+    loadCached(`${req.blockchain}::constants`),
+    loadCached(`${req.blockchain}::runevaultBalance`),
+    loadCached(`${req.blockchain}::v1SinglechainStats`),
+    loadCached(`${req.blockchain}::v1SinglechainNetwork`),
+    loadCached(`${req.blockchain}::taPeriods`),
+    loadCached(`${req.blockchain}::version`),
+    loadCached(`${req.blockchain}::binanceAccounts`),
+    loadCached(`${req.blockchain}::stats`),
+    loadCached(`${req.blockchain}::poolHistoryDepths`),
+    loadCached(`${req.blockchain}::poolHistorySwaps`),
+    loadCached(`${req.blockchain}::allPoolsHistoryEarnings`),
+    loadCached(`${req.blockchain}::chainBalances`),
+    ...poolsPromises,
+  ];
+  const [
     queue,
+    nodes,
+    lastBlock,
+    mimir,
+    asgardVaults,
+    network,
+    market,
+    constants,
+    runevaultBalance,
+    v1SinglechainStats,
+    v1SinglechainNetwork,
+    taPeriods,
+    version,
+    binanceAccounts,
     stats,
-    pools,
+    availablePoolHistoryDepths,
+    availablePoolHistorySwaps,
+    allPoolsHistoryEarnings,
+    chainBalances,
+    ...availablePoolStats
+  ] = await Promise.all(payloadPromises);
+  res.json({
+    queue: queue || {},
+    pools: pools || [],
+    stats,
     nodes,
     lastBlock,
     mimir,
