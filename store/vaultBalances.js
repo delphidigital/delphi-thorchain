@@ -18,12 +18,6 @@ export const getters = {
       if (asset === 'RUNE') { return 1; }
       const pool = rootState.pools.pools.find((p) => {
         const assetKey = assetFromString(p.poolId);
-        if (!assetKey?.ticker) {
-          console.log(assetKey, p.poolId);
-          // eslint-disable-next-line
-          debugger;
-          console.log(assetKey, p.poolId);
-        }
         return assetKey.ticker === asset;
       });
       if (!pool) {
