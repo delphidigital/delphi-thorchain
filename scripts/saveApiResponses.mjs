@@ -224,7 +224,6 @@ async function updateBlockchainData(blockchain) {
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
   await set('taPeriods', taPeriods);
-  // await set('technicalAnalysis', ta);
   
   // Keep a list of most recent asgard vault addresses
   inboundAddresses.forEach(async (addressData) => {

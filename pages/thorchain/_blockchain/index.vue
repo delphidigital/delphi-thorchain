@@ -30,22 +30,30 @@
       <div class="pure-g">
         <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-left">
           <no-ssr>
-          <TopPerformers />
+            <LazyHydrate when-visible>
+              <TopPerformers />
+            </LazyHydrate>
           </no-ssr>
         </div>
         <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-right section-comming-soon">
           <no-ssr>
-          <StandbyPools />
+            <LazyHydrate when-visible>
+              <StandbyPools />
+            </LazyHydrate>
           </no-ssr>
         </div>
       </div>
 
       <no-ssr>
-        <PoolList />
+        <LazyHydrate when-visible>
+          <PoolList />
+        </LazyHydrate>
       </no-ssr>
 
       <no-ssr>
-        <RuneDataInfo />
+        <LazyHydrate when-visible>
+          <RuneDataInfo />
+        </LazyHydrate>
       </no-ssr>
       <!-- <NodeSummary /> -->
 
@@ -58,6 +66,7 @@
 </template>
 
 <script>
+import LazyHydrate from 'vue-lazy-hydration';
 import frontendFetcher from '../../../lib/frontendFetcher.mjs';
 import Footer from '../../../components/Common/Footer.vue';
 import PoolDepthSummary from '../../../components/Thorchain/PoolDepthSummary.vue';
@@ -67,6 +76,7 @@ import NodeSummary from '../../../components/Thorchain/NodeSummary.vue';
 export default {
   // load data here
   components: {
+    LazyHydrate,
     Footer,
     PercentageRuneLocked,
     PoolDepthSummary,

@@ -30,16 +30,13 @@ thorchain.all('/overview', async (req, res) => {
   const pools = await loadCached(`${req.blockchain}::pools`);
   // NOTE: provide by default all available pools info in advance
   const poolIds = pools.filter(i => (i.status || '').toLowerCase() === 'available').map(i => i.asset);
-  const poolsPromises = poolIds.map((poolId) => {
-    return new Promise(async (res, rej) => {
-      try {
-        const poolStats = await loadCached(`${req.blockchain}::pools-${poolId}`);
-        return res({ poolId, poolStats });
-      } catch(err) {
-        return rej(err);
-      }
-    })
-  });
+  const poolsPromises = poolIds.map((poolId) => (
+    new Promise((res, rej) => (
+      loadCached(`${req.blockchain}::pools-${poolId}`).then(poolStats => res({
+        poolId, poolStats
+      })).catch(rej)
+    ))
+  ));
   const payloadPromises = [
     loadCached(`${req.blockchain}::queue`),
     loadCached(`${req.blockchain}::nodeAccounts`),

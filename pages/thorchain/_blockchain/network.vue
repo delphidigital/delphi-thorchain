@@ -242,116 +242,62 @@
       <div class="pure-g">
         <div class="pure-u-1">
           <no-ssr>
-          <div class="section" style="flex: 1;">
-            <div class="section__header" id="rune_location" style="overflow-x: visible;">
-              <h2 class="section__title">
-                Location of RUNE
-                <span class="section__title--tooltip">
-                  <Icon
-                    class="tooltip__hover--info"
-                    name="info"
-                    scale="0.4"
-                  >
-                  </Icon>
-                  <div class="app-tooltip section__title__tooltip" style="width:340px;">
-                    <div class="app-tooltip__body">
-                      An overview of where all RUNE is located:<br />
-                      Pooled: The amount of RUNE in liquidity pools on Thorchain<br />
-                      Standby Bonded: The amount of RUNE bonded by standby nodes.<br />
-                      Active Bonded: The amount of RUNE bonded by active nodes.<br />
-                      Reserve: The amount of RUNE in the reserve.<br />
-                      Unreleased: The amount of unreleased RUNE. This portion will be released in line with the emission schedule.<br />
-                      Unlocked: The amount of RUNE elsewhere.<br />
+            <LazyHydrate when-visible>
+              <div class="section" style="flex: 1;">
+                <div class="section__header" id="rune_location" style="overflow-x: visible;">
+                  <h2 class="section__title">
+                    Location of RUNE
+                    <span class="section__title--tooltip">
+                      <Icon
+                        class="tooltip__hover--info"
+                        name="info"
+                        scale="0.4"
+                      >
+                      </Icon>
+                      <div class="app-tooltip section__title__tooltip" style="width:340px;">
+                        <div class="app-tooltip__body">
+                          An overview of where all RUNE is located:<br />
+                          Pooled: The amount of RUNE in liquidity pools on Thorchain<br />
+                          Standby Bonded: The amount of RUNE bonded by standby nodes.<br />
+                          Active Bonded: The amount of RUNE bonded by active nodes.<br />
+                          Reserve: The amount of RUNE in the reserve.<br />
+                          Unreleased: The amount of unreleased RUNE. This portion will be released in line with the emission schedule.<br />
+                          Unlocked: The amount of RUNE elsewhere.<br />
+                        </div>
+                      </div>
+                    </span>
+                  </h2>
+                  <a class="deeplink-selector" href="#rune_location">
+                    <Icon name="link" scale="0.7"></Icon>
+                  </a>
+                  <a class="tweet__link" :href="tweetRuneLocation" target="_blank">
+                    <Icon
+                      name="brands/twitter"
+                      scale="0.7"
+                    ></Icon>
+                  </a>
+                </div>
+                <div class="section__body">
+                  <div class="location-rune-detail">
+                    <div class="perc-rune-locked">
+                      <h3>
+                        {{percentageOfRuneLocked}} %
+                      </h3>
+                      <div>% of RUNE locked</div>
+                    </div>
+                    <div class="cirq-supply-rune">
+                      <CirculatingSupply />
                     </div>
                   </div>
-                </span>
-              </h2>
-              <a class="deeplink-selector" href="#rune_location">
-                <Icon name="link" scale="0.7"></Icon>
-              </a>
-              <a class="tweet__link" :href="tweetRuneLocation" target="_blank">
-                <Icon
-                  name="brands/twitter"
-                  scale="0.7"
-                ></Icon>
-              </a>
-            </div>
-            <div class="section__body">
-              <div class="location-rune-detail">
-                <div class="perc-rune-locked">
-                  <h3>
-                    {{percentageOfRuneLocked}} %
-                  </h3>
-                  <div>% of RUNE locked</div>
-                </div>
-                <div class="cirq-supply-rune">
-                  <CirculatingSupply />
+                  <div class="location-of-rune-section">
+                    <LocationOfRune />
+                  </div>
                 </div>
               </div>
-              <div class="location-of-rune-section">
-                <LocationOfRune />
-              </div>
-            </div>
-          </div>
+            </LazyHydrate>
           </no-ssr>
         </div>
       </div>
-
-      <!-- TODO: ENABLE Thorchain Developer Activity when ready
-      <div class="pure-g">
-        <div class="pure-u-1">
-          <div class="section" style="flex: 1;">
-            <div class="section__header" id="thorchain_dev_activity">
-              <h2 class="section__title">
-                Thorchain Developer Activity
-              </h2>
-              <a class="deeplink-selector" href="#thorchain_dev_activity">
-                <Icon name="link" scale="0.7"></Icon>
-              </a>
-              <a class="tweet__link" :href="tweetThorchainDevActivity" target="_blank">
-                <Icon
-                  name="brands/twitter"
-                  scale="0.7"
-                ></Icon>
-              </a>
-            </div>
-            <div class="section__body dev-activity-section">
-              <div class="dev-activity-detail">
-                <div class="dev-detail-numberdevs">
-                  <h3>16</h3>
-                  <div># of active developers</div>
-                </div>
-                <div class="dev-detail-devretention">
-                  <h3>25%</h3>
-                  <div>Developer retention</div>
-                </div>
-              </div>
-              <div class="dev-activity-chart">
-                <div class="dev-activity-chartwrapper">
-                  <div class="dev-activity-header">
-                    <div class="dev-activity-header-title">Gitlab commits over time</div>
-                    <div class="volume-by-pool-time-selector">
-                      <button
-                        v-for="option in timeOptions"
-                        :key="option"
-                        class="volume-by-pool-time-option"
-                        :class="{ 'volume-by-pool-time-option--active': option === currentTimeOption }"
-                        @click="togglePeriod(option)"
-                      >
-                        {{ option }}
-                      </button>
-                    </div>
-                  </div>
-                  <div class="dev-activity-gitlabchart">
-                    <GitlabCommitsChart />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      -->
       <Footer />
     </div>
     <div v-else>
@@ -362,6 +308,7 @@
 
 <script>
 import numeral from 'numeral';
+import LazyHydrate from 'vue-lazy-hydration';
 import frontendFetcher from '../../../lib/frontendFetcher.mjs';
 import DeterministicRunePieChart from '../../../components/Network/DeterministicRunePieChart.vue';
 import BlockRewardsPerDayColumnChart from '../../../components/Network/BlockRewardsPerDayColumnChart.vue';
@@ -374,6 +321,7 @@ const runeDivider = 10 ** 8;
 export default {
   // load data here
   components: {
+    LazyHydrate,
     DeterministicRunePieChart,
     BlockRewardsPerDayColumnChart,
     VolumeByPoolVsTotalVolume,
