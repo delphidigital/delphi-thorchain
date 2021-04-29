@@ -26,14 +26,6 @@
           scale="0.7"
         ></Icon>
       </a>
-      <!--
-      <div class="standby-pools-gauge">
-        <div
-          class="standby-pools-gauge__primary"
-          :style="{ width: (nextChurnHeightProgress * 100) + '%' }"
-        />
-      </div>
-      -->
     </div>
     <div class="section__body">
       <table class="section__table standby-pools-table">
@@ -84,7 +76,6 @@ export default {
     // status enum: "available" "staged" "suspended"
     // Ref: https://testnet.midgard.thorchain.info/v2/doc#operation/GetPools
     const stagedPools = this.$store.state.pools.poolsOverview.filter(p => p.status === 'staged');
-    // const ta = this.$store.state.pools.technicalAnalysis;
     return {
       tweetStandbyPools: `http://twitter.com/intent/tweet?text=${encodeURIComponent('Staged Pools')}&url=${encodeURIComponent(standbyPoolsDeepLink)}`,
       pools: stagedPools.map(p => ({
@@ -92,7 +83,6 @@ export default {
         depth: ((parseInt(p.assetDepth, 10)/ (10**8)) * parseFloat(p.assetPriceUSD) * 2),
         assetPriceUSD: parseFloat(p.assetPriceUSD),
       })).sort((a,b) => parseInt(b.depth, 10) - parseInt(a.depth, 10)),
-      // nextChurnHeightProgress: Math.random(),
     };
   },
   computed: {
