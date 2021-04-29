@@ -1,17 +1,10 @@
 import express from 'express';
-import { promisify } from 'util';
 import redisClient from '../lib/redisClient.mjs';
-import compression from 'compression';
-
-const client = redisClient;
-const getAsync = promisify(client.get).bind(client);
 
 const app = express();
 const thorchain = express.Router();
 const chaosnet = express.Router();
 const testnet = express.Router();
-
-app.use(compression());
 
 app.use(function(_req, res, next) {
   res.header("Access-Control-Allow-Origin", '*');
@@ -22,7 +15,7 @@ app.use(function(_req, res, next) {
 });
 
 async function loadCached(id) {
-  const rawdata = await getAsync(`thorchain::${id}`);
+  const rawdata = await redisClient.getAsync(`thorchain::${id}`);
   return JSON.parse(rawdata);
 }
 

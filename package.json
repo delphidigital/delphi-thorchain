@@ -30,7 +30,6 @@
     "axios": "0.21.1",
     "babel-eslint": "10.1.0",
     "bignumber.js": "9.0.1",
-    "compression": "1.7.4",
     "css-loader": "5.0.1",
     "date-fns": "2.16.1",
     "eslint": "7.18.0",
@@ -49,7 +48,6 @@
     "sort-by": "1.2.0",
     "vue": "2.6.12",
     "vue-awesome": "4.1.0",
-    "vue-lazy-hydration": "^2.0.0-beta.4",
     "vue-loader": "15.9.6",
     "vue2-datepicker": "^3.9.0",
     "webpack": "4.46.0"

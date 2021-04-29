@@ -35,23 +35,17 @@
       <div class="pure-g">
         <div class="pure-u-1 pure-u-md-1-2 section--split-left">
           <no-ssr>
-            <LazyHydrate when-visible>
-              <ChurnInfo />
-            </LazyHydrate>
+            <ChurnInfo />
           </no-ssr>
         </div>
         <div class="pure-u-1 pure-u-md-1-2 section--split-right">
           <no-ssr>
-            <LazyHydrate when-visible>
-              <NodesByLocation />
-            </LazyHydrate>
+            <NodesByLocation />
           </no-ssr>
         </div>
       </div>
       <no-ssr>
-        <LazyHydrate when-visible>
-          <NodeDetailList />
-        </LazyHydrate>
+        <NodeDetailList />
       </no-ssr>
       <Footer />
     </div>
@@ -62,7 +56,6 @@
 </template>
 
 <script>
-import LazyHydrate from 'vue-lazy-hydration';
 import frontendFetcher from '../../../lib/frontendFetcher.mjs';
 import NodesByLocation from '../../../components/Network/NodesByLocation.vue';
 import ChurnInfo from '../../../components/Network/ChurnInfo.vue';
@@ -71,7 +64,6 @@ import NodeDetailList from '../../../components/Network/NodeDetailList.vue';
 export default {
   // load data here
   components: {
-    LazyHydrate,
     NodesByLocation,
     NodeDetailList,
     ChurnInfo,

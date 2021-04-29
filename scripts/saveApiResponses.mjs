@@ -39,7 +39,7 @@ async function getBalancesFromChainAddr(chain, addr, net, routerAddr) {
     const data = await axios.post(url, { query }, {
       headers: { "Content-Type": "application/json", "X-API-KEY": BITQUERY_API_KEY },
     });
-    const balance = data.data.data.bitcoin.outputs[0].value - data.data.data.bitcoin.inputs[0].value;
+    const balance = (data.data.data.bitcoin.outputs?.[0].value || 0) - (data.data.data.bitcoin.inputs?.[0].value);
     return [{ network: chain, address: addr, balance }];
   } else if (chain === 'BNB') {
     // https://docs.binance.org/api-reference/dex-api/paths.html
