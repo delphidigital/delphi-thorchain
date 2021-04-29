@@ -116,7 +116,7 @@ import Percentage from '../Common/Percentage.vue';
 import RuneUSD from '../Common/RuneUSD.vue';
 import { periodsHistoryMap, periodToStatsMap } from '../../store/pools';
 import { poolNameWithoutAddr } from '../../lib/utils';
-import { getInvervalsFromPeriodKey, getTopPerformers, e8ValueParser } from '../../lib/ta';
+import { getInvervalsFromPeriodKey, e8ValueParser } from '../../lib/ta';
 
 export default {
   components: {
@@ -164,14 +164,15 @@ export default {
   },
   computed: {
     pools() {
-      const topPerformers = getTopPerformers(
-        this.$store.state.pools.poolHistoryDepths,
-        this.$store.state.pools.poolHistorySwaps,
-        this.$store.state.pools.allPoolsHistoryEarnings,
-        periodsHistoryMap[this.currentTimeOption], // history detphs period key
-        this.$store.state.pools.pools, // pool stats
-        periodToStatsMap[this.currentTimeOption],  // stats period key
-      );
+      const taPeriods = this.$store.state.pools.taPeriods;
+      const periodKey = periodsHistoryMap[this.currentTimeOption];
+      const periodTA = taPeriods[periodKey];
+      const poolsDepths = getInvervalsFromPeriodKey(this.$store.state.pools.poolHistoryDepths, periodKey);
+      const topPerformers = poolsDepths.map(pd => ({
+        poolId: pd.poolId,
+        apy: this.$store.state.pools.pools.find(p => p.poolId === pd.poolId).poolStats[periodToStatsMap[this.currentTimeOption]].poolAPY,
+        ta: periodTA[pd.poolId][periodKey],
+      }));
       const unsortedPools = topPerformers.map(({ poolId, apy, ta }) => {
         const poolStats = this.$store.state.pools.pools.find(p => p.poolId === poolId).poolStats;
         const poolPeriodStats = poolStats[periodToStatsMap[this.currentTimeOption]];
