@@ -92,11 +92,12 @@ import { getPoolsPeriodDepthAndVolumeUsd, getInvervalsFromPeriodKey } from '../.
 import { periodsHistoryMap, runeDivider } from '../../store/pools';
 
 const colors = [
-  '#4346D3',
   '#5E2BBC',
   '#F7517F',
   '#2D99FF',
   '#16CEB9',
+  '#f0b909',
+  '#4346D3',
 ];
 
 export default {
@@ -130,13 +131,16 @@ export default {
       const poolHistoryDepths = this.$store.state.pools.poolHistoryDepths;
       const poolHistorySwaps = this.$store.state.pools.poolHistorySwaps;
       const periodKey = periodsHistoryMap[this.currentTimeOption];
-      const allPools = getPoolsPeriodDepthAndVolumeUsd(poolHistoryDepths, poolHistorySwaps, periodKey, colors);
+      const allPools = getPoolsPeriodDepthAndVolumeUsd(poolHistoryDepths, poolHistorySwaps, periodKey);
       return allPools;
     },
     top5PoolsWithOthers() {
       const allPools = this.poolsPeriodDepthAndVolumeUsd;
       const allPoolsSorted = allPools.slice().sort((a, b) => b.totalDepthUsd - a.totalDepthUsd);
-      const top5PoolsSortedByVolume = allPoolsSorted.slice(0, 5);
+      const top5PoolsSortedByVolume = allPoolsSorted.slice(0, 5).map((p, idx) => ({
+        ...p,
+        color: colors[idx],
+      }));
       const otherPoolsSorted = allPoolsSorted.slice(5, allPoolsSorted.length);
       const other = otherPoolsSorted.reduce((result, item) => {
         return {

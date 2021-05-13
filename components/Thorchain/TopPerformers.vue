@@ -192,7 +192,7 @@ export default {
         };
       });
       const descChar = this.sortDescending ? '-' : '';
-      return unsortedPools.sort(sortBy(`${descChar}${this.sortBy}`));
+      return unsortedPools.sort(sortBy(`${descChar}${this.sortBy}`)).slice(0, 10);
     },
   },
   methods: {

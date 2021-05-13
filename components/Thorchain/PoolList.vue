@@ -51,7 +51,7 @@
             <th
               v-for="field in fields"
               :key="field.name"
-              class="section__table__head"
+              :class="`section__table__head section__table__head--${field.name}`"
               @click="toggleSort(field.name)"
             >
               {{ field.label }}
@@ -75,13 +75,13 @@
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody :class="selectedPools.length > 0 ? 'pool-list--expanded' : ''">
           <tr
             v-for="pool in poolsSelected"
             :key="pool.poolId"
             :class="selectedPools.indexOf(pool.poolId) === -1 ? 'section__table__row' : `section__table__row selectedpool__color${selectedPools.indexOf(pool.poolId)}`"
           >
-            <td class="section__table__data section__table__data--highlight pool-list-pool">
+            <td class="section__table__data section__table__data--highlight pool-list-pool section__table__data--poolId">
               <label class="container control control-checkbox">
                 {{ displayPoolName(pool.poolId) }}
                 <input type="checkbox"
@@ -92,7 +92,7 @@
                 <div class="control_indicator"></div>
               </label>
             </td>
-            <td class="section__table__data pool-list-apy">
+            <td class="section__table__data pool-list-apy section__table__data--averagePeriodAPY">
               <div>
                 <span
                   :class="(sortBy == 'averagePeriodAPY') ? 'column__highlight__colored' : ''"
@@ -102,7 +102,7 @@
                 </span>
               </div>
             </td>
-            <td class="section__table__data">
+            <td class="section__table__data section__table__data--volumeAverageUsd">
               <span
                 :class="(sortBy == 'poolId' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('volumeAverageUsd')"
@@ -110,7 +110,7 @@
                 {{ formatLabel(pool.volumeAverageUsd) }}
               </span>
             </td>
-            <td class="section__table__data">
+            <td class="section__table__data section__table__data--totalDepthUsd">
               <span
                 :class="(sortBy == 'totalDepthUsd') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('totalDepthUsd')"
@@ -119,7 +119,7 @@
               </span>
             </td>
 
-            <td class="section__table__data">
+            <td class="section__table__data section__table__data--volumeOverDepthRatio">
               <div v-if="!isNaN(pool.volumeOverDepthRatio)">
                 <span
                   :class="(sortBy == 'volumeOverDepthRatio') ? 'column__highlight__colored' : ''"
@@ -134,8 +134,8 @@
                 </span>
               </div>
             </td>
-
-            <td class="section__table__data">
+            <!--
+            <td class="section__table__data" :style="`width: ${fields[5].width};`">
               <span
                 :class="(sortBy == 'lastCorrellation') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('lastCorrellation')"
@@ -143,11 +143,12 @@
                 {{(pool.lastCorrellation || 0).toFixed(2)}}
               </span>
             </td>
+            -->
           </tr>
 
 
           <tr v-if="selectedPools.length > 0">
-            <td colspan="6">
+            <td colspan="6" style="width: 100%;">
               <div class="section__linearvolume__chart">
                 <div class="section__chart-title">
                   <h3 class="section__subtitle">
@@ -174,7 +175,7 @@
             :key="pool.poolId"
             :class="selectedPools.indexOf(pool.poolId) === -1 ? 'section__table__row' : `section__table__row selectedpool__color${selectedPools.indexOf(pool.poolId)}`"
           >
-            <td class="section__table__data section__table__data--highlight pool-list-pool">
+            <td class="section__table__data section__table__data--highlight pool-list-pool section__table__data--poolId">
               <label class="container control control-checkbox">
                 {{ displayPoolName(pool.poolId) }}
                 <input type="checkbox"
@@ -185,7 +186,7 @@
                 <div class="control_indicator"></div>
               </label>
             </td>
-            <td class="section__table__data pool-list-apy">
+            <td class="section__table__data pool-list-apy section__table__data--averagePeriodAPY">
               <div>
                 <span
                   :class="(sortBy == 'averagePeriodAPY') ? 'column__highlight__colored' : ''"
@@ -195,7 +196,7 @@
                 </span>
               </div>
             </td>
-            <td class="section__table__data">
+            <td class="section__table__data section__table__data--volumeAverageUsd">
               <span
                 :class="(sortBy == 'poolId' || sortBy == 'volumeAverageUsd') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('volumeAverageUsd')"
@@ -203,7 +204,7 @@
                 {{ formatLabel(pool.volumeAverageUsd) }}
               </span>
             </td>
-            <td class="section__table__data">
+            <td class="section__table__data section__table__data--totalDepthUsd">
               <span
                 :class="(sortBy == 'totalDepthUsd') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('totalDepthUsd')"
@@ -212,7 +213,7 @@
               </span>
             </td>
 
-            <td class="section__table__data">
+            <td class="section__table__data section__table__data--volumeOverDepthRatio">
               <div v-if="!isNaN(pool.volumeOverDepthRatio)">
                 <span
                   :class="(sortBy == 'volumeOverDepthRatio') ? 'column__highlight__colored' : ''"
@@ -227,8 +228,8 @@
                 </span>
               </div>
             </td>
-
-            <td class="section__table__data">
+            <!--
+            <td class="section__table__data" :style="`width: ${fields[5].width};`">
               <span
                 :class="(sortBy == 'lastCorrellation') ? 'column__highlight__colored' : ''"
                 @click="changeColumn('lastCorrellation')"
@@ -236,6 +237,7 @@
                 {{(pool.lastCorrellation || 0).toFixed(2)}}
               </span>
             </td>
+            -->
           </tr>
         </tbody>
       </table>
@@ -297,11 +299,11 @@ export default {
           label: 'V/D Ratio',
           info: 'A metric which indicates a pool’s potential. A higher number means higher demand.',
         },
-        {
-          name: 'lastCorrellation',
-          label: 'Correllation',
-          info: 'Price divergence between ASSET and RUNE. A high correllation is favorable (close to 1). it indicates a lower chance of IL.',
-        },
+        // {
+        //   name: 'lastCorrellation',
+        //   label: 'Correllation',
+        //   info: 'Price divergence between ASSET and RUNE. A high correllation is favorable (close to 1). it indicates a lower chance of IL.',
+        // },
       ],
     };
   },
@@ -314,9 +316,10 @@ export default {
         text = 'Depth';
       } else if (this.sortBy === 'volumeOverDepthRatio') {
         text = 'V/D Ratio';
-      } else if (this.sortBy === 'lastCorrellation') {
-        text = 'Correlation';
       }
+      //  else if (this.sortBy === 'lastCorrellation') {
+      //   text = 'Correlation';
+      // }
       return {
         type: 'linear',
         title: {
@@ -411,9 +414,10 @@ export default {
         return { title: 'Depth of selected pools' };
       } else if (this.sortBy === 'volumeOverDepthRatio') {
         return { title: 'V/D of selected pools' };
-      } else if (this.sortBy === 'lastCorrellation') {
-        return { title: 'Correllation of selected pools' };
       }
+      // else if (this.sortBy === 'lastCorrellation') {
+      //   return { title: 'Correllation of selected pools' };
+      // }
       return { title: 'Volume of selected pools' };
     },
     selectedPoolsLinechartData() {
@@ -479,7 +483,8 @@ export default {
             color: colorsList[colorIndex],
           };
           return ret;
-        } else if (this.sortBy === 'lastCorrellation') {
+        }
+        /*else if (this.sortBy === 'lastCorrellation') {
           const poolTA = this.poolsTA
           const periodTA = poolTA[sp][period];
           const periodIntervalsLinechartData = Object.keys(periodTA.intervals).map(timestamp => ({
@@ -493,7 +498,8 @@ export default {
             data: finalData,
             color: colorsList[colorIndex],
           };
-        } else { // if (this.chartedValue === 'volumeAverageUsd') {
+        } */
+        else { // if (this.chartedValue === 'volumeAverageUsd') {
           const poolTA = this.poolsTA
           const periodTA = poolTA[sp][period];
           const periodIntervalsLinechartData = Object.keys(periodTA.intervalSwaps).map(timestamp => ({
@@ -529,7 +535,7 @@ export default {
     formatYValueTooltip(value) {
       if (this.sortBy === 'averagePeriodAPY') {
         return this.displayPoolAPY(value);
-      } else if (this.sortBy === 'volumeOverDepthRatio' || this.sortBy === 'lastCorrellation') {
+      } else if (this.sortBy === 'volumeOverDepthRatio') { // || this.sortBy === 'lastCorrellation') {
         return `${(value || 0.0).toFixed(2)}`;
       }
       return this.formatLabel(value);
@@ -665,14 +671,61 @@ export default {
 .pool-list-table {
   width: 100%;
 
+  tbody {
+    max-height: 580px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    &.pool-list--expanded {
+      max-height: 580px; // 910px;
+    }
+  }
+  thead {
+    display: flex;
+    flex-direction: column;
+  }
+  thead tr, tbody tr { display: flex; flex-direction: row; }
   th {
     cursor: pointer;
     padding-left: 22px;
     text-align: center;
     &:first-child {
       text-align: left;
+      flex: 1;
     }
   }
+  td {
+    &:first-child {
+      flex: 1;
+    }
+  }
+
+  .section__table__head--poolId, .section__table__data--poolId {
+    flex: 3;
+    min-width: 150px;
+  }
+  .section__table__head--averagePeriodAPY, .section__table__data--averagePeriodAPY {
+    flex: 1;
+    min-width: 80px;
+  }
+  .section__table__head--volumeAverageUsd, .section__table__data--volumeAverageUsd {
+    flex: 2;
+    min-width: 120px;
+  }
+  .section__table__head--totalDepthUsd, .section__table__data--totalDepthUsd {
+    flex: 2;
+    min-width: 150px;
+  }
+  .section__table__head--volumeOverDepthRatio, .section__table__data--volumeOverDepthRatio {
+    flex: 1;
+    min-width: 70px;
+  }
+  .section__table__head--lastCorrellation, .section__table__data--lastCorrellation {
+    flex: 1;
+    min-width: 70px;
+  }
+
   .section__table__head--info {
     font-size: 0.4em;
     width: 12px;
