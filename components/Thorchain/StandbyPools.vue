@@ -93,11 +93,10 @@ export default {
   },
   methods: {
     formatDepthUsdValue(value) {
-      const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('($0,0.00)')}K`;
+      return numeral(value).format('($0,0.00a)').toUpperCase();
     },
     formatUsdValue(value) {
-      return `${numeral(value).format('($0,0.00)')}`;
+      return numeral(value).format('($0,0.00)');
     },
   }
 };

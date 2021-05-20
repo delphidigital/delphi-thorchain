@@ -200,8 +200,7 @@ export default {
       return poolId ? poolNameWithoutAddr(poolId) : poolId;
     },
     formatLabelDepth(value) {
-      const thousandsConvert = value / 1000;
-      return `${numeral(thousandsConvert).format('($0,0)')}K`;
+      return numeral(value).format('($0,0.00a)').toUpperCase();
     },
     formatNumberDecimals(value){
       return value.toFixed(2);
