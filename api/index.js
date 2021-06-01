@@ -81,7 +81,7 @@ thorchain.all('/int/extra', async (req, res) => {
 });
 
 app.use('/chaosnet', chaosnet);
-app.use('/testnet', testnet);
+// app.use('/testnet', testnet);
 
 chaosnet.use((req, res, next) => {
   req.blockchain = 'chaosnet';
@@ -96,7 +96,7 @@ testnet.use((req, res, next) => {
 testnet.use('/', thorchain);
 
 app.use('/chaosnet', chaosnet);
-app.use('/testnet', testnet);
+// app.use('/testnet', testnet);
 
 module.exports = {
   handler: app,

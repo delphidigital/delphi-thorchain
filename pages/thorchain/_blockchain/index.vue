@@ -4,7 +4,7 @@
       <h1 class="page__title">
         Dashboard
       </h1>
-      <BlockchainToggle />
+      <!-- <BlockchainToggle /> -->
     </div>
 
     <div v-if="!this.$store.state.thorchain.loading">

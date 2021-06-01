@@ -151,5 +151,5 @@ async function fetchDataJob(blockchain) {
   }, timeout);
 }
 
-fetchDataJob('testnet');
+// fetchDataJob('testnet');
 fetchDataJob('chaosnet');
