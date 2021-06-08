@@ -35,6 +35,11 @@ thorchain.all('/v1/network', async (req, res) => {
   res.json(data);
 });
 
+thorchain.all('/v1/history/stats', async (req, res) => {
+  const data = await loadCached(`${req.blockchain}::statsHistory`);
+  res.json(data);
+});
+
 thorchain.all('/v1/thorchain/constants', async (req, res) => {
   const data = await loadCached(`${req.blockchain}::constants`);
   res.json(data);
