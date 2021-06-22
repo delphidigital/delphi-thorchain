@@ -106,8 +106,19 @@ async function updateBlockchainData(blockchain) {
 
   // FETCH DATA
   // Thorchain
+  const stats = await api.loadStats(); // NOTE: same as v1 without : [poolCount, totalEarned, totalVolume24hr]
+  await set('stats', stats);
+  const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
+  await set('network', network);
+  const constants = await api.loadConstants(); // same, some props updated?
+  await set('constants', constants);
+  const versionRequest = await api.loadNodeVersion();
+  await set('version', versionRequest);
   const queue = await api.loadQueue();
+  await set('queue', queue);
   const poolList = await api.loadPools();
+  await set('pools', poolList);
+
   const v1SinglechainStats = await api.loadV1SinglechainStats();
   const v1SinglechainNetwork = await api.loadV1SinglechainNetwork();
   // NOTE: v1 returned status: 'Enabled'
@@ -128,6 +139,9 @@ async function updateBlockchainData(blockchain) {
     const poolHS = await api.loadHistorySwaps(poolId);
     poolHistorySwaps[poolId] = poolHS;
   }
+  Object.keys(poolStats).forEach(async (poolId) => {
+    await set(`pools-${poolId}`, poolStats[poolId]);
+  });
   const nodeAccounts = await api.loadNodeAccounts();
   const nodeAccountsWithLocation = await Promise.all(nodeAccounts.map(async (nodeAccount) => {
     const cacheKey = `nodeIP-${nodeAccount['ip_address']}`;
@@ -138,10 +152,6 @@ async function updateBlockchainData(blockchain) {
   const mimir = await api.loadMimir();
   const asgardVaults = await api.loadAsgardVaults();
   const inboundAddresses = await api.loadInboundAddresses();
-  const stats = await api.loadStats(); // NOTE: same as v1 without : [poolCount, totalEarned, totalVolume24hr]
-  const network = await api.loadNetwork(); // NOTE: v2 same props changed standbyNodeCount is str, totalPooledRune, totalStaked
-  const constants = await api.loadConstants(); // same, some props updated?
-  const versionRequest = await api.loadNodeVersion();
 
 
   // TODO HERE ADD BITQUERY
@@ -153,6 +163,7 @@ async function updateBlockchainData(blockchain) {
     const balances = await getBalancesFromChainAddr(ia.chain, ia.address, net, ia.router);
     chainBalances = chainBalances.concat(balances);
   }
+  await set('chainBalances', chainBalances);
 
   // Other sources
   let runevaultBalance = 0;
@@ -206,24 +217,18 @@ async function updateBlockchainData(blockchain) {
       poolHistoryDepths, poolHistorySwaps, allPoolsHistoryEarnings, periodKey
     );
   });
-
-  // SET DATA
-  await set('chainBalances', chainBalances);
-  await set('queue', queue);
-  await set('pools', poolList);
-  Object.keys(poolStats).forEach(async (poolId) => {
-    await set(`pools-${poolId}`, poolStats[poolId]);
-  });
-  await set('v1SinglechainStats', v1SinglechainStats);
-  await set('v1SinglechainNetwork', v1SinglechainNetwork);
   await set('allPoolsHistoryEarnings', allPoolsHistoryEarnings);
   await set('poolHistoryDepths', poolHistoryDepths);
+  await set('taPeriods', taPeriods);
   await set('poolHistorySwaps', poolHistorySwaps);
   await set('nodeAccounts', nodeAccountsWithLocation);
   await set('lastBlock', lastBlock);
   await set('mimir', mimir);
   await set('asgardVaults', asgardVaults);
-  await set('taPeriods', taPeriods);
+
+  // SET DATA
+  await set('v1SinglechainStats', v1SinglechainStats);
+  await set('v1SinglechainNetwork', v1SinglechainNetwork);
   
   // Keep a list of most recent asgard vault addresses
   inboundAddresses.forEach(async (addressData) => {
@@ -240,11 +245,6 @@ async function updateBlockchainData(blockchain) {
       await redisClient.ltrimAsync(key, 0, 3);
     }
   });
-
-  await set('stats', stats);
-  await set('network', network);
-  await set('constants', constants);
-  await set('version', versionRequest);
   await set('marketData', { priceUsd: priceUsd.toString(), circulating, totalValueLockedUSD, coingeckoMarketData });
   await set('runevaultBalance', runevaultBalance);
   await set('binanceAccounts', binanceAccounts);

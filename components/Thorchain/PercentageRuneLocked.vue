@@ -52,6 +52,9 @@ export default {
   computed: {
     runeLockedData() {
       const net = this.$store.state.networkHealth.network;
+      if (!net) {
+        return [];
+      }
       const bm = net.bondMetrics;
       // const stats = this.$store.state.networkHealth.stats;
       const v1Net = this.$store.state.networkHealth.v1SinglechainNetwork;

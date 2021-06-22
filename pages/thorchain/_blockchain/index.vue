@@ -29,24 +29,25 @@
 
       <div class="pure-g">
         <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-left">
-          <no-ssr>
+          <client-only>
             <TopPerformers />
-          </no-ssr>
+          </client-only>
         </div>
         <div class="pure-u-1 pure-u-lg-1-2 section--lg-split-right section-comming-soon">
-          <no-ssr>
+          <client-only>
             <StandbyPools />
-          </no-ssr>
+          </client-only>
         </div>
       </div>
 
-      <no-ssr>
+      <client-only>
         <PoolList />
-      </no-ssr>
+      </client-only>
 
-      <no-ssr>
+      <client-only>
         <RuneDataInfo />
-      </no-ssr>
+      </client-only>
+      
       <!-- <NodeSummary /> -->
 
       <Footer />
@@ -81,7 +82,10 @@ export default {
     window.addEventListener('blur', this.pollDataDeactivate);
   },
   mounted() {
-    this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+    const taPeriods = this.$store.state.pools.taPeriods;
+    if (!taPeriods || !taPeriods.poolsperiod24H || !Object.keys(taPeriods.poolsperiod24H).length) {
+      this.pollData(); // this.timeout = setTimeout(this.pollData, process.env.pollingFrequency);
+    }
     this.$store.commit('nodeStarred/initializeStore');
   },
   beforeDestroy() {

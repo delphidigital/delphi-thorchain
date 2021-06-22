@@ -4,7 +4,7 @@
       <h2 class="section__title">
         Staged Pools
       </h2>
-      <no-ssr>
+      <client-only>
         <span style="font-size: 11px;display: inline-flex;flex: 1;">
           <VueCountdown :time="secondsToNextPoolActivation * 1000" v-slot="{ days, hours, minutes }" :interval="60000">
             <span style="font-weight: 600; color: #19ceb8;">
@@ -13,7 +13,7 @@
             until next pool activation
           </VueCountdown>
         </span>
-      </no-ssr>
+      </client-only>
       <a class="deeplink-selector" href="#staged-pools">
         <Icon
           name="link"

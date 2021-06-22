@@ -335,6 +335,9 @@ export default {
     poolsTA() {
       const taPeriods = this.$store.state.pools.taPeriods;
       const periodKey = periodsHistoryMap[this.currentTimeOption];
+      if (!periodKey || !taPeriods || !taPeriods[periodKey]) {
+        return {};
+      }
       return taPeriods[periodKey];
     },
     pools() {

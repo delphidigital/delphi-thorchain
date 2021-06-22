@@ -80,7 +80,14 @@ export default {
           padding: 0,
         },
         xAxis: {
-          categories: this.data.map(e => format(e.date, 'dd MMM yyyy')),
+          categories: this.data.map(e => {
+            try {
+              return format(e.date, 'dd MMM yyyy');
+            } catch(e) {
+              console.error('INVALID DATE FORMAT AT CHART DATA', e);
+              return '';
+            }
+          }),
           labels: {
             formatter() {
               const baseStyle =

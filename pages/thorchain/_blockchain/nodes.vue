@@ -34,19 +34,19 @@
 
       <div class="pure-g">
         <div class="pure-u-1 pure-u-md-1-2 section--split-left">
-          <no-ssr>
+          <client-only>
             <ChurnInfo />
-          </no-ssr>
+          </client-only>
         </div>
         <div class="pure-u-1 pure-u-md-1-2 section--split-right">
-          <no-ssr>
+          <client-only>
             <NodesByLocation />
-          </no-ssr>
+          </client-only>
         </div>
       </div>
-      <no-ssr>
+      <client-only>
         <NodeDetailList />
-      </no-ssr>
+      </client-only>
       <Footer />
     </div>
     <div v-else>
